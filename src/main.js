@@ -21,6 +21,11 @@ const router = new VueRouter({
   routes,
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.path !== '/login' && sessionStorage.getItem("shopInfo") === null) next({name: 'login'})
+  else next()
+})
+
 Vue.config.productionTip = false
 
 new Vue({
