@@ -1,11 +1,11 @@
 <template>
   <div class="login-page">
     <img class="image login-page__image" src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png" />
-    <div class="title login-page__title">LOGIN</div>
+    <div class="title login-page__title">SALON ADMIN</div>
     <form class="form login-page__form" action="#" @submit.prevent="onSubmit">
       <input v-model="dataUser.username" placeholder="Enter ID" required/>
       <input v-model="dataUser.password" type="password" placeholder="Enter password" required/>
-      <button type="submit" class="login-page__btn login-page__btn--disabled" :disabled="disabledBtn">Login</button>
+      <button type="submit" class="login-page__btn" :class="{'login-page__btn--disabled': disabledBtn}" :disabled="disabledBtn">Login</button>
     </form>
     <nofication-modal ref="noficationRef" modalTitle="Login Failed" />
   </div>
@@ -29,7 +29,7 @@ export default {
         username: '',
         password: '',
       },
-      disabledBtn: true
+      disabledBtn: false
     }
   },
 
