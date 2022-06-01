@@ -6,25 +6,12 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-//import Vue Router & routes
-import VueRouter from 'vue-router';
-import routes from './route';
+//import router
+import router from './route';
 
 //use Bootstrap
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
-
-//use Vue Router
-Vue.use(VueRouter);
-const router = new VueRouter({
-  mode: 'history',
-  routes,
-})
-
-router.beforeEach((to, from, next) => {
-  if (to.path !== '/login' && sessionStorage.getItem("shopInfo") === null) next({name: 'login'})
-  else next()
-})
 
 Vue.config.productionTip = false
 

@@ -7,11 +7,6 @@
 <script>
 export default {
 	name: "HomePage",
-	created() {
-		// if(sessionStorage.getItem("shopInfo") === null) {
-		//     this.$router.push('/login')
-		// }
-	},
 	data() {
 		return {
 			name: "ThankZ",

@@ -10,31 +10,25 @@
 </template>
 
 <script>
-import axios from 'axios'
+import apis from '../../lib/apis'
+import session from '../../lib/utils/session'
+
 export default {
   name: 'ClientPage',
   data() {
     return {
-      name: 'ThankZ',
       users: [],
+      name: 'ThankZ',
     }
   },
   props: {},
   async mounted() {
-    const shopInfo = JSON.parse(sessionStorage.getItem("shopInfo"))
     const data = {
-      shopId: 600908,
       pageSize: 10,
-      pageNumber: 1
+      pageNumber: 1,
+      shopId: session.shopSession.getShopId(),
     }
-    console.log(shopInfo.userAuthInfo.authToken)
-    const headers = {
-      'Authorization': `Bearer ${shopInfo.userAuthInfo.authToken}`,
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Headers': 'Access-Control-Allow-Methods, Access-Control-Allow-Origin, Origin, Accept, Content-Type',
-      'Accept': 'application/json'
-    }
-    const res = await axios.post('https://ahasoft-salon-admin-http-aggregator-dev.azurewebsites.net/api/read/v1/clients/Client/Active', data, {headers: headers})
+    const res = await apis.clientApi.getAllClientByShop('DEV', data)
     this.users = res.data.result.items
     console.log(res.data.result.items)
   },
@@ -48,6 +42,6 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+  @import "./Client.scss"
 </style>

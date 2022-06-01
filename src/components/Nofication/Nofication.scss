@@ -1,0 +1,23 @@
+.nofication-modal {
+    background-color: red;
+    height: 100px;
+    .nofication-modal__modal {
+        .modal__message {
+            color: red;
+            font-size: 18px;
+        }
+        .modal__footer {
+            .footer__btn {
+                width: 30%;
+                color: white;
+                font-size: 18px;
+                margin-top: 15px;
+                border-radius: 10px;
+                background-color: rgba(27, 123, 248, 0.8);
+            }
+            .footer__btn:hover {
+                background-color: rgb(27, 123, 248);
+            }
+        }
+    }
+}

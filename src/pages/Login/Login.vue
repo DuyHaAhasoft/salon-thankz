@@ -3,57 +3,65 @@
     <img class="image login-page__image" src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png" />
     <div class="title login-page__title">LOGIN</div>
     <form class="form login-page__form" action="#" @submit.prevent="onSubmit">
-      <input v-model="username" placeholder="Enter ID" required/>
-      <input v-model="password" placeholder="Enter password" required/>
-      <button type="submit" @click="onSubmit">Login</button>
+      <input v-model="dataUser.username" placeholder="Enter ID" required/>
+      <input v-model="dataUser.password" type="password" placeholder="Enter password" required/>
+      <button type="submit" class="login-page__btn login-page__btn--disabled" :disabled="disabledBtn">Login</button>
     </form>
+    <nofication-modal ref="noficationRef" modalTitle="Login Failed" />
   </div>
 </template>
 
 <script>
-import axios from "axios"
+// Utils
+import apis from '../../lib/apis'
+import session from '../../lib/utils/session'
+import constant from '../../lib/utils/constant'
+
+// Components
+import NoficationModal from '../../components/Nofication/Nofication.vue'
 
 export default {
   name: 'LoginPage',
+
   data() {
     return {
-      username: '',
-      password: ''
+      dataUser: {
+        username: '',
+        password: '',
+      },
+      disabledBtn: true
     }
   },
-  async mounted() {
-    sessionStorage.removeItem("shopInfo");
-    // const data = {
-    //   userID: 'thankz_salon',
-    //   password: 'abcd@1234',
-    //   solutionId: 3002
-    // }
-    // const res = await axios.post('https://ahasoft-salon-admin-http-aggregator-dev.azurewebsites.net/api/aggr/v1/auth/login/subscriber?culture=en-US&ui-culture=en-US', data)
-    // console.log(data, res, res.data.isOK)
+
+  mounted() {
+    session.shopSession.removeShopInfo()
   },
+  
+  components: {
+    NoficationModal
+  },
+
   methods: {
     async onSubmit() {
       const data = {
         userID: this.username,
         password: this.password,
-        solutionId: 3002
+        solutionId: constant.api.SOLUTION_ID.SALON_ADMIN
       }
+
       try {
-        // this.preLoader()
-        const res = await axios.post('https://ahasoft-salon-admin-http-aggregator-dev.azurewebsites.net/api/aggr/v1/auth/login/subscriber?culture=en-US&ui-culture=en-US', data)
-        // this.preLoader(false)
+        const res = await apis.userApi.login('DEV', data)
         if(res.status !== 200) {
           throw res.statusText
         }
         
         if(res.data.isOK) {
-          console.log('OK')
-          sessionStorage.setItem("shopInfo", JSON.stringify(res.data.result));
+          await session.shopSession.setShopInfo(res.data.result)
           this.$router.push('/client')
         } else {
-          alert('SOS')
+          console.log(res.data)
+          this.$refs.noficationRef.showModal({listMessage: res.data.errorMessages})
         }
-
       }
       catch(errors) {
         console.log(errors)
@@ -63,7 +71,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
   @import "./Login.scss";
 </style>
