@@ -6,12 +6,18 @@
 		/>
 		<div class="title login-page__title">SALON ADMIN</div>
 		<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
-			<input v-model="dataUser.username" placeholder="Enter ID" required autofocus />
+			<input
+				v-model="dataUser.username"
+				placeholder="Enter ID"
+				required
+				autofocus
+			/>
 			<input
 				v-model="dataUser.password"
 				type="password"
 				placeholder="Enter password"
 				required
+				autocomplete="none"
 			/>
 			<button
 				type="submit"
@@ -44,7 +50,6 @@ export default {
 				username: "",
 				password: "",
 			},
-			// disabledBtn: true,
 		};
 	},
 
@@ -58,8 +63,8 @@ export default {
 
 	computed: {
 		disabledBtn() {
-			return this.dataUser.username === '' || this.dataUser.password === ''
-		}
+			return this.dataUser.username === "" || this.dataUser.password === "";
+		},
 	},
 
 	methods: {
@@ -70,9 +75,9 @@ export default {
 				solutionId: constant.api.SOLUTION_ID.SALON_ADMIN,
 			};
 
-			if(data.userID.trim() === '' || data.password.trim() === '') {
+			if (data.userID.trim() === "" || data.password.trim() === "") {
 				this.$refs.noficationRef.showModal({
-					listMessage: 'Username and password cannot be empty',
+					listMessage: "Username and password cannot be empty",
 				});
 			} else {
 				try {

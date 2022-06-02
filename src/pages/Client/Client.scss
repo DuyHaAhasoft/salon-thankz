@@ -23,6 +23,7 @@
         }
 
         .header__btn:hover {
+            cursor: pointer;
             box-shadow: 3px 5px 2px 0px rgba(0,0,0,0.1);
         }
     }
@@ -116,9 +117,14 @@
                         font-weight: 400;
                         border-radius: 8px;
                         background-color: #84ceff;
+
+                        &.data--btn__btn--calendar, &.data--btn__btn--sales {
+                            width: 70%;
+                        }
                     }
 
                     .data--btn__btn:hover {
+                        cursor: pointer;
                         box-shadow: 5px 5px 2px 0px rgba(0,0,0,0.1);
                     }
                 }
@@ -143,6 +149,16 @@
 
             .page__btn:hover {
                 box-shadow: 1.5px 5px 2px 0px rgba(0,0,0,0.1);
+            }
+        }
+    }
+}
+
+@media (max-width: 1560px) {
+    .clients-page {
+        .clients-page__content {
+            .content__page {
+                position: relative;
             }
         }
     }

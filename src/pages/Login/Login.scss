@@ -50,6 +50,7 @@
         }
         
         .login-page__btn:hover {
+            cursor: pointer;
             font-weight: 650;
             background-color: rgb(76, 163, 245);
             box-shadow: 0.25rem 0.25rem 0.25rem rgba(76, 163, 245,0.15);
