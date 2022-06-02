@@ -45,7 +45,7 @@
 						<td
 							class="table-data table-data--notes table__table-data table__table-data--notes"
 						>
-							{{ showLongText(client.notes, 100) }}
+							{{ showLongText(client.notes, 50) }}
 						</td>
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
