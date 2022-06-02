@@ -1,44 +1,206 @@
 <template>
-  <div>
-    <h1>{{name}}</h1>
-    <ul>
-      <li v-for="user in users" :key="user.clientId">
-        {{user.clientName}}
-      </li>
-    </ul>
+  <div class="clients-page">
+   <div class="header clients-page___header">
+     <img class="image header__image" src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png" />
+     <button class="header__btn" @click="clickSignout">Sign out</button>
+   </div>
+   <div class="title clients-page__title">Client</div>
+    <div class="content clients-page__content">
+      <label class="title content__title">Total {{ clientTotal }} client(s) searched</label>
+      <table class="table content__table">
+        <thead>
+          <tr>
+            <th v-for="field in fields" :key="field.text">
+              {{ field.text }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="client in clients" :key="client.clientId">
+            <td class="table-data table-data--registration-date table__table-data table__table-data--registration-date">
+              {{ client.registrationDate }}
+            </td>
+            <td class="table-data table-data--client-name table__table-data table__table-data--client-name">
+              {{showLongText(client.clientName, 50)}}
+            </td>
+            <td class="table-data table-data--phone table__table-data table__table-data--phone">
+              {{ client.phone }}
+            </td>
+            <td class="table-data table-data--total-sales-amount table__table-data table__table-data--total-sales-amount">
+              {{ client.totalSalesAmount }}
+            </td>
+            <td class="table-data table-data--notes table__table-data table__table-data--notes">
+              {{ showLongText(client.notes, 100) }}
+            </td>
+            <td class="table-data table-data--btn table__table-data table__table-data--btn">
+              <button class="data--btn__btn data--btn__btn--edit">Edit</button>
+            </td>
+            <td class="table-data table-data--btn table__table-data table__table-data--btn">
+              <button class="data--btn__btn data--btn__btn--calendar">&#10152;</button>
+            </td>
+            <td class="table-data table-data--btn table__table-data table__table-data--btn">
+              <button class="data--btn__btn data--btn__btn--sales">&#10152;</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="page content__page">
+        <label class="page-total page__page-total">Page {{page.pageNumber}} of {{page.pageTotal}}</label>
+        <button class="page__btn page__btn--go-to-first-page" @click="clickGoToFirstPage">&lt;&lt;</button>
+        <button class="page__btn page__btn--go-to-previous-page" @click="clickGoToPreviousPage">&lt;</button>
+        <button class="page__btn page__btn--go-to-next-page" @click="clickGoToNextPage">></button>
+        <button class="page__btn page__btn--go-to-last-page" @click="clickGoToLastPage">>></button>
+        <button class="page__btn page__btn--go-to" @click="clickGoto">{{isShowSelectPage ? 'Goto' : 'Hide'}}</button>
+        <select v-model="page.pageSelected" @click="clickSelectedPage" :hidden="isShowSelectPage">
+          <option v-for="option in optionsPage" :value="option.value" :key="option.value">
+            {{option.text}}
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
+
 import apis from '../../lib/apis'
 import session from '../../lib/utils/session'
+import constant from '../../lib/utils/constant'
 
 export default {
   name: 'ClientPage',
   data() {
     return {
-      users: [],
+      clients: [],
       name: 'ThankZ',
+      clientTotal: 0,
+      isShowSelectPage: true,
+      page: {
+        pageTotal: 1,
+        pageNumber: 1,
+        pageSelected: 1,
+        pageSize: constant.payload.DEFAULT_PAGE_SIZE,
+      },
+      fields: {
+        registrationDate: {text: 'Registered Date'},
+        clientName: {text: 'Client Name'},
+        mobileNumber: {text: 'Mobile / Phone'},
+        totalSalesAmount: {text: 'Total Sales'},
+        notes: {text: 'Notes'},
+        edit: {text: 'Edit'},
+        calendar: {text: 'Calendar'},
+        sales: {text: 'Sales'}
+      }
     }
   },
   props: {},
-  async mounted() {
-    const data = {
-      pageSize: 10,
-      pageNumber: 1,
-      shopId: session.shopSession.getShopId(),
-    }
-    const res = await apis.clientApi.getAllClientByShop('DEV', data)
-    this.users = res.data.result.items
-    console.log(res.data.result.items)
+
+  mounted() {
+    this.loadDataClient()  
   },
+
   computed: {
-    shopInfo() {
-      const shopInfo = sessionStorage.getItem("shopInfo")
-      return JSON.parse(shopInfo)
-    }
+    optionsPage() {
+      const optionsPage = []
+      for(let page = 1; page <= this.page.pageTotal; page++) {
+        optionsPage.push({text: page, value: page})
+      }
+      return optionsPage
+    },
+
+
   },
-  methods: {}
+
+  methods: {
+    async loadDataClient() {
+      const data = {
+        pageSize: this.page.pageSize,
+        pageNumber: this.page.pageNumber,
+        shopId: session.shopSession.getShopId(),
+      }
+
+      let keysClient = Object.keys(this.fields)
+
+      const res = await apis.clientApi.getAllClientByShop('DEV', data)
+
+      this.clientTotal = res.data.result.pagingInfo.totalItems
+
+      this.page.pageTotal = Math.ceil(res.data.result.pagingInfo.totalItems / res.data.result.pagingInfo.pageSize)
+      
+      this.clients = res.data.result.items.map(function(item) {
+        let client = {}
+        client['clientId'] = item.clientId
+
+        for(let key in keysClient) {
+          client[keysClient[key]] = item[keysClient[key]]
+        }
+
+        client.mobileNumber2 = item.mobileNumber2
+        client.registrationDate = moment(client.registrationDate, 'YYYY-MM-DD').format('YYYY-MM-DD')
+
+        client.phone = ''
+        if(client.mobileNumber !== null)
+          client.phone += client.mobileNumber
+        if(client.mobileNumber2 !== null)
+          client.phone += client.mobileNumber2
+        if(client.phone[0] === '/') client.phone.splice(0, 1)
+
+        return client
+      })
+    },
+
+    clickGoToFirstPage() {
+      this.page.pageNumber = 1
+      this.page.pageSelected = this.page.pageNumber
+      this.loadDataClient()
+    },
+
+    clickGoToPreviousPage() {
+      if(this.page.pageNumber !== 1) {
+        this.page.pageNumber -= 1
+        this.page.pageSelected = this.page.pageNumber
+      }
+      this.loadDataClient()
+    },
+
+    clickGoToNextPage() {
+      if(this.page.pageNumber !== this.page.pageTotal){
+        this.page.pageNumber += 1
+        this.page.pageSelected = this.page.pageNumber
+      }
+      this.loadDataClient()
+    },
+
+    clickGoToLastPage() {
+      this.page.pageNumber = this.page.pageTotal
+      this.page.pageSelected = this.page.pageNumber
+      this.loadDataClient()
+    },
+
+    clickGoto() {
+      this.isShowSelectPage = !this.isShowSelectPage
+    },
+
+    clickSelectedPage() {
+     if(this.page.pageSelected !== this.page.pageNumber) {
+       this.page.pageNumber = this.page.pageSelected
+       this.loadDataClient()
+     }
+    },
+
+    clickSignout() {
+      session.shopSession.removeShopInfo()
+      this.$router.push('/login')
+    },
+
+    showLongText(text, length) {
+      if (text && text.trim().length > 100) {
+        return text.substring(0, length) + '...'
+      }
+      return  text
+    },
+  }
 }
 </script>
 

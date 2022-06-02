@@ -6,7 +6,7 @@
 		/>
 		<div class="title login-page__title">SALON ADMIN</div>
 		<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
-			<input v-model="dataUser.username" placeholder="Enter ID" required />
+			<input v-model="dataUser.username" placeholder="Enter ID" required autofocus />
 			<input
 				v-model="dataUser.password"
 				type="password"
@@ -44,7 +44,7 @@ export default {
 				username: "",
 				password: "",
 			},
-			disabledBtn: false,
+			// disabledBtn: true,
 		};
 	},
 
@@ -56,6 +56,12 @@ export default {
 		NoficationModal,
 	},
 
+	computed: {
+		disabledBtn() {
+			return this.dataUser.username === '' || this.dataUser.password === ''
+		}
+	},
+
 	methods: {
 		async onSubmit() {
 			const data = {
@@ -64,22 +70,28 @@ export default {
 				solutionId: constant.api.SOLUTION_ID.SALON_ADMIN,
 			};
 
-			try {
-				const res = await apis.userApi.login("DEV", data);
-				if (res.status !== 200) {
-					throw res.statusText;
+			if(data.userID.trim() === '' || data.password.trim() === '') {
+				this.$refs.noficationRef.showModal({
+					listMessage: 'Username and password cannot be empty',
+				});
+			} else {
+				try {
+					const res = await apis.userApi.login("DEV", data);
+					if (res.status !== 200) {
+						throw res.statusText;
+					}
+					if (res.data.isOK) {
+						await session.shopSession.setShopInfo(res.data.result);
+						this.$router.push("/client");
+					} else {
+						console.log(res.data);
+						this.$refs.noficationRef.showModal({
+							listMessage: res.data.errorMessages,
+						});
+					}
+				} catch (errors) {
+					console.log(errors);
 				}
-				if (res.data.isOK) {
-					await session.shopSession.setShopInfo(res.data.result);
-					this.$router.push("/client");
-				} else {
-					console.log(res.data);
-					this.$refs.noficationRef.showModal({
-						listMessage: res.data.errorMessages,
-					});
-				}
-			} catch (errors) {
-				console.log(errors);
 			}
 		},
 	},

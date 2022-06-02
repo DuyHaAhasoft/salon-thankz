@@ -1,5 +1,3 @@
-// const shopInfo = JSON.parse(sessionStorage.getItem("shopInfo"))
-
 const api = {
     DEFAULT_API_GATEWAY: {
         LOCAL: 'https://localhost:44001',

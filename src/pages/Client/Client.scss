@@ -1,0 +1,149 @@
+.clients-page {
+    height: 100%;
+    background-color: #DEE2E6;
+
+    .clients-page___header {
+        display: flex;
+        margin-bottom: 10px;
+        justify-content: space-between;
+
+        .header__image {
+            width: 10%;
+            padding: 5px;
+        }
+
+        .header__btn {
+            width: 100px;
+            margin: 5px;
+            border: 0px;
+            padding: 4px;
+            font-weight: 550;
+            border-radius: 8px;
+            background-color: #85ceff;
+        }
+
+        .header__btn:hover {
+            box-shadow: 3px 5px 2px 0px rgba(0,0,0,0.1);
+        }
+    }
+
+    .clients-page__title {
+        font-size: 25px;
+        font-weight: 600;
+        margin: 0px 8px 8px 8px;
+        border-bottom: 1px solid black;
+    }
+
+    .clients-page__content {
+        margin: 0px 5px;
+        background-color: white;
+        padding: 10px 5px 1px 5px;
+
+        .content__title {
+            font-weight: 500;
+            padding-left: 5px;
+        }
+
+        .content__table {
+            width: 100%;
+            padding: 10px 5px;
+            border-spacing: 0px;
+            border-collapse: unset;
+
+            th, td {
+                font-size: 14px;
+                padding: 5px 10px;
+                vertical-align: middle;
+            }
+
+            thead {
+                tr {
+                    th {
+                        border: 0px;
+                        font-size: 15px;
+                        padding: 10px 0px;
+                        font-weight: 400;
+                        text-align: center;
+                        border: 1px solid rgba(0, 0, 0, 0.1);
+                        background-color: rgba(240, 240, 240, 1);
+                    }
+                }
+            }
+
+            tbody {
+                tr {
+                    td {
+                        border-bottom: 1px solid rgba(240, 240, 240, 1);
+                    }
+                }
+                tr:hover {
+                    background-color: rgb(248, 248, 248);
+                }
+            }
+
+            .table__table-data {
+                height: 60px;
+                text-align: center;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+
+                &.table__table-data--registration-date {
+                    width: 12.5%;
+                }
+
+                &.table__table-data--client-name {
+                    width: 15%;
+                }
+
+                &.table__table-data--phone {
+                    width: 15%;
+                }
+
+                &.table__table-data--total-sales-amount {
+                    width: 12.5%;
+                }
+
+                &.table__table-data--notes {
+                    width: 22.5%;
+                }
+
+                &.table__table-data--btn {
+                    width: 7.5%;
+
+                    .data--btn__btn {
+                        width: 100%;
+                        border: 0px;
+                        padding: 8px;
+                        font-weight: 400;
+                        border-radius: 8px;
+                        background-color: #84ceff;
+                    }
+
+                    .data--btn__btn:hover {
+                        box-shadow: 5px 5px 2px 0px rgba(0,0,0,0.1);
+                    }
+                }
+            }
+        }
+
+        .content__page {
+            bottom: 15px;
+            position: fixed;
+            margin-left: 10px;
+
+            .page__page-total {
+                width: 120px;
+            }
+
+            .page__btn {
+                margin: 0px 2px;
+                color: #60bfff;
+                background-color: white;
+                border: 1px solid #60bfff;
+            }
+
+            .page__btn:hover {
+                box-shadow: 1.5px 5px 2px 0px rgba(0,0,0,0.1);
+            }
+        }
+    }
+}

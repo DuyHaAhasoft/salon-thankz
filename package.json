@@ -13,6 +13,7 @@
     "bootstrap-vue": "^2.22.0",
     "core-js": "^3.8.3",
     "dotenv-webpack": "^7.1.0",
+    "moment": "^2.29.3",
     "node-sass": "^7.0.1",
     "sass-loader": "^13.0.0",
     "style-loader": "^3.3.1",
