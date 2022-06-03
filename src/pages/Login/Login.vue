@@ -5,7 +5,7 @@
 			src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png"
 		/>
 		<div class="title login-page__title">SALON ADMIN</div>
-		<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
+		<form class="form login-page__form" action="#" @submit.once="onSubmit">
 			<input
 				v-model="dataUser.username"
 				placeholder="Enter ID"
@@ -68,7 +68,7 @@ export default {
 	},
 
 	methods: {
-		async onSubmit() {
+		async onSubmit(event) {
 			const data = {
 				userID: this.dataUser.username,
 				password: this.dataUser.password,
@@ -98,6 +98,8 @@ export default {
 					console.log(errors);
 				}
 			}
+
+			event.preventDefault();
 		},
 	},
 };
