@@ -1,0 +1,10 @@
+.client-actions-modal {
+    .client-actions-modal__modal {
+        width: 100%;
+
+        .modal__content {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+}

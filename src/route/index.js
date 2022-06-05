@@ -7,6 +7,12 @@ import Client from '../pages/Client/Client.vue';
 
 Vue.use(VueRouter);
 
+// custom vue router with double click
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+};
+
 const routes = [
     {path: '/', name: 'home' , component: Home},
     {path: '/login', name: 'login', component: Login},

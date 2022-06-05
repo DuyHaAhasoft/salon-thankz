@@ -5,7 +5,7 @@
 			src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png"
 		/>
 		<div class="title login-page__title">SALON ADMIN</div>
-		<form class="form login-page__form" action="#" @submit.once="onSubmit">
+		<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
 			<input
 				v-model="dataUser.username"
 				placeholder="Enter ID"
@@ -28,7 +28,7 @@
 				Login
 			</button>
 		</form>
-		<nofication-modal ref="noficationRef" modalTitle="Login Failed" />
+		<notification-modal ref="notificationRef" modalTitle="Login Failed" />
 	</div>
 </template>
 
@@ -39,7 +39,7 @@ import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
 
 // Components
-import NoficationModal from "../../components/Nofication/Nofication.vue";
+import NotificationModal from "../../components/Notification/Notification.vue";
 
 export default {
 	name: "LoginPage",
@@ -58,7 +58,7 @@ export default {
 	},
 
 	components: {
-		NoficationModal,
+		NotificationModal,
 	},
 
 	computed: {
@@ -68,7 +68,7 @@ export default {
 	},
 
 	methods: {
-		async onSubmit(event) {
+		async onSubmit() {
 			const data = {
 				userID: this.dataUser.username,
 				password: this.dataUser.password,
@@ -76,10 +76,11 @@ export default {
 			};
 
 			if (data.userID.trim() === "" || data.password.trim() === "") {
-				this.$refs.noficationRef.showModal({
+				this.$refs.notificationRef.showModal({
 					listMessage: "Username and password cannot be empty",
 				});
 			} else {
+				// e.preventDefault();
 				try {
 					const res = await apis.userApi.login("DEV", data);
 					if (res.status !== 200) {
@@ -89,8 +90,7 @@ export default {
 						await session.shopSession.setShopInfo(res.data.result);
 						this.$router.push("/client");
 					} else {
-						console.log(res.data);
-						this.$refs.noficationRef.showModal({
+						this.$refs.notificationRef.showModal({
 							listMessage: res.data.errorMessages,
 						});
 					}
@@ -98,8 +98,6 @@ export default {
 					console.log(errors);
 				}
 			}
-
-			event.preventDefault();
 		},
 	},
 };

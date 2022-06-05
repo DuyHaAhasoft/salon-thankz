@@ -1,0 +1,21 @@
+.group-button {
+    display: flex;
+    justify-content: space-around;
+
+    .group-button__btn {
+        width: 100px;
+        border: 0px;
+
+        &.group-button__btn--confirm {
+            background-color: #85ceff;
+        }
+
+        &.group-button__btn--delete {
+            background-color: red;
+        }
+
+        &.group-button__btn--cancel {
+            background-color: #85ceff;
+        }
+    }
+}

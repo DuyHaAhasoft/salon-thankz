@@ -2,9 +2,9 @@
     height: 100%;
     background-color: #DEE2E6;
 
-    .clients-page___header {
+    .clients-page__header {
         display: flex;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         justify-content: space-between;
 
         .header__image {
@@ -29,10 +29,24 @@
     }
 
     .clients-page__title {
-        font-size: 25px;
-        font-weight: 600;
+        display: flex;
         margin: 0px 8px 8px 8px;
+        justify-content: space-between;
         border-bottom: 1px solid black;
+
+        .title__title-text {
+            font-size: 25px;
+            font-weight: 600;
+        }
+
+        .title__btn-add-client {
+            border: 0px;
+            width: 100px;
+            font-weight: 550;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            background-color:#85ceff;
+        }
     }
 
     .clients-page__content {

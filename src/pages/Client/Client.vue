@@ -1,13 +1,21 @@
 <template>
 	<div class="clients-page">
-		<div class="header clients-page___header">
+		<div class="header clients-page__header">
 			<img
 				class="image header__image"
 				src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png"
 			/>
 			<button class="header__btn" @click="clickSignout">Sign out</button>
 		</div>
-		<div class="title clients-page__title">Client</div>
+		<div class="title clients-page__title">
+			<div class="title-text title__title-text">Client</div>
+			<button
+				@click="handleClickAddClient"
+				class="btn-add-client title__btn-add-client"
+			>
+				Add
+			</button>
+		</div>
 		<div class="content clients-page__content">
 			<label class="title content__title"
 				>Total {{ clientTotal }} client(s) searched</label
@@ -43,6 +51,12 @@
 							{{ client.totalSalesAmount }}
 						</td>
 						<td
+							v-b-tooltip.hover.left
+							:title="
+								client.notes && client.notes.trim().length > 50
+									? client.notes
+									: ''
+							"
 							class="table-data table-data--notes table__table-data table__table-data--notes"
 						>
 							{{ showLongText(client.notes, 50) }}
@@ -115,6 +129,8 @@
 				</select>
 			</div>
 		</div>
+
+		<client-actions ref="clientActionsRef" />
 	</div>
 </template>
 
@@ -153,8 +169,15 @@ export default {
 	},
 	props: {},
 
+	components: {
+		"client-actions": () =>
+			import("../../components/Client-Actions/Client-Actions.vue"),
+	},
+
 	mounted() {
 		this.loadDataClient();
+		// this.$refs.clientActionsRef.showModal();
+		// console.log(this.$refs);
 	},
 
 	computed: {
@@ -258,6 +281,10 @@ export default {
 				return text.substring(0, length) + "...";
 			}
 			return text;
+		},
+
+		handleClickAddClient() {
+			this.$refs.clientActionsRef.showModal({ typeModal: 0 });
 		},
 	},
 };
