@@ -35,7 +35,7 @@
 <script>
 // Utils
 import apis from "../../lib/apis";
-import common from '../../lib/utils/common'
+import common from "../../lib/utils/common";
 import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
 
@@ -88,8 +88,9 @@ export default {
 						throw res.statusText;
 					}
 					if (res.data.isOK) {
-						res.data.result.userAuthInfo.session_token = common.random.guid()
+						res.data.result.userAuthInfo.session_token = common.random.guid();
 						await session.shopSession.setShopInfo(res.data.result);
+						await this.loadClientSetUp(res.data.result.shopBasicInfo.shopId);
 						this.$router.push("/client");
 					} else {
 						this.$refs.notificationRef.showModal({
@@ -99,6 +100,23 @@ export default {
 				} catch (errors) {
 					console.log(errors);
 				}
+			}
+		},
+
+		async loadClientSetUp(shopId) {
+			const data = {
+				shopId: shopId,
+			};
+			try {
+				const resShopInfo = await apis.shopApi.getShopInfo("DEV", data);
+
+				if (resShopInfo.status !== 200) throw resShopInfo.message;
+
+				if (resShopInfo.data.isOK)
+					session.clientSession.setClientSetup(resShopInfo.data.result);
+				else alert("Error Set up client");
+			} catch (errors) {
+				console.log(errors);
 			}
 		},
 	},

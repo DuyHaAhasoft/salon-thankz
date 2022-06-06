@@ -64,7 +64,12 @@
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
 						>
-							<button class="data--btn__btn data--btn__btn--edit" @click="() => handleClickEditClient(client)">Edit</button>
+							<button
+								class="data--btn__btn data--btn__btn--edit"
+								@click="() => handleClickEditClient(client)"
+							>
+								Edit
+							</button>
 						</td>
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
@@ -175,8 +180,7 @@ export default {
 	},
 
 	created() {
-		this.loadClientSetUp()
-		this.loadStaffActive()
+		this.loadStaffActive();
 	},
 
 	mounted() {
@@ -235,44 +239,21 @@ export default {
 			});
 		},
 
-		async loadClientSetUp() {
-			const data = {
-				shopId: session.shopSession.getShopId()
-			}
-			try {
-				const resShopInfo = await apis.shopApi.getShopInfo('DEV', data)
-
-				if(resShopInfo.status !== 200)
-					throw resShopInfo.message
-				
-				if(resShopInfo.data.isOK)
-					session.clientSession.setClientSetup(resShopInfo.data.result)
-				else
-					alert('Error Set up client')
-			}
-			catch (errors) {
-				console.log(errors)
-			}
-		},
-
 		async loadStaffActive() {
 			const data = {
-				shopId: session.shopSession.getShopId()
-			}
+				shopId: session.shopSession.getShopId(),
+			};
 
 			try {
-				const resStaffActive = await apis.shopApi.getStaffActive('DEV', data)
+				const resStaffActive = await apis.shopApi.getStaffActive("DEV", data);
 
-				if(resStaffActive.status !== 200)
-					throw resStaffActive.message
+				if (resStaffActive.status !== 200) throw resStaffActive.message;
 
-				if(resStaffActive.data.isOK)
-					session.shopSession.setStaffActive(resStaffActive.data.result)
-				else
-					alert('Error Staff Active')
-			}
-			catch (errors) {
-				console.log(errors)
+				if (resStaffActive.data.isOK)
+					session.shopSession.setStaffActive(resStaffActive.data.result);
+				else alert("Error Staff Active");
+			} catch (errors) {
+				console.log(errors);
 			}
 		},
 
@@ -330,36 +311,59 @@ export default {
 		},
 
 		async handleClickAddClient() {
-			const memberNumber = await this.getNextMemberNumber()
-			this.$refs.clientActionsRef.showModal({ typeModal: 0 , memberNumber});
+			const memberNumber = await this.getNextMemberNumber();
+			this.$refs.clientActionsRef.showModal({ typeModal: 0, memberNumber });
 		},
 
 		async handleClickEditClient(client) {
-			console.log(client)
-			this.$refs.clientActionsRef.showModal({ typeModal: 1});
+			const data = {
+				shopId: session.shopSession.getShopId(),
+				clientId: client.clientId,
+			};
+			try {
+				const resDataClient = await apis.clientApi.getClientByClientId(
+					"DEV",
+					data
+				);
+
+				if (resDataClient.status !== 200) throw resDataClient.message;
+
+				if (resDataClient.data.isOK) {
+					this.$refs.clientActionsRef.showModal({
+						typeModal: 1,
+						dataClient: resDataClient.data.result,
+					});
+				} else {
+					alert("Get Client Error");
+				}
+			} catch (errors) {
+				console.log("Errors");
+			}
 		},
 
 		async getNextMemberNumber() {
 			const data = {
-				shopId: session.shopSession.getShopId()
-			}
+				shopId: session.shopSession.getShopId(),
+			};
 
 			try {
-				const resNextMemberNumber = await apis.clientApi.getNextMemberNumber('DEV', data)
+				const resNextMemberNumber = await apis.clientApi.getNextMemberNumber(
+					"DEV",
+					data
+				);
 
-				if(resNextMemberNumber.status !== 200) 
-					throw resNextMemberNumber.message
+				if (resNextMemberNumber.status !== 200)
+					throw resNextMemberNumber.message;
 
-				if(resNextMemberNumber.data.isOK){
-					return resNextMemberNumber.data.result
+				if (resNextMemberNumber.data.isOK) {
+					return resNextMemberNumber.data.result;
 				}
 
-				return
+				return;
+			} catch (errors) {
+				console.log(errors);
 			}
-			catch (errors) {
-				console.log(errors)
-			}
-		}
+		},
 	},
 };
 </script>

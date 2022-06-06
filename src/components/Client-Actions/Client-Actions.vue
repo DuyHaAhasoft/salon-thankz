@@ -8,45 +8,62 @@
 			size="xl"
 			static
 			hide-footer
+			@hide="handleResetData"
 		>
 			<div class="content modal__content">
 				<div class="data-input content__data-input">
-					<div class="group-input group-input--name data-input__group-input data-input__group-input--name">
+					<div
+						class="group-input group-input--name data-input__group-input data-input__group-input--name"
+					>
 						<label>Client Name <span>*</span></label>
-						<input v-model="dataNewClient.clientName" />
+						<input v-model="dataClient.clientName" />
 					</div>
-					<div class="group-input group-input--number data-input__group-input data-input__group-input--number">
+					<div
+						class="group-input group-input--number data-input__group-input data-input__group-input--number"
+					>
 						<label>Client Number</label>
-						<input v-model="dataNewClient.memberNumber" />
+						<input v-model="dataClient.memberNumber" />
 					</div>
-					<div class="group-input group-input--mobile data-input__group-input data-input__group-input--mobile">
+					<div
+						class="group-input group-input--mobile data-input__group-input data-input__group-input--mobile"
+					>
 						<label>Mobile Number</label>
-						<input v-model="dataNewClient.mobileNumber" />
+						<input v-model="dataClient.mobileNumber" />
 					</div>
-					<div class="group-input group-input--sex data-input__group-input data-input__group-input--sex">
+					<div
+						class="group-input group-input--sex data-input__group-input data-input__group-input--sex"
+					>
 						<label>Sex</label>
-						<b-form-radio v-model="dataNewClient.sex" name="sex-radios" value="1"
+						<b-form-radio v-model="dataClient.sex" name="sex-radios" value="1"
 							>Male</b-form-radio
 						>
-						<b-form-radio v-model="dataNewClient.sex" name="sex-radios" value="2"
+						<b-form-radio v-model="dataClient.sex" name="sex-radios" value="2"
 							>Female</b-form-radio
 						>
 					</div>
-					<div class="group-input group-input--group data-input__group-input data-input__group-input--group">
+					<div
+						class="group-input group-input--group data-input__group-input data-input__group-input--group"
+					>
 						<label>Client Group</label>
 						<b-form-select
 							v-model="groupClient"
 							:options="clientGroupOptions"
 						></b-form-select>
 					</div>
-					<div class="group-input group-input--register-date data-input__group-input data-input__group-input--register-date">
+					<div
+						class="group-input group-input--register-date data-input__group-input data-input__group-input--register-date"
+					>
 						<label>Registered Date <span>*</span></label>
-						<v-date-picker v-model="registeredDate" :masks="masks" class="date-picker group-input--register-date__date-picker">
+						<v-date-picker
+							v-model="registeredDate"
+							:masks="masks"
+							class="date-picker group-input--register-date__date-picker"
+						>
 							<template v-slot="{ inputValue, inputEvents }">
 								<input
-								class="input-date-picker date-picker__input-date-picker"
-								:value="inputValue"
-								v-on="inputEvents"
+									class="input-date-picker date-picker__input-date-picker"
+									:value="inputValue"
+									v-on="inputEvents"
 								/>
 							</template>
 						</v-date-picker>
@@ -65,11 +82,10 @@
 </template>
 
 <script>
-
 import apis from "../../lib/apis";
-import common from "../../lib/utils/common"
-import session from "../../lib/utils/session"
-import constant from "../../lib/utils/constant"
+import common from "../../lib/utils/common";
+import session from "../../lib/utils/session";
+import constant from "../../lib/utils/constant";
 
 const DEFAULT_TITLE_MODAL = ["Add Client", "Edit Client"];
 
@@ -92,7 +108,7 @@ const DEFAULT_DATA_CREATE_CLIENT = {
 	clientReferralSourceName: null,
 	country: constant.payload.DEFAULT_COUNTRY,
 	// Time create client
-	createdDateTimeTS: 1654527624,
+	// createdDateTimeTS: 1654527624,
 	email: null,
 	memberNumber: 6,
 	memberType: 1,
@@ -107,8 +123,13 @@ const DEFAULT_DATA_CREATE_CLIENT = {
 	sessionToken: session.shopSession.getSessionToken(),
 	sex: 3,
 	shopId: session.shopSession.getShopId(),
-	shopLocation: constant.payload.DEFAULT_SHOP_LOCATION
-}
+	shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
+};
+
+const DEFAULT_GROUP_CLIENT = {
+	clientGroupId: null,
+	clientGroupName: null,
+};
 
 export default {
 	name: "SalonThankzClientActions",
@@ -116,14 +137,14 @@ export default {
 	data() {
 		return {
 			typeModal: 0,
-			dataNewClient: Object.assign({}, DEFAULT_DATA_CREATE_CLIENT),
-			groupClient: {clientGroupId: null, clientGroupName: null},
+			dataClient: Object.assign({}, DEFAULT_DATA_CREATE_CLIENT),
+			groupClient: Object.assign({}, DEFAULT_GROUP_CLIENT),
 			registeredDate: Date.now(),
 			inputProps: {
-				class: 'input',
+				class: "input",
 			},
 			masks: {
-				input: 'YYYY-MM-DD',
+				input: "YYYY-MM-DD",
 			},
 		};
 	},
@@ -144,26 +165,44 @@ export default {
 		},
 
 		clientGroupOptions() {
-			const clientGroup = session.clientSession.getClientSetup().clientGroup.map(function(group) {
-				return {
-					value: {
-						clientGroupId: group.clientGroupId,
-						clientGroupName: group.itemName
-					},
-					text: group.itemName
-				}
-			})
+			const clientGroup = session.clientSession
+				.getClientSetup()
+				.clientGroup.map(function (group) {
+					return {
+						value: {
+							clientGroupId: group.clientGroupId,
+							clientGroupName: group.itemName,
+						},
+						text: group.itemName,
+					};
+				});
 			return [
-				{value: {clientGroupId: null, clientGroupName: null}, text: "Select"}, 
-				...clientGroup
-			]
+				{
+					value: { clientGroupId: null, clientGroupName: null },
+					text: "Select",
+				},
+				...clientGroup,
+			];
 		},
 	},
 
 	methods: {
 		showModal(dataModal) {
 			this.typeModal = dataModal.typeModal;
-			this.dataNewClient.memberNumber = dataModal?.memberNumber || 0
+			this.dataClient.memberNumber = dataModal?.memberNumber || 0;
+			if (dataModal.dataClient && dataModal.dataClient !== null) {
+				this.dataClient = Object.assign(
+					DEFAULT_DATA_CREATE_CLIENT,
+					dataModal.dataClient
+				);
+				this.groupClient = {
+					clientGroupId: dataModal?.dataClient?.clientGroupId,
+					clientGroupName: dataModal?.dataClient?.clientGroupName,
+				};
+				this.registeredDate = common.momentFunction.UnixMiliSecondsIntoDate(
+					dataModal?.dataClient?.clientInputDateTimeTS
+				);
+			}
 			this.$refs.clientActionsModal && this.$refs.clientActionsModal.show();
 		},
 
@@ -172,31 +211,47 @@ export default {
 		},
 
 		async onClickConfirm() {
-			this.dataNewClient.clientGroupId = this.groupClient.clientGroupId
-			this.dataNewClient.clientGroupName = this.groupClient.clientGroupName
-			this.dataNewClient.createdDateTimeTS = common.momentFunction.DateNowIntoUnix()
-			this.dataNewClient.clientInputDateTimeTS = common.momentFunction.DateIntoUnix(common.momentFunction.FormatDate(this.registeredDate))
-			
+			this.dataClient.clientGroupId = this.groupClient.clientGroupId;
+			this.dataClient.clientGroupName = this.groupClient.clientGroupName;
+			this.dataClient.clientInputDateTimeTS =
+				common.momentFunction.DateIntoUnix(
+					common.momentFunction.FormatDate(this.registeredDate)
+				);
+
 			try {
-				const res = await apis.clientApi.createNewClient('DEV', this.dataNewClient)
+				let res;
+				if (!this.typeModal) {
+					this.dataClient.createdDateTimeTS =
+						common.momentFunction.DateNowIntoUnix();
 
-				if(res.status !== 200)
-					throw res.message
-
-				if(res.data.isOK) {
-					this.$emit('loadClient')
-					this.hideModal()
+					res = await apis.clientApi.createNewClient("DEV", this.dataClient);
 				} else {
-					alert('Errors')
+					this.dataClient.editedDateTimeTS =
+						common.momentFunction.DateNowIntoUnix();
+					console.log(this.dataClient);
+					res = await apis.clientApi.editClient("DEV", this.dataClient);
 				}
-			}
-			catch (errors) {
-				console.log(errors)
+
+				if (res.status !== 200) throw res.message;
+
+				if (res.data.isOK) {
+					this.$emit("loadClient");
+					this.hideModal();
+				} else {
+					alert("Errors");
+				}
+			} catch (errors) {
+				console.log(errors);
 			}
 		},
 
 		onClickCancel() {
 			this.hideModal();
+		},
+
+		handleResetData() {
+			this.groupClient = Object.assign({}, DEFAULT_GROUP_CLIENT);
+			this.dataClient = Object.assign({}, DEFAULT_DATA_CREATE_CLIENT);
 		},
 	},
 };

@@ -18,11 +18,11 @@ function DateNowIntoUnix() {
 }
 
 function UnixSecondsIntoDate(unix) {
-    return moment.unix(unix * 1000)
+    return moment.unix(unix * 1000)._d
 }
 
 function UnixMiliSecondsIntoDate(unix) {
-    return moment.unix(unix)
+    return moment.unix(unix)._d
 }
 
 function FormatDate(date) {
