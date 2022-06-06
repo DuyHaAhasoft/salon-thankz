@@ -5,6 +5,47 @@
         .modal__content {
             display: flex;
             justify-content: space-between;
+
+            .content__data-input {
+                width: 70%;
+
+                .data-input__group-input {
+                    width: 100%;
+                    display: flex;
+                    margin: 10px 0px;
+
+                    label {
+                        width: 150px;
+
+                        span {
+                            color: red;
+                        }
+                    }
+
+                    input, select {
+                        min-width: 300px;
+                        padding: 0px 5px;
+                    }
+
+                    select {
+                        height: 30px;
+                    }
+
+                    &.data-input__group-input--sex {
+                        :nth-child(2) , :nth-child(3) {
+                            margin: 0px 10px;
+                        }
+                    }
+
+                    &.data-input__group-input--register-date {
+                        .group-input--register-date__date-picker {
+                            .date-picker__input-date-picker {
+                                height: 30px;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -35,6 +35,7 @@
 <script>
 // Utils
 import apis from "../../lib/apis";
+import common from '../../lib/utils/common'
 import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
 
@@ -87,6 +88,7 @@ export default {
 						throw res.statusText;
 					}
 					if (res.data.isOK) {
+						res.data.result.userAuthInfo.session_token = common.random.guid()
 						await session.shopSession.setShopInfo(res.data.result);
 						this.$router.push("/client");
 					} else {

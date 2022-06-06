@@ -33,7 +33,7 @@ export default {
 
 	methods: {
 		handleClickConfirm() {
-			alert("Confirm");
+			this.$emit("confirm");
 		},
 
 		handleClickDelete() {

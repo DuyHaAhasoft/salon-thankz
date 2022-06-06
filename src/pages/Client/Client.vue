@@ -64,7 +64,7 @@
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
 						>
-							<button class="data--btn__btn data--btn__btn--edit">Edit</button>
+							<button class="data--btn__btn data--btn__btn--edit" @click="() => handleClickEditClient(client)">Edit</button>
 						</td>
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
@@ -130,7 +130,7 @@
 			</div>
 		</div>
 
-		<client-actions ref="clientActionsRef" />
+		<client-actions ref="clientActionsRef" @loadClient="loadDataClient" />
 	</div>
 </template>
 
@@ -174,10 +174,13 @@ export default {
 			import("../../components/Client-Actions/Client-Actions.vue"),
 	},
 
+	created() {
+		this.loadClientSetUp()
+		this.loadStaffActive()
+	},
+
 	mounted() {
 		this.loadDataClient();
-		// this.$refs.clientActionsRef.showModal();
-		// console.log(this.$refs);
 	},
 
 	computed: {
@@ -232,6 +235,47 @@ export default {
 			});
 		},
 
+		async loadClientSetUp() {
+			const data = {
+				shopId: session.shopSession.getShopId()
+			}
+			try {
+				const resShopInfo = await apis.shopApi.getShopInfo('DEV', data)
+
+				if(resShopInfo.status !== 200)
+					throw resShopInfo.message
+				
+				if(resShopInfo.data.isOK)
+					session.clientSession.setClientSetup(resShopInfo.data.result)
+				else
+					alert('Error Set up client')
+			}
+			catch (errors) {
+				console.log(errors)
+			}
+		},
+
+		async loadStaffActive() {
+			const data = {
+				shopId: session.shopSession.getShopId()
+			}
+
+			try {
+				const resStaffActive = await apis.shopApi.getStaffActive('DEV', data)
+
+				if(resStaffActive.status !== 200)
+					throw resStaffActive.message
+
+				if(resStaffActive.data.isOK)
+					session.shopSession.setStaffActive(resStaffActive.data.result)
+				else
+					alert('Error Staff Active')
+			}
+			catch (errors) {
+				console.log(errors)
+			}
+		},
+
 		clickGoToFirstPage() {
 			this.page.pageNumber = 1;
 			this.page.pageSelected = this.page.pageNumber;
@@ -273,6 +317,8 @@ export default {
 
 		clickSignout() {
 			session.shopSession.removeShopInfo();
+			session.shopSession.removeStaffActive();
+			session.clientSession.removeClientSetup();
 			this.$router.push("/login");
 		},
 
@@ -283,9 +329,37 @@ export default {
 			return text;
 		},
 
-		handleClickAddClient() {
-			this.$refs.clientActionsRef.showModal({ typeModal: 0 });
+		async handleClickAddClient() {
+			const memberNumber = await this.getNextMemberNumber()
+			this.$refs.clientActionsRef.showModal({ typeModal: 0 , memberNumber});
 		},
+
+		async handleClickEditClient(client) {
+			console.log(client)
+			this.$refs.clientActionsRef.showModal({ typeModal: 1});
+		},
+
+		async getNextMemberNumber() {
+			const data = {
+				shopId: session.shopSession.getShopId()
+			}
+
+			try {
+				const resNextMemberNumber = await apis.clientApi.getNextMemberNumber('DEV', data)
+
+				if(resNextMemberNumber.status !== 200) 
+					throw resNextMemberNumber.message
+
+				if(resNextMemberNumber.data.isOK){
+					return resNextMemberNumber.data.result
+				}
+
+				return
+			}
+			catch (errors) {
+				console.log(errors)
+			}
+		}
 	},
 };
 </script>

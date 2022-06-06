@@ -10,7 +10,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import router from './route';
 
 //import v-calendar
-import VCalendar from 'v-calendar';
+import VCalendar from "v-calendar";
 
 //use Bootstrap
 Vue.use(BootstrapVue);
@@ -18,7 +18,7 @@ Vue.use(IconsPlugin);
 
 //use v-calendar
 Vue.use(VCalendar, {
-  componentPrefix: 'vc',
+  componentPrefix: 'v',
 });
 
 Vue.config.productionTip = false
