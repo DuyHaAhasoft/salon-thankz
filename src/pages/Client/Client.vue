@@ -236,7 +236,11 @@ export default {
 				}
 
 				client.mobileNumber2 = item.mobileNumber2;
-				client.registrationDate = moment(common.momentFunction.UnixMiliSecondsIntoDate(item.clientInputDateTimeTS)).format("YYYY-MM-DD")
+				client.registrationDate = moment(
+					common.momentFunction.UnixMiliSecondsIntoDate(
+						item.clientInputDateTimeTS
+					)
+				).format("YYYY-MM-DD");
 
 				client.phone = "";
 				if (client.mobileNumber !== null) client.phone += client.mobileNumber;
@@ -339,7 +343,7 @@ export default {
 				if (resDataClient.data.isOK) {
 					this.$refs.clientActionsRef.showModal({
 						typeModal: 1,
-						dataClient: resDataClient.data.result
+						dataClient: resDataClient.data.result,
 					});
 				} else {
 					alert("Get Client Error");
@@ -375,66 +379,88 @@ export default {
 
 		async handleClickPrintListClient() {
 			const workbook = new ExcelJS.Workbook();
-			let worksheet = workbook.addWorksheet(`Client List Page ${this.page.pageNumber}`);
+			let worksheet = workbook.addWorksheet(
+				`Client List Page ${this.page.pageNumber}`
+			);
 
 			// set header
 			worksheet.mergeCells("A1:F1");
-			const headerExcel = worksheet.getCell("A1")
-			headerExcel.value = "Client List"
+			const headerExcel = worksheet.getCell("A1");
+			headerExcel.value = "Client List";
 			headerExcel.font = {
 				family: 4,
 				size: 18,
 				bold: true,
 				name: "Time New Roman",
-			} 
-			headerExcel.height = 40
-			headerExcel.alignment = { vertical: 'middle', horizontal: 'center'}
+			};
+			headerExcel.height = 40;
+			headerExcel.alignment = { vertical: "middle", horizontal: "center" };
 
 			// set column
-			const row = worksheet.addRow(['Client No','Client Name','Mobile', 'Total Sales', 'Note','Registered Date'])
+			const row = worksheet.addRow([
+				"Client No",
+				"Client Name",
+				"Mobile",
+				"Total Sales",
+				"Note",
+				"Registered Date",
+			]);
 			row.height = 30;
-			row.alignment = { vertical: 'middle', horizontal: 'center'}
+			row.alignment = { vertical: "middle", horizontal: "center" };
 			row._cells[0]._column.width = 10;
 			row._cells[1]._column.width = 30;
 			row._cells[2]._column.width = 15;
 			row._cells[3]._column.width = 20;
 			row._cells[4]._column.width = 50;
 			row._cells[5]._column.width = 20;
-			for(let i=0; i<row._cells.length; i++) {
-				row._cells[i].border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}}
+			for (let i = 0; i < row._cells.length; i++) {
+				row._cells[i].border = {
+					top: { style: "thin" },
+					left: { style: "thin" },
+					bottom: { style: "thin" },
+					right: { style: "thin" },
+				};
 			}
 
 			// set row
-			this.clients.map(function(client) {
+			this.clients.map(function (client) {
 				const clientRow = [];
 				clientRow.push(client.memberNumber);
 				clientRow.push(client.clientName);
-				clientRow.push(client.mobileNumber ?? '');
+				clientRow.push(client.mobileNumber ?? "");
 				clientRow.push(client.totalSalesAmount ?? 0);
-				clientRow.push(client.notes ?? '');
+				clientRow.push(client.notes ?? "");
 				clientRow.push(client.registrationDate);
 
 				const rowClient = worksheet.addRow(clientRow);
 
-				rowClient.height = 20
-				rowClient._cells[4].alignment = { horizontal: 'right'}
-				rowClient._cells[2].alignment = { horizontal: 'right'}
-				rowClient._cells[0].alignment = { horizontal: 'center'}
-				rowClient._cells[3].alignment = { horizontal: 'center'}
-				rowClient._cells[5].alignment = { horizontal: 'center'}
+				rowClient.height = 20;
+				rowClient._cells[4].alignment = { horizontal: "right" };
+				rowClient._cells[2].alignment = { horizontal: "right" };
+				rowClient._cells[0].alignment = { horizontal: "center" };
+				rowClient._cells[3].alignment = { horizontal: "center" };
+				rowClient._cells[5].alignment = { horizontal: "center" };
 
-				for(let i=0; i<rowClient._cells.length; i++) {
-					rowClient._cells[i].border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}}
+				for (let i = 0; i < rowClient._cells.length; i++) {
+					rowClient._cells[i].border = {
+						top: { style: "thin" },
+						left: { style: "thin" },
+						bottom: { style: "thin" },
+						right: { style: "thin" },
+					};
 				}
-			})
+			});
 
 			workbook.xlsx
 				.writeBuffer()
-				.then((buffer) =>
-					saveAs(new Blob([buffer]), `Client_List_Page_${this.page.pageNumber}.xlsx`)
+				.then(buffer =>
+					saveAs(
+						new Blob([buffer]),
+						`Client_List_Page_${this.page.pageNumber}.xlsx`
+					)
 				)
-				.catch((err) => console.log("Error writing excel export", err));
-		}
+				.catch(err => console.log("Error writing excel export", err));
+		},
 	},
 };
 </script>

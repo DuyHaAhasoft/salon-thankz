@@ -1,6 +1,6 @@
 <template>
 	<div class="client-actions-modal">
-		<validation-observer v-slot="{invalid}">
+		<validation-observer v-slot="{ invalid }">
 			<b-modal
 				ref="clientActionsModal"
 				:title="title"
@@ -16,35 +16,57 @@
 						<div
 							class="group-input group-input--name data-input__group-input data-input__group-input--name"
 						>
-							<validation-provider name="name" rules="required|min:3" v-slot="{ errors }">
+							<validation-provider
+								name="name"
+								rules="required|min:3"
+								v-slot="{ errors }"
+							>
 								<label>Client Name <span>*</span></label>
 								<input v-model="dataClient.clientName" />
-								<div class="error-text group-input__error-text">{{ errors[0] }}</div>
+								<div class="error-text group-input__error-text">
+									{{ errors[0] }}
+								</div>
 							</validation-provider>
 						</div>
 						<div
 							class="group-input group-input--number data-input__group-input data-input__group-input--number"
 						>
-							<validation-provider name="number" rules="required" v-slot="{ errors }">
+							<validation-provider
+								name="number"
+								rules="required"
+								v-slot="{ errors }"
+							>
 								<label>Client Number</label>
-								<input type="number" v-model="dataClient.memberNumber" maxlength=10 />
-								<div class="error-text group-input__error-text">{{ errors[0] }}</div>
+								<input
+									type="number"
+									v-model="dataClient.memberNumber"
+									maxlength="10"
+								/>
+								<div class="error-text group-input__error-text">
+									{{ errors[0] }}
+								</div>
 							</validation-provider>
 						</div>
 						<div
 							class="group-input group-input--mobile data-input__group-input data-input__group-input--mobile"
 						>
-							<validation-provider name="mobile" rules="min:10|max:11" v-slot="{ errors }">
+							<validation-provider
+								name="mobile"
+								rules="min:10|max:11"
+								v-slot="{ errors }"
+							>
 								<label>Mobile Number</label>
-								<input 
+								<input
 									type="number"
-									minlength=10 
-									maxlength=11 
+									minlength="10"
+									maxlength="11"
 									class="no-arrow group-input--no-arrow"
-									v-model="dataClient.mobileNumber" 
+									v-model="dataClient.mobileNumber"
 									oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
 								/>
-								<div class="error-text group-input__error-text">{{ errors[0] }}</div>
+								<div class="error-text group-input__error-text">
+									{{ errors[0] }}
+								</div>
 							</validation-provider>
 						</div>
 						<div
@@ -85,9 +107,15 @@
 								</template>
 							</v-date-picker>
 						</div>
-						<div class="error-client data-input__error-client" v-if="errorActionClient.isShow">
-							<div v-for="errorMessage in errorActionClient.errorMessages" :key="errorMessage.errorCode">
-								{{errorMessage.errorMessage}}
+						<div
+							class="error-client data-input__error-client"
+							v-if="errorActionClient.isShow"
+						>
+							<div
+								v-for="errorMessage in errorActionClient.errorMessages"
+								:key="errorMessage.errorCode"
+							>
+								{{ errorMessage.errorMessage }}
 							</div>
 						</div>
 					</div>
@@ -98,7 +126,11 @@
 				</div>
 
 				<footer class="footer modal__footer">
-					<group-button @cancel="onClickCancel" @confirm="onClickConfirm" :disableConfirm="invalid" />
+					<group-button
+						@cancel="onClickCancel"
+						@confirm="onClickConfirm"
+						:disableConfirm="invalid"
+					/>
 				</footer>
 			</b-modal>
 		</validation-observer>
@@ -107,13 +139,12 @@
 </template>
 
 <script>
-
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 
 import apis from "../../lib/apis";
 import common from "../../lib/utils/common";
 import session from "../../lib/utils/session";
-import constant from "../../lib/utils/constant"; 
+import constant from "../../lib/utils/constant";
 
 const DEFAULT_TITLE_MODAL = ["Add Client", "Edit Client"];
 
@@ -160,7 +191,7 @@ const DEFAULT_GROUP_CLIENT = {
 const DEFAULT_ERROR_MESSAGES = {
 	isShow: false,
 	errorMessages: [],
-}
+};
 
 export default {
 	name: "SalonThankzClientActions",
@@ -187,7 +218,7 @@ export default {
 		ValidationProvider,
 		ValidationObserver,
 		"group-button": () => import("../Group-Button/Group-Button.vue"),
-		"upload-image-modal": () => import("../Upload-Image/Upload-Image.vue")
+		"upload-image-modal": () => import("../Upload-Image/Upload-Image.vue"),
 	},
 
 	created() {},
@@ -252,12 +283,12 @@ export default {
 				common.momentFunction.DateIntoUnix(
 					common.momentFunction.FormatDate(this.registeredDate)
 				);
-			
-			const currentDateTime = common.momentFunction.DateNowIntoUnix()
 
-			if(currentDateTime < this.dataClient.clientInputDateTimeTS) {
-				alert('Registerd Date Client cannot be greater than current time')
-				return
+			const currentDateTime = common.momentFunction.DateNowIntoUnix();
+
+			if (currentDateTime < this.dataClient.clientInputDateTimeTS) {
+				alert("Registerd Date Client cannot be greater than current time");
+				return;
 			}
 
 			try {
@@ -278,10 +309,10 @@ export default {
 				if (res.data.isOK) {
 					this.$emit("loadClient");
 					this.hideModal();
-					this.errorActionClient.isShow = false
+					this.errorActionClient.isShow = false;
 				} else {
-					this.errorActionClient.isShow = true
-					this.errorActionClient.errorMessages = [...res.data.errorMessages]
+					this.errorActionClient.isShow = true;
+					this.errorActionClient.errorMessages = [...res.data.errorMessages];
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -297,19 +328,27 @@ export default {
 			this.groupClient = Object.assign({}, DEFAULT_GROUP_CLIENT);
 
 			// Reset Data Client
-			this.dataClient = Object.assign({},common.clientFunctions.ResetDataClient())
+			this.dataClient = Object.assign(
+				{},
+				common.clientFunctions.ResetDataClient()
+			);
 
-			this.registeredDate = Date.now()
+			this.registeredDate = Date.now();
 
 			//Reset Error Messages
-			this.errorActionClient = Object.assign({}, common.messageFunctions.ResetErrorMessages())
+			this.errorActionClient = Object.assign(
+				{},
+				common.messageFunctions.ResetErrorMessages()
+			);
 		},
 
 		showUploadImageModal() {
-			console.log('run');
-			const dataClient = this.dataClient.clientId
-			this.$refs.uploadImageModal.showModal({title: 'UploadImage', dataClient})
-		}
+			const dataClient = this.dataClient.clientId;
+			this.$refs.uploadImageModal.showModal({
+				title: "UploadImage",
+				dataClient,
+			});
+		},
 	},
 };
 </script>
