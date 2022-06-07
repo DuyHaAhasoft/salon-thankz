@@ -39,13 +39,16 @@
             font-weight: 600;
         }
 
-        .title__btn-add-client {
-            border: 0px;
-            width: 100px;
-            font-weight: 550;
-            margin-bottom: 5px;
-            border-radius: 8px;
-            background-color:#85ceff;
+        .title__group-button {
+            .group-button__btn {
+                border: 0px;
+                width: 100px;
+                height: 30px;
+                font-weight: 550;
+                border-radius: 8px;
+                background-color:#85ceff;
+                margin: 0px 0px 5px 10px;
+            }
         }
     }
 

@@ -19,7 +19,7 @@ const clientApi = {
 
     editClient(env, payload) {
         const url = DEFAULT_API_GATEWAY[env] + '/api/aggr/v1/Client/EditClient'
-        return axios.post(url, payload, { headers: http.getHeader() })
+        return axios.put(url, payload, { headers: http.getHeader() })
     },
 
     getNextMemberNumber(env, payload) {
@@ -29,6 +29,11 @@ const clientApi = {
 
     getClientByClientId(env, payload) {
         const url = DEFAULT_API_GATEWAY[env] + '/api/aggr/v1/Client/GetClient'
+        return axios.post(url, payload, { headers: http.getHeader() })
+    },
+
+    uploadClientImage(env, payload) {
+        const url = DEFAULT_API_GATEWAY[env] + '/api/cmd/v1/clients/ClientImage'
         return axios.post(url, payload, { headers: http.getHeader() })
     }
 }

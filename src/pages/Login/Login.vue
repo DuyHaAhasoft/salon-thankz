@@ -1,39 +1,47 @@
 <template>
-	<div class="login-page">
-		<img
-			class="image login-page__image"
-			src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png"
-		/>
-		<div class="title login-page__title">SALON ADMIN</div>
-		<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
-			<input
-				v-model="dataUser.username"
-				placeholder="Enter ID"
-				required
-				autofocus
+	<validation-observer v-slot="{invalid}">
+		<div class="login-page">
+			<img
+				class="image login-page__image"
+				src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png"
 			/>
-			<input
-				v-model="dataUser.password"
-				type="password"
-				placeholder="Enter password"
-				required
-				autocomplete="none"
-			/>
-			<button
-				type="submit"
-				class="login-page__btn"
-				:class="{ 'login-page__btn--disabled': disabledBtn }"
-				:disabled="disabledBtn"
-			>
-				Login
-			</button>
-		</form>
-		<notification-modal ref="notificationRef" modalTitle="Login Failed" />
-	</div>
+			<div class="title login-page__title">SALON ADMIN</div>
+				<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
+					<validation-provider name="user" rules="required|min:3|alpha_dash">
+						<input
+							v-model="dataUser.username"
+							placeholder="Enter ID"
+							required
+							autofocus
+						/>
+					</validation-provider>
+					<validation-provider name="password" rules="required|min:8">
+						<input
+							v-model="dataUser.password"
+							type="password"
+							placeholder="Enter password"
+							required
+							autocomplete="off"
+						/>
+					</validation-provider>
+					<button
+						type="submit"
+						class="login-page__btn"
+						:class="{ 'login-page__btn--disabled': disabledBtn || invalid }"
+						:disabled="disabledBtn || invalid"
+					>
+						Login
+					</button>
+				</form>
+			<notification-modal ref="notificationRef" modalTitle="Login Failed" />
+		</div>
+	</validation-observer>
 </template>
 
 <script>
 // Utils
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+
 import apis from "../../lib/apis";
 import common from "../../lib/utils/common";
 import session from "../../lib/utils/session";
@@ -59,6 +67,8 @@ export default {
 	},
 
 	components: {
+		ValidationProvider,
+		ValidationObserver,
 		NotificationModal,
 	},
 

@@ -1,12 +1,12 @@
 const shopSession = {
     getShopId() {
-        const shopInfo = this.getShopInfo()
-        return shopInfo.shopBasicInfo.shopId
+        const shopInfo = JSON.parse(sessionStorage.getItem("shopInfo"))
+        return shopInfo?.shopBasicInfo?.shopId
     },
 
     getSessionToken() {
-        const shopInfo = this.getShopInfo()
-        return shopInfo.userAuthInfo.session_token
+        const shopInfo = JSON.parse(sessionStorage.getItem("shopInfo"))
+        return shopInfo?.userAuthInfo?.session_token
     },
 
     // ShopInfo

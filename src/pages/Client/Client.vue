@@ -9,12 +9,20 @@
 		</div>
 		<div class="title clients-page__title">
 			<div class="title-text title__title-text">Client</div>
-			<button
-				@click="handleClickAddClient"
-				class="btn-add-client title__btn-add-client"
-			>
-				Add
-			</button>
+			<div class="group-button title__group-button">
+				<button
+					@click="handleClickPrintListClient"
+					class="btn--print group-button__btn group-button__btn--print"
+				>
+					Export
+				</button>
+				<button
+					@click="handleClickAddClient"
+					class="btn--add-client group-button__btn group-button__btn--add-client"
+				>
+					Add
+				</button>
+			</div>
 		</div>
 		<div class="content clients-page__content">
 			<label class="title content__title"
@@ -141,10 +149,13 @@
 
 <script>
 import moment from "moment";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 import apis from "../../lib/apis";
 import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
+import common from "@/lib/utils/common";
 
 export default {
 	name: "ClientPage",
@@ -215,20 +226,17 @@ export default {
 				res.data.result.pagingInfo.totalItems /
 					res.data.result.pagingInfo.pageSize
 			);
-
 			this.clients = res.data.result.items.map(function (item) {
 				let client = {};
 				client["clientId"] = item.clientId;
+				client["memberNumber"] = item.memberNumber;
 
 				for (let key in keysClient) {
 					client[keysClient[key]] = item[keysClient[key]];
 				}
 
 				client.mobileNumber2 = item.mobileNumber2;
-				client.registrationDate = moment(
-					client.registrationDate,
-					"YYYY-MM-DD"
-				).format("YYYY-MM-DD");
+				client.registrationDate = moment(common.momentFunction.UnixMiliSecondsIntoDate(item.clientInputDateTimeTS)).format("YYYY-MM-DD")
 
 				client.phone = "";
 				if (client.mobileNumber !== null) client.phone += client.mobileNumber;
@@ -331,13 +339,13 @@ export default {
 				if (resDataClient.data.isOK) {
 					this.$refs.clientActionsRef.showModal({
 						typeModal: 1,
-						dataClient: resDataClient.data.result,
+						dataClient: resDataClient.data.result
 					});
 				} else {
 					alert("Get Client Error");
 				}
 			} catch (errors) {
-				console.log("Errors");
+				console.log("Errors", errors);
 			}
 		},
 
@@ -364,6 +372,69 @@ export default {
 				console.log(errors);
 			}
 		},
+
+		async handleClickPrintListClient() {
+			const workbook = new ExcelJS.Workbook();
+			let worksheet = workbook.addWorksheet(`Client List Page ${this.page.pageNumber}`);
+
+			// set header
+			worksheet.mergeCells("A1:F1");
+			const headerExcel = worksheet.getCell("A1")
+			headerExcel.value = "Client List"
+			headerExcel.font = {
+				family: 4,
+				size: 18,
+				bold: true,
+				name: "Time New Roman",
+			} 
+			headerExcel.height = 40
+			headerExcel.alignment = { vertical: 'middle', horizontal: 'center'}
+
+			// set column
+			const row = worksheet.addRow(['Client No','Client Name','Mobile', 'Total Sales', 'Note','Registered Date'])
+			row.height = 30;
+			row.alignment = { vertical: 'middle', horizontal: 'center'}
+			row._cells[0]._column.width = 10;
+			row._cells[1]._column.width = 30;
+			row._cells[2]._column.width = 15;
+			row._cells[3]._column.width = 20;
+			row._cells[4]._column.width = 50;
+			row._cells[5]._column.width = 20;
+			for(let i=0; i<row._cells.length; i++) {
+				row._cells[i].border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}}
+			}
+
+			// set row
+			this.clients.map(function(client) {
+				const clientRow = [];
+				clientRow.push(client.memberNumber);
+				clientRow.push(client.clientName);
+				clientRow.push(client.mobileNumber ?? '');
+				clientRow.push(client.totalSalesAmount ?? 0);
+				clientRow.push(client.notes ?? '');
+				clientRow.push(client.registrationDate);
+
+				const rowClient = worksheet.addRow(clientRow);
+
+				rowClient.height = 20
+				rowClient._cells[4].alignment = { horizontal: 'right'}
+				rowClient._cells[2].alignment = { horizontal: 'right'}
+				rowClient._cells[0].alignment = { horizontal: 'center'}
+				rowClient._cells[3].alignment = { horizontal: 'center'}
+				rowClient._cells[5].alignment = { horizontal: 'center'}
+
+				for(let i=0; i<rowClient._cells.length; i++) {
+					rowClient._cells[i].border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}}
+				}
+			})
+
+			workbook.xlsx
+				.writeBuffer()
+				.then((buffer) =>
+					saveAs(new Blob([buffer]), `Client_List_Page_${this.page.pageNumber}.xlsx`)
+				)
+				.catch((err) => console.log("Error writing excel export", err));
+		}
 	},
 };
 </script>

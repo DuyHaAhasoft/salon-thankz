@@ -1,6 +1,7 @@
 <template>
 	<div class="group-button">
 		<button
+			:disabled="disableConfirm"
 			@click="handleClickConfirm"
 			class="btn--confirm group-button__btn group-button__btn--confirm"
 		>
@@ -27,6 +28,13 @@ export default {
 
 	data() {
 		return {};
+	},
+
+	props: {
+		disableConfirm: {
+			type: Boolean,
+			default: false
+		}
 	},
 
 	mounted() {},
