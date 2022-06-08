@@ -1,9 +1,10 @@
 <template>
 	<div class="group-button">
 		<button
-			v-if="isShowButton.confirm"
 			:disabled="disableConfirm"
+			v-if="isShowButton.confirm"
 			@click="handleClickConfirm"
+			:class="{ 'group-button__btn--disable': disableConfirm }"
 			class="btn--confirm group-button__btn group-button__btn--confirm"
 		>
 			Save
@@ -16,7 +17,7 @@
 		>
 			Delete
 		</button>
-		
+
 		<button
 			v-if="isShowButton.cancel"
 			@click="handleClickCancel"
@@ -38,19 +39,19 @@ export default {
 	props: {
 		disableConfirm: {
 			type: Boolean,
-			default: false
+			default: false,
 		},
 
 		isShowButton: {
 			type: Object,
-			default:  function() {
+			default: function () {
 				return {
 					delete: true,
 					cancel: true,
 					confirm: true,
-				}
-			}
-		}
+				};
+			},
+		},
 	},
 
 	mounted() {},

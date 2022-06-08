@@ -38,9 +38,7 @@
 						<th v-for="field in fields" :key="field.text">
 							{{ field.text }}
 						</th>
-						<th colspan="3">
-							Actions
-						</th>
+						<th colspan="3">Actions</th>
 					</tr>
 				</thead>
 
@@ -166,7 +164,11 @@
 		</div>
 
 		<loading v-if="isLoading" />
-		<client-actions ref="clientActionsRef" @loadClient="loadDataClient" @loading="handleSetLoading" />
+		<client-actions
+			ref="clientActionsRef"
+			@loadClient="loadDataClient"
+			@loading="handleSetLoading"
+		/>
 	</div>
 </template>
 
@@ -213,7 +215,7 @@ export default {
 		"client-actions": () =>
 			import("../../components/Client-Actions/Client-Actions.vue"),
 
-		"loading": () => import("../../components/Loading/Loading.vue")
+		loading: () => import("../../components/Loading/Loading.vue"),
 	},
 
 	created() {
@@ -244,19 +246,18 @@ export default {
 			};
 
 			let keysClient = Object.keys(this.fields);
-			
+
 			this.isLoading = true;
 
 			try {
 				const res = await apis.clientApi.getAllClientByShop("DEV", data);
-				
-				if(res.status !== 200) {
-					this.isLoading = false;
-					throw res
-				}
-				console.log(res)
-				if(res.data.isOK) {
 
+				if (res.status !== 200) {
+					this.isLoading = false;
+					throw res;
+				}
+
+				if (res.data.isOK) {
 					this.clientTotal = res.data.result.pagingInfo.totalItems;
 
 					this.page.pageTotal = Math.ceil(
@@ -281,13 +282,21 @@ export default {
 
 						client.phone = "";
 
-						if (client.mobileNumber !== null) client.phone += common.commonFunctions.formatPhoneNumber(client.mobileNumber);
+						if (client.mobileNumber !== null)
+							client.phone += common.commonFunctions.formatPhoneNumber(
+								client.mobileNumber
+							);
 
-						if (client.mobileNumber2 !== null) client.phone += common.commonFunctions.formatPhoneNumber(client.mobileNumber2);
-						
+						if (client.mobileNumber2 !== null)
+							client.phone += common.commonFunctions.formatPhoneNumber(
+								client.mobileNumber2
+							);
+
 						if (client.phone[0] === "/") client.phone.splice(0, 1);
 
-						client.totalSales = common.commonFunctions.formatMoneyNumber(client.totalSalesAmount);
+						client.totalSales = common.commonFunctions.formatMoneyNumber(
+							client.totalSalesAmount
+						);
 
 						return client;
 					});
@@ -295,11 +304,10 @@ export default {
 					this.isLoading = false;
 				} else {
 					this.isLoading = false;
-					console.log(res.data)
+					console.log(res.data);
 				}
-			}
-			catch (errors) {
-				console.log(errors)
+			} catch (errors) {
+				console.log(errors);
 			}
 		},
 
@@ -316,8 +324,7 @@ export default {
 				if (resStaffActive.data.isOK)
 					session.shopSession.setStaffActive(resStaffActive.data.result);
 				else alert("Error Staff Active");
-			} 
-			catch (errors) {
+			} catch (errors) {
 				console.log(errors);
 			}
 		},
@@ -401,8 +408,7 @@ export default {
 				} else {
 					alert("Get Client Error");
 				}
-			} 
-			catch (errors) {
+			} catch (errors) {
 				console.log("Errors", errors);
 			}
 		},
@@ -442,7 +448,7 @@ export default {
 			const headerExcel = worksheet.getCell("A1");
 
 			headerExcel.value = "Client List";
-			
+
 			headerExcel.font = {
 				family: 4,
 				size: 18,
@@ -489,12 +495,14 @@ export default {
 				clientRow.push(client.clientName);
 
 				let mobileNumber = client.mobileNumber;
-				if(mobileNumber) {
-					mobileNumber = common.commonFunctions.formatPhoneNumber(mobileNumber)
+				if (mobileNumber) {
+					mobileNumber = common.commonFunctions.formatPhoneNumber(mobileNumber);
 				}
 				clientRow.push(mobileNumber ?? "");
 
-				let totalSalesAmount = common.commonFunctions.formatMoneyNumber(client.totalSalesAmount);
+				let totalSalesAmount = common.commonFunctions.formatMoneyNumber(
+					client.totalSalesAmount
+				);
 				clientRow.push(totalSalesAmount ?? 0);
 
 				clientRow.push(client.notes ?? "");
@@ -531,8 +539,8 @@ export default {
 		},
 
 		handleSetLoading(valueLoading) {
-			this.isLoading = valueLoading
-		}
+			this.isLoading = valueLoading;
+		},
 	},
 };
 </script>

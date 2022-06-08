@@ -1,6 +1,7 @@
 const commonFunctions = {
     formatPhoneNumber,
     formatMoneyNumber,
+    trimAllDataObject,
 }
 
 function formatPhoneNumber(phone) {
@@ -18,6 +19,18 @@ function formatPhoneNumber(phone) {
 
 function formatMoneyNumber(money) {
     return money.toLocaleString('en-US')
+}
+
+function trimAllDataObject(dataObject) {
+    const keys = Object.keys(dataObject);
+
+    for (let i = 0; i < keys.length; i++) {
+        if (typeof dataObject[keys[i]] === 'string') {
+            dataObject[keys[i]] = dataObject[keys[i]].trim()
+        }
+    }
+
+    return dataObject
 }
 
 export default commonFunctions

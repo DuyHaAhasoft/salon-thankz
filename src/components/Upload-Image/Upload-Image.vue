@@ -26,11 +26,10 @@
 				<img :src="urlImage" v-if="urlImage" />
 			</div>
 
-			<group-button 
+			<group-button
 				@cancel="onClickCancel"
 				@confirm="onClickSaveImage"
 				@delete="onClickDeleleImage"
-
 				:disableConfirm="!file"
 				:isShowButton="isShowGroupButton"
 			/>
@@ -59,7 +58,7 @@ export default {
 				cancel: true,
 				delete: true,
 				confirm: true,
-			}
+			},
 		};
 	},
 
@@ -72,9 +71,7 @@ export default {
 
 	created() {},
 
-	mounted() {
-		console.log(this.file, this.urlImage)
-	},
+	mounted() {},
 
 	computed: {},
 
@@ -84,10 +81,8 @@ export default {
 			this.dataClient = dataModal.dataClient;
 			this.urlImage = dataModal.urlImageAvatar;
 
-			if(dataModal.urlImageAvatar)
-				this.typeUploadImage = 0
-			else
-				this.typeUploadImage = 1
+			if (dataModal.urlImageAvatar) this.typeUploadImage = 0;
+			else this.typeUploadImage = 1;
 
 			this.isShowGroupButton.delete = !!this.urlImage;
 			this.isShowGroupButton.confirm = !this.urlImage;
@@ -114,30 +109,36 @@ export default {
 			formData.append("shopId", session.shopSession.getShopId());
 			formData.append("countryCode", constant.payload.DEFAULT_COUNTRY);
 
-			this.$emit('loading', true);
+			this.$emit("loading", true);
 
 			try {
 				const res = await apis.clientApi.uploadClientImage("DEV", formData);
-				
-				if(res.status !== 200)
-					throw res
 
-				if(res.data.isOK) {
-					const urlImageAvatar = constant.api.DEFAULT_URL_IMAGE.CLIENT + '/' + res.data.result.imagePath + '/' + res.data.result.imageName
-					this.$emit('updateUrlImageAvatar', {clientImageId: res.data.result.clientImageId, urlImageAvatar})
+				if (res.status !== 200) throw res;
 
-					this.$emit('loading', false);
+				if (res.data.isOK) {
+					const urlImageAvatar =
+						constant.api.DEFAULT_URL_IMAGE.CLIENT +
+						"/" +
+						res.data.result.imagePath +
+						"/" +
+						res.data.result.imageName;
+					this.$emit("updateUrlImageAvatar", {
+						clientImageId: res.data.result.clientImageId,
+						urlImageAvatar,
+					});
 
-					this.hideModal()
+					this.$emit("loading", false);
 
-					this.handleReset()
+					this.hideModal();
+
+					this.handleReset();
 				} else {
-					this.$emit('loading', false);
+					this.$emit("loading", false);
 
-					console.log(res.data)
+					console.log(res.data);
 				}
-			} 
-			catch (errors) {
+			} catch (errors) {
 				console.log("errors", errors);
 			}
 		},
@@ -148,49 +149,53 @@ export default {
 		},
 
 		onClickDeleleImage() {
-			this.$refs.confirmModal.showModal({title: 'Delete Avatar Client', message: 'Are you sure you want to delete this avatar?'})
+			this.$refs.confirmModal.showModal({
+				title: "Delete Avatar Client",
+				message: "Are you sure you want to delete this avatar?",
+			});
 		},
 
 		async handleDeleleImage() {
 			const data = {
 				shopId: session.shopSession.getShopId(),
 				clientImageId: this.dataClient.clientImageId,
-			}
+			};
 
-			this.$emit('loading', true);
+			this.$emit("loading", true);
 
 			try {
-				const res = await apis.clientApi.deleteClientImage('DEV', data)
+				const res = await apis.clientApi.deleteClientImage("DEV", data);
 
-				if(res.status !== 200)
-					throw res
-				
-				if(res.data.isOK) {
-					this.$emit('updateUrlImageAvatar', {clientImageId: null, urlImageAvatar: ""})
+				if (res.status !== 200) throw res;
 
-					this.$emit('loading', false)
+				if (res.data.isOK) {
+					this.$emit("updateUrlImageAvatar", {
+						clientImageId: null,
+						urlImageAvatar: "",
+					});
 
-					this.hideModal()
+					this.$emit("loading", false);
 
-					this.handleReset()
+					this.hideModal();
+
+					this.handleReset();
 				} else {
-					this.$emit('loading', false)
-					console.log(res)
+					this.$emit("loading", false);
+					console.log(res);
 				}
-			}
-			catch(errors) {
-				console.log(errors)
+			} catch (errors) {
+				console.log(errors);
 			}
 		},
 
 		onClickChangeFile(event) {
 			const dataFile = event.target.files[0];
 
-			if(dataFile) {
+			if (dataFile) {
 				this.file = dataFile?.name;
 				const url = URL.createObjectURL(dataFile);
-				
-				if(url && url !== this.urlImage){
+
+				if (url && url !== this.urlImage) {
 					URL.revokeObjectURL(this.urlImage);
 					this.urlImage = url;
 				}
@@ -199,8 +204,8 @@ export default {
 
 		handleReset() {
 			this.file = "";
-			this.$refs.inputFileImage.value = ""
-		}
+			this.$refs.inputFileImage.value = "";
+		},
 	},
 };
 </script>

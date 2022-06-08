@@ -12,9 +12,11 @@
 				:size="typeModal ? 'lg' : 'lg'"
 				:modal-class="'modal client-actions-modal__modal'"
 			>
-				<div class="content modal__content"  :class="{'modal__content--add-client': !typeModal}">
+				<div
+					class="content modal__content"
+					:class="{ 'modal__content--add-client': !typeModal }"
+				>
 					<div class="data-input content__data-input">
-
 						<div
 							class="group-input group-input--name data-input__group-input data-input__group-input--name"
 						>
@@ -24,7 +26,7 @@
 								v-slot="{ errors }"
 							>
 								<label>Client Name <span>*</span></label>
-								<input v-model="dataClient.clientName" maxlength="50"/>
+								<input v-model="dataClient.clientName" maxlength="50" />
 								<div class="error-text group-input__error-text">
 									{{ errors[0] }}
 								</div>
@@ -128,14 +130,25 @@
 								{{ errorMessage.errorMessage }}
 							</div>
 						</div>
-
 					</div>
 
-					<div v-if="typeModal" class="avatar-image content__avatar-image" @click="showUploadImageModal">
-						<div v-if="urlImageAvatar === '' ? true : false" class="message avatar-image__message">Click here to upload avatar</div>
-						<img v-if="urlImageAvatar !== '' ? true : false" :src="urlImageAvatar" class="avatar-image__img-avatar" />
+					<div
+						v-if="typeModal"
+						class="avatar-image content__avatar-image"
+						@click="showUploadImageModal"
+					>
+						<div
+							v-if="urlImageAvatar === '' ? true : false"
+							class="message avatar-image__message"
+						>
+							Click here to upload avatar
+						</div>
+						<img
+							v-if="urlImageAvatar !== '' ? true : false"
+							:src="urlImageAvatar"
+							class="avatar-image__img-avatar"
+						/>
 					</div>
-
 				</div>
 
 				<footer class="footer modal__footer">
@@ -148,7 +161,11 @@
 			</b-modal>
 		</validation-observer>
 
-		<upload-image-modal ref="uploadImageModal" @updateUrlImageAvatar="updateUrlImageAvatar" @loading="handleLoading" />
+		<upload-image-modal
+			ref="uploadImageModal"
+			@updateUrlImageAvatar="updateUrlImageAvatar"
+			@loading="handleLoading"
+		/>
 	</div>
 </template>
 
@@ -287,8 +304,13 @@ export default {
 				);
 			}
 
-			if(this.dataClient.imageName && this.dataClient.imagePath)
-				this.urlImageAvatar = constant.api.DEFAULT_URL_IMAGE.CLIENT + '/' + this.dataClient.imagePath + '/' + this.dataClient.imageName
+			if (this.dataClient.imageName && this.dataClient.imagePath)
+				this.urlImageAvatar =
+					constant.api.DEFAULT_URL_IMAGE.CLIENT +
+					"/" +
+					this.dataClient.imagePath +
+					"/" +
+					this.dataClient.imageName;
 
 			this.$refs.clientActionsModal && this.$refs.clientActionsModal.show();
 		},
@@ -308,24 +330,30 @@ export default {
 			const currentDateTime = common.momentFunction.DateNowIntoUnix();
 
 			if (currentDateTime < this.dataClient.clientInputDateTimeTS) {
-				alert("Registerd Date Client cannot be greater than current time");
+				alert("Registered Date Client cannot be greater than current time");
 				return;
 			}
 
 			try {
-				this.$emit("loading", true)
+				this.$emit("loading", true);
 
 				let res;
 				if (!this.typeModal) {
 					this.dataClient.createdDateTimeTS =
 						common.momentFunction.DateNowIntoUnix();
 
-					Object.keys(this.dataClient).forEach(key => this.dataClient[key] = this.dataClient[key].trim())
+					this.dataClient = common.commonFunctions.trimAllDataObject(
+						this.dataClient
+					);
 
 					res = await apis.clientApi.createNewClient("DEV", this.dataClient);
 				} else {
 					this.dataClient.editedDateTimeTS =
 						common.momentFunction.DateNowIntoUnix();
+
+					this.dataClient = common.commonFunctions.trimAllDataObject(
+						this.dataClient
+					);
 
 					res = await apis.clientApi.editClient("DEV", this.dataClient);
 				}
@@ -373,7 +401,7 @@ export default {
 			);
 
 			//Reset URL Image Avatar
-			this.urlImageAvatar = ''
+			this.urlImageAvatar = "";
 		},
 
 		showUploadImageModal() {
@@ -381,22 +409,24 @@ export default {
 				clientId: this.dataClient.clientId,
 				clientImageId: this.dataClient.clientImageId,
 			};
-			
+
 			this.$refs.uploadImageModal.showModal({
 				dataClient,
-				title: "Upload Avatar Image",
+				title: this.urlImageAvatar
+					? "Delete Avatar Image"
+					: "Upload Avatar Image",
 				urlImageAvatar: this.urlImageAvatar,
 			});
 		},
 
-		updateUrlImageAvatar({clientImageId, urlImageAvatar}) {
-			this.urlImageAvatar = urlImageAvatar
-			this.dataClient.clientImageId = clientImageId
+		updateUrlImageAvatar({ clientImageId, urlImageAvatar }) {
+			this.urlImageAvatar = urlImageAvatar;
+			this.dataClient.clientImageId = clientImageId;
 		},
 
 		handleLoading(value) {
-			this.$emit('loading', value)
-		} 
+			this.$emit("loading", value);
+		},
 	},
 };
 </script>

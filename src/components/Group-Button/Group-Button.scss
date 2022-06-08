@@ -24,5 +24,10 @@
         &.group-button__btn:hover {
             box-shadow: 5px 5px 2px 0px rgba(0,0,0,0.1);
         }
+
+        &.group-button__btn--disable:hover {
+            cursor: not-allowed;
+            box-shadow: 0px 0px 0px 0px red;
+        }
     }
 }
