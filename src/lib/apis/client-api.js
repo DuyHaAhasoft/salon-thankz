@@ -9,7 +9,7 @@ const DEFAULT_API_GATEWAY = constant.api.DEFAULT_API_GATEWAY
 const clientApi = {
     getAllClientByShop(env, payload) {
         const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/clients/Client/Active'
-        return axios.post(url, payload, { headers: http.getHeader() })
+        return axios.post(url, payload, { headers: http.getHeader() }) // Non 
     },
 
     createNewClient(env, payload) {
@@ -35,7 +35,12 @@ const clientApi = {
     uploadClientImage(env, payload) {
         const url = DEFAULT_API_GATEWAY[env] + '/api/cmd/v1/clients/ClientImage'
         return axios.post(url, payload, { headers: http.getHeader() })
-    }
+    },
+
+    deleteClientImage(env, data) {
+        const url = DEFAULT_API_GATEWAY[env] + '/api/cmd/v1/clients/ClientImage'
+        return axios.delete(url, { headers: http.getHeader(), data: data })
+    },
 }
 
 export default clientApi

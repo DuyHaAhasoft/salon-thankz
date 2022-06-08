@@ -5,12 +5,12 @@
     .group-button__btn {
         border: 0px;
         width: 100px;
-        height: 30px;
         margin-top: 10px;
+        padding: 6px 10px;
         border-radius: 8px;
 
         &.group-button__btn--confirm {
-            background-color: #85ceff;
+            background-color: #3499db;
         }
 
         &.group-button__btn--delete {
@@ -19,6 +19,10 @@
 
         &.group-button__btn--cancel {
             background-color: #85ceff;
+        }
+
+        &.group-button__btn:hover {
+            box-shadow: 5px 5px 2px 0px rgba(0,0,0,0.1);
         }
     }
 }

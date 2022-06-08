@@ -2,51 +2,57 @@
 	<div class="client-actions-modal">
 		<validation-observer v-slot="{ invalid }">
 			<b-modal
-				ref="clientActionsModal"
-				:title="title"
-				:no-close-on-backdrop="true"
-				:modal-class="'modal client-actions-modal__modal'"
-				size="xl"
 				static
 				hide-footer
+				:title="title"
 				@hide="handleResetData"
+				header-bg-variant="info"
+				ref="clientActionsModal"
+				:no-close-on-backdrop="true"
+				:size="typeModal ? 'lg' : 'lg'"
+				:modal-class="'modal client-actions-modal__modal'"
 			>
-				<div class="content modal__content">
+				<div class="content modal__content"  :class="{'modal__content--add-client': !typeModal}">
 					<div class="data-input content__data-input">
+
 						<div
 							class="group-input group-input--name data-input__group-input data-input__group-input--name"
 						>
 							<validation-provider
 								name="name"
-								rules="required|min:3"
+								rules="required|min:3|max:50"
 								v-slot="{ errors }"
 							>
 								<label>Client Name <span>*</span></label>
-								<input v-model="dataClient.clientName" />
+								<input v-model="dataClient.clientName" maxlength="50"/>
 								<div class="error-text group-input__error-text">
 									{{ errors[0] }}
 								</div>
 							</validation-provider>
 						</div>
+
 						<div
 							class="group-input group-input--number data-input__group-input data-input__group-input--number"
 						>
 							<validation-provider
 								name="number"
-								rules="required"
+								rules="required|max:16"
 								v-slot="{ errors }"
 							>
 								<label>Client Number</label>
 								<input
 									type="number"
 									v-model="dataClient.memberNumber"
-									maxlength="10"
+									minlength="1"
+									maxlength="16"
+									oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
 								/>
 								<div class="error-text group-input__error-text">
 									{{ errors[0] }}
 								</div>
 							</validation-provider>
 						</div>
+
 						<div
 							class="group-input group-input--mobile data-input__group-input data-input__group-input--mobile"
 						>
@@ -69,10 +75,11 @@
 								</div>
 							</validation-provider>
 						</div>
+
 						<div
 							class="group-input group-input--sex data-input__group-input data-input__group-input--sex"
 						>
-							<label>Sex</label>
+							<label>Gender</label>
 							<b-form-radio v-model="dataClient.sex" name="sex-radios" value="1"
 								>Male</b-form-radio
 							>
@@ -80,6 +87,7 @@
 								>Female</b-form-radio
 							>
 						</div>
+
 						<div
 							class="group-input group-input--group data-input__group-input data-input__group-input--group"
 						>
@@ -89,6 +97,7 @@
 								:options="clientGroupOptions"
 							></b-form-select>
 						</div>
+
 						<div
 							class="group-input group-input--register-date data-input__group-input data-input__group-input--register-date"
 						>
@@ -107,6 +116,7 @@
 								</template>
 							</v-date-picker>
 						</div>
+
 						<div
 							class="error-client data-input__error-client"
 							v-if="errorActionClient.isShow"
@@ -118,11 +128,14 @@
 								{{ errorMessage.errorMessage }}
 							</div>
 						</div>
+
 					</div>
-					<div class="avatar-image content__avatar-image">
-						<div>Click here to upload avatar</div>
-						<button @click="showUploadImageModal">Show</button>
+
+					<div v-if="typeModal" class="avatar-image content__avatar-image" @click="showUploadImageModal">
+						<div v-if="urlImageAvatar === '' ? true : false" class="message avatar-image__message">Click here to upload avatar</div>
+						<img v-if="urlImageAvatar !== '' ? true : false" :src="urlImageAvatar" class="avatar-image__img-avatar" />
 					</div>
+
 				</div>
 
 				<footer class="footer modal__footer">
@@ -134,7 +147,8 @@
 				</footer>
 			</b-modal>
 		</validation-observer>
-		<upload-image-modal ref="uploadImageModal" />
+
+		<upload-image-modal ref="uploadImageModal" @updateUrlImageAvatar="updateUrlImageAvatar" @loading="handleLoading" />
 	</div>
 </template>
 
@@ -199,6 +213,7 @@ export default {
 	data() {
 		return {
 			typeModal: 0,
+			urlImageAvatar: "",
 			registeredDate: Date.now(),
 			groupClient: Object.assign({}, DEFAULT_GROUP_CLIENT),
 			dataClient: Object.assign({}, DEFAULT_DATA_CREATE_CLIENT),
@@ -217,6 +232,7 @@ export default {
 	components: {
 		ValidationProvider,
 		ValidationObserver,
+
 		"group-button": () => import("../Group-Button/Group-Button.vue"),
 		"upload-image-modal": () => import("../Upload-Image/Upload-Image.vue"),
 	},
@@ -256,6 +272,7 @@ export default {
 		showModal(dataModal) {
 			this.typeModal = dataModal.typeModal;
 			this.dataClient.memberNumber = dataModal?.memberNumber || 0;
+
 			if (dataModal.dataClient && dataModal.dataClient !== null) {
 				this.dataClient = Object.assign(
 					DEFAULT_DATA_CREATE_CLIENT,
@@ -269,6 +286,10 @@ export default {
 					dataModal?.dataClient?.clientInputDateTimeTS
 				);
 			}
+
+			if(this.dataClient.imageName && this.dataClient.imagePath)
+				this.urlImageAvatar = constant.api.DEFAULT_URL_IMAGE.CLIENT + '/' + this.dataClient.imagePath + '/' + this.dataClient.imageName
+
 			this.$refs.clientActionsModal && this.$refs.clientActionsModal.show();
 		},
 
@@ -292,15 +313,20 @@ export default {
 			}
 
 			try {
+				this.$emit("loading", true)
+
 				let res;
 				if (!this.typeModal) {
 					this.dataClient.createdDateTimeTS =
 						common.momentFunction.DateNowIntoUnix();
 
+					Object.keys(this.dataClient).forEach(key => this.dataClient[key] = this.dataClient[key].trim())
+
 					res = await apis.clientApi.createNewClient("DEV", this.dataClient);
 				} else {
 					this.dataClient.editedDateTimeTS =
 						common.momentFunction.DateNowIntoUnix();
+
 					res = await apis.clientApi.editClient("DEV", this.dataClient);
 				}
 
@@ -308,9 +334,14 @@ export default {
 
 				if (res.data.isOK) {
 					this.$emit("loadClient");
+
+					this.$emit("loading", false);
+
 					this.hideModal();
 					this.errorActionClient.isShow = false;
 				} else {
+					this.$emit("loading", false);
+
 					this.errorActionClient.isShow = true;
 					this.errorActionClient.errorMessages = [...res.data.errorMessages];
 				}
@@ -340,15 +371,32 @@ export default {
 				{},
 				common.messageFunctions.ResetErrorMessages()
 			);
+
+			//Reset URL Image Avatar
+			this.urlImageAvatar = ''
 		},
 
 		showUploadImageModal() {
-			const dataClient = this.dataClient.clientId;
+			const dataClient = {
+				clientId: this.dataClient.clientId,
+				clientImageId: this.dataClient.clientImageId,
+			};
+			
 			this.$refs.uploadImageModal.showModal({
-				title: "UploadImage",
 				dataClient,
+				title: "Upload Avatar Image",
+				urlImageAvatar: this.urlImageAvatar,
 			});
 		},
+
+		updateUrlImageAvatar({clientImageId, urlImageAvatar}) {
+			this.urlImageAvatar = urlImageAvatar
+			this.dataClient.clientImageId = clientImageId
+		},
+
+		handleLoading(value) {
+			this.$emit('loading', value)
+		} 
 	},
 };
 </script>

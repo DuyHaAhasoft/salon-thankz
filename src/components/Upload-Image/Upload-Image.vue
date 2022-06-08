@@ -1,26 +1,42 @@
 <template>
 	<div class="upload-image-modal">
 		<b-modal
-			ref="uploadImageModal"
-			:title="title"
-			:no-close-on-backdrop="true"
-			:modal-class="'modal upload-image-modal__modal'"
 			static
 			hide-footer
+			:title="title"
+			ref="uploadImageModal"
+			header-bg-variant="info"
+			:no-close-on-backdrop="true"
+			:modal-class="'modal upload-image-modal__modal'"
 		>
 			<input
-				ref="inputFileImage"
-				type="file"
-				accept="image/png image/jpg image/jpg"
-				@change="onClickChangeFile"
 				hidden
+				type="file"
+				ref="inputFileImage"
+				@change="onClickChangeFile"
+				accept="image/png image/jpg image/jpg"
 			/>
-			<input readonly v-model="file" />
-			<img :src="url" width="200" />
-			<button @click="onClickSelectImage">Search Image</button>
-			<button @click="onClickSaveImage">Save</button>
-			<button @click="onClickCancel">Cancel</button>
+
+			<div class="input-data modal__input-data" v-if="typeUploadImage">
+				<input readonly v-model="file" />
+				<button @click="onClickSelectImage">Search Image</button>
+			</div>
+
+			<div class="preview-avatar modal__preview-avatar">
+				<img :src="urlImage" v-if="urlImage" />
+			</div>
+
+			<group-button 
+				@cancel="onClickCancel"
+				@confirm="onClickSaveImage"
+				@delete="onClickDeleleImage"
+
+				:disableConfirm="!file"
+				:isShowButton="isShowGroupButton"
+			/>
 		</b-modal>
+
+		<confirm-modal ref="confirmModal" @confirm="handleDeleleImage" />
 	</div>
 </template>
 
@@ -34,20 +50,31 @@ export default {
 
 	data() {
 		return {
-			title: "",
-			url: "",
 			file: "",
+			title: "",
+			urlImage: "",
 			dataClient: null,
+			typeUploadImage: 1,
+			isShowGroupButton: {
+				cancel: true,
+				delete: true,
+				confirm: true,
+			}
 		};
 	},
 
 	props: {},
 
-	components: {},
+	components: {
+		"confirm-modal": () => import("../Confirm-Modal/Confirm-Modal.vue"),
+		"group-button": () => import("../Group-Button/Group-Button.vue"),
+	},
 
 	created() {},
 
-	mounted() {},
+	mounted() {
+		console.log(this.file, this.urlImage)
+	},
 
 	computed: {},
 
@@ -55,7 +82,20 @@ export default {
 		showModal(dataModal) {
 			this.title = dataModal.title;
 			this.dataClient = dataModal.dataClient;
+			this.urlImage = dataModal.urlImageAvatar;
+
+			if(dataModal.urlImageAvatar)
+				this.typeUploadImage = 0
+			else
+				this.typeUploadImage = 1
+
+			this.isShowGroupButton.delete = !!this.urlImage;
+			this.isShowGroupButton.confirm = !this.urlImage;
 			this.$refs.uploadImageModal && this.$refs.uploadImageModal.show();
+		},
+
+		hideModal() {
+			this.$refs.uploadImageModal && this.$refs.uploadImageModal.hide();
 		},
 
 		onClickSelectImage() {
@@ -70,26 +110,97 @@ export default {
 			const formData = new FormData();
 
 			formData.append("fomrFile", file);
-			formData.append("clientId", this.dataClient);
+			formData.append("clientId", this.dataClient.clientId);
 			formData.append("shopId", session.shopSession.getShopId());
 			formData.append("countryCode", constant.payload.DEFAULT_COUNTRY);
+
+			this.$emit('loading', true);
+
 			try {
 				const res = await apis.clientApi.uploadClientImage("DEV", formData);
-				console.log("res", res);
-			} catch (errors) {
+				
+				if(res.status !== 200)
+					throw res
+
+				if(res.data.isOK) {
+					const urlImageAvatar = constant.api.DEFAULT_URL_IMAGE.CLIENT + '/' + res.data.result.imagePath + '/' + res.data.result.imageName
+					this.$emit('updateUrlImageAvatar', {clientImageId: res.data.result.clientImageId, urlImageAvatar})
+
+					this.$emit('loading', false);
+
+					this.hideModal()
+
+					this.handleReset()
+				} else {
+					this.$emit('loading', false);
+
+					console.log(res.data)
+				}
+			} 
+			catch (errors) {
 				console.log("errors", errors);
 			}
 		},
 
 		onClickCancel() {
-			console.log("Cancel");
+			this.hideModal();
+			this.handleReset();
+		},
+
+		onClickDeleleImage() {
+			this.$refs.confirmModal.showModal({title: 'Delete Avatar Client', message: 'Are you sure you want to delete this avatar?'})
+		},
+
+		async handleDeleleImage() {
+			const data = {
+				shopId: session.shopSession.getShopId(),
+				clientImageId: this.dataClient.clientImageId,
+			}
+
+			this.$emit('loading', true);
+
+			try {
+				const res = await apis.clientApi.deleteClientImage('DEV', data)
+
+				if(res.status !== 200)
+					throw res
+				
+				if(res.data.isOK) {
+					this.$emit('updateUrlImageAvatar', {clientImageId: null, urlImageAvatar: ""})
+
+					this.$emit('loading', false)
+
+					this.hideModal()
+
+					this.handleReset()
+				} else {
+					this.$emit('loading', false)
+					console.log(res)
+				}
+			}
+			catch(errors) {
+				console.log(errors)
+			}
 		},
 
 		onClickChangeFile(event) {
 			const dataFile = event.target.files[0];
-			this.file = dataFile.name;
-			this.url = URL.createObjectURL(dataFile);
+
+			if(dataFile) {
+				this.file = dataFile?.name;
+				const url = URL.createObjectURL(dataFile);
+				
+				if(url && url !== this.urlImage){
+					URL.revokeObjectURL(this.urlImage);
+					this.urlImage = url;
+				}
+			}
 		},
+
+		handleReset() {
+			this.file = "";
+			this.$refs.inputFileImage.value = ""
+		}
 	},
 };
 </script>

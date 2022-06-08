@@ -5,25 +5,32 @@
 				class="image login-page__image"
 				src="https://www.ahasoft.co.kr/login/images/logo_nobkg.png"
 			/>
+
 			<div class="title login-page__title">SALON ADMIN</div>
 				<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
-					<validation-provider name="user" rules="required|min:3|alpha_dash">
+					<validation-provider name="user" rules="required|min:3|max:16|alpha_dash" v-slot="{ errors }">
 						<input
-							v-model="dataUser.username"
-							placeholder="Enter ID"
 							required
 							autofocus
+							maxlength="16"
+							placeholder="Enter ID"
+							v-model="dataUser.username"
 						/>
+						<div class="error-message form__error-message">{{ errors[0] }}</div>
 					</validation-provider>
-					<validation-provider name="password" rules="required|min:8">
+
+					<validation-provider name="password" rules="required|min:8|max:16" v-slot="{ errors }">
 						<input
-							v-model="dataUser.password"
-							type="password"
-							placeholder="Enter password"
 							required
+							maxlength="16"
+							type="password"
 							autocomplete="off"
+							v-model="dataUser.password"
+							placeholder="Enter password"
 						/>
+						<div class="error-message form__error-message">{{ errors[0] }}</div>
 					</validation-provider>
+
 					<button
 						type="submit"
 						class="login-page__btn"
@@ -33,8 +40,11 @@
 						Login
 					</button>
 				</form>
+
 			<notification-modal ref="notificationRef" modalTitle="Login Failed" />
 		</div>
+
+		<loading v-if="isLoading" />
 	</validation-observer>
 </template>
 
@@ -49,6 +59,7 @@ import constant from "../../lib/utils/constant";
 
 // Components
 import NotificationModal from "../../components/Notification/Notification.vue";
+import Loading from "../../components/Loading/Loading.vue"
 
 export default {
 	name: "LoginPage",
@@ -59,6 +70,8 @@ export default {
 				username: "",
 				password: "",
 			},
+
+			isLoading: false,
 		};
 	},
 
@@ -69,6 +82,8 @@ export default {
 	components: {
 		ValidationProvider,
 		ValidationObserver,
+
+		Loading,
 		NotificationModal,
 	},
 
@@ -81,8 +96,8 @@ export default {
 	methods: {
 		async onSubmit() {
 			const data = {
-				userID: this.dataUser.username,
-				password: this.dataUser.password,
+				userID: this.dataUser.username.trim(),
+				password: this.dataUser.password.trim(),
 				solutionId: constant.api.SOLUTION_ID.SALON_ADMIN,
 			};
 
@@ -93,21 +108,31 @@ export default {
 			} else {
 				// e.preventDefault();
 				try {
+					this.isLoading = true;
 					const res = await apis.userApi.login("DEV", data);
+
 					if (res.status !== 200) {
 						throw res.statusText;
 					}
+
 					if (res.data.isOK) {
 						res.data.result.userAuthInfo.session_token = common.random.guid();
+
 						await session.shopSession.setShopInfo(res.data.result);
 						await this.loadClientSetUp(res.data.result.shopBasicInfo.shopId);
+
 						this.$router.push("/client");
+
+						this.isLoading = false;
 					} else {
+						this.isLoading = false;
+
 						this.$refs.notificationRef.showModal({
 							listMessage: res.data.errorMessages,
 						});
 					}
-				} catch (errors) {
+				} 
+				catch (errors) {
 					console.log(errors);
 				}
 			}
@@ -117,6 +142,7 @@ export default {
 			const data = {
 				shopId: shopId,
 			};
+
 			try {
 				const resShopInfo = await apis.shopApi.getShopInfo("DEV", data);
 
@@ -125,7 +151,8 @@ export default {
 				if (resShopInfo.data.isOK)
 					session.clientSession.setClientSetup(resShopInfo.data.result);
 				else alert("Error Set up client");
-			} catch (errors) {
+			} 
+			catch (errors) {
 				console.log(errors);
 			}
 		},

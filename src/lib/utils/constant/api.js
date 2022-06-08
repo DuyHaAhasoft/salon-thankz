@@ -14,6 +14,10 @@ const api = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Headers': 'Access-Control-Allow-Methods, Access-Control-Allow-Origin, Origin, Accept, Content-Type',
         'Accept': 'application/json'
+    },
+
+    DEFAULT_URL_IMAGE: {
+        CLIENT: 'https://ahasoftsaloncommondev.blob.core.windows.net/clients'
     }
 }
 

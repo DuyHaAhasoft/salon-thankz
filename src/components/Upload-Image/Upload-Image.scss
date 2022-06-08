@@ -1,0 +1,36 @@
+.upload-image-modal {
+
+    .upload-image-modal__modal {
+        
+        .modal__input-data {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+
+            input {
+                width: 60%;
+                min-width: 200px;
+                padding: 5px 10px;
+                margin-right: 10px;
+            }
+
+            button {
+                border: 0px;
+                padding: 5px 10px;
+                border-radius: 8px;
+                background-color: #3499db;
+            }
+        }
+
+        .modal__preview-avatar {
+            width: 100%;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+
+            img {
+                width: 50%;
+            }
+        }
+    }
+}

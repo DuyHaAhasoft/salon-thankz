@@ -7,8 +7,10 @@
 			/>
 			<button class="header__btn" @click="clickSignout">Sign out</button>
 		</div>
+
 		<div class="title clients-page__title">
 			<div class="title-text title__title-text">Client</div>
+
 			<div class="group-button title__group-button">
 				<button
 					@click="handleClickPrintListClient"
@@ -24,18 +26,24 @@
 				</button>
 			</div>
 		</div>
+
 		<div class="content clients-page__content">
 			<label class="title content__title"
 				>Total {{ clientTotal }} client(s) searched</label
 			>
+
 			<table class="table content__table">
 				<thead>
 					<tr>
 						<th v-for="field in fields" :key="field.text">
 							{{ field.text }}
 						</th>
+						<th colspan="3">
+							Actions
+						</th>
 					</tr>
 				</thead>
+
 				<tbody>
 					<tr v-for="client in clients" :key="client.clientId">
 						<td
@@ -43,21 +51,25 @@
 						>
 							{{ client.registrationDate }}
 						</td>
+
 						<td
 							class="table-data table-data--client-name table__table-data table__table-data--client-name"
 						>
 							{{ showLongText(client.clientName, 50) }}
 						</td>
+
 						<td
 							class="table-data table-data--phone table__table-data table__table-data--phone"
 						>
 							{{ client.phone }}
 						</td>
+
 						<td
 							class="table-data table-data--total-sales-amount table__table-data table__table-data--total-sales-amount"
 						>
-							{{ client.totalSalesAmount }}
+							{{ client.totalSales }}
 						</td>
+
 						<td
 							v-b-tooltip.hover.left
 							:title="
@@ -69,6 +81,7 @@
 						>
 							{{ showLongText(client.notes, 50) }}
 						</td>
+
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
 						>
@@ -79,54 +92,63 @@
 								Edit
 							</button>
 						</td>
+
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
 						>
 							<button class="data--btn__btn data--btn__btn--calendar">
-								&#8594;
+								Calender
 							</button>
 						</td>
+
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
 						>
 							<button class="data--btn__btn data--btn__btn--sales">
-								&#8594;
+								Sales
 							</button>
 						</td>
 					</tr>
 				</tbody>
 			</table>
+
 			<div class="page content__page">
 				<label class="page-total page__page-total"
 					>Page {{ page.pageNumber }} of {{ page.pageTotal }}</label
 				>
+
 				<button
 					class="page__btn page__btn--go-to-first-page"
 					@click="clickGoToFirstPage"
 				>
 					&lt;&lt;
 				</button>
+
 				<button
 					class="page__btn page__btn--go-to-previous-page"
 					@click="clickGoToPreviousPage"
 				>
 					&lt;
 				</button>
+
 				<button
 					class="page__btn page__btn--go-to-next-page"
 					@click="clickGoToNextPage"
 				>
 					>
 				</button>
+
 				<button
 					class="page__btn page__btn--go-to-last-page"
 					@click="clickGoToLastPage"
 				>
 					>>
 				</button>
+
 				<button class="page__btn page__btn--go-to" @click="clickGoto">
 					{{ isShowSelectPage ? "Goto" : "Hide" }}
 				</button>
+
 				<select
 					v-model="page.pageSelected"
 					@click="clickSelectedPage"
@@ -143,7 +165,8 @@
 			</div>
 		</div>
 
-		<client-actions ref="clientActionsRef" @loadClient="loadDataClient" />
+		<loading v-if="isLoading" />
+		<client-actions ref="clientActionsRef" @loadClient="loadDataClient" @loading="handleSetLoading" />
 	</div>
 </template>
 
@@ -164,6 +187,7 @@ export default {
 			clients: [],
 			name: "ThankZ",
 			clientTotal: 0,
+			isLoading: false,
 			isShowSelectPage: true,
 			page: {
 				pageTotal: 1,
@@ -177,9 +201,9 @@ export default {
 				mobileNumber: { text: "Mobile / Phone" },
 				totalSalesAmount: { text: "Total Sales" },
 				notes: { text: "Notes" },
-				edit: { text: "Edit" },
-				calendar: { text: "Calendar" },
-				sales: { text: "Sales" },
+				// edit: { text: "Edit" },
+				// calendar: { text: "Calendar" },
+				// sales: { text: "Sales" },
 			},
 		};
 	},
@@ -188,6 +212,8 @@ export default {
 	components: {
 		"client-actions": () =>
 			import("../../components/Client-Actions/Client-Actions.vue"),
+
+		"loading": () => import("../../components/Loading/Loading.vue")
 	},
 
 	created() {
@@ -201,6 +227,7 @@ export default {
 	computed: {
 		optionsPage() {
 			const optionsPage = [];
+
 			for (let page = 1; page <= this.page.pageTotal; page++) {
 				optionsPage.push({ text: page, value: page });
 			}
@@ -217,38 +244,63 @@ export default {
 			};
 
 			let keysClient = Object.keys(this.fields);
+			
+			this.isLoading = true;
 
-			const res = await apis.clientApi.getAllClientByShop("DEV", data);
-
-			this.clientTotal = res.data.result.pagingInfo.totalItems;
-
-			this.page.pageTotal = Math.ceil(
-				res.data.result.pagingInfo.totalItems /
-					res.data.result.pagingInfo.pageSize
-			);
-			this.clients = res.data.result.items.map(function (item) {
-				let client = {};
-				client["clientId"] = item.clientId;
-				client["memberNumber"] = item.memberNumber;
-
-				for (let key in keysClient) {
-					client[keysClient[key]] = item[keysClient[key]];
+			try {
+				const res = await apis.clientApi.getAllClientByShop("DEV", data);
+				
+				if(res.status !== 200) {
+					this.isLoading = false;
+					throw res
 				}
+				console.log(res)
+				if(res.data.isOK) {
 
-				client.mobileNumber2 = item.mobileNumber2;
-				client.registrationDate = moment(
-					common.momentFunction.UnixMiliSecondsIntoDate(
-						item.clientInputDateTimeTS
-					)
-				).format("YYYY-MM-DD");
+					this.clientTotal = res.data.result.pagingInfo.totalItems;
 
-				client.phone = "";
-				if (client.mobileNumber !== null) client.phone += client.mobileNumber;
-				if (client.mobileNumber2 !== null) client.phone += client.mobileNumber2;
-				if (client.phone[0] === "/") client.phone.splice(0, 1);
+					this.page.pageTotal = Math.ceil(
+						res.data.result.pagingInfo.totalItems /
+							res.data.result.pagingInfo.pageSize
+					);
+					this.clients = res.data.result.items.map(function (item) {
+						let client = {};
+						client["clientId"] = item.clientId;
+						client["memberNumber"] = item.memberNumber;
 
-				return client;
-			});
+						for (let key in keysClient) {
+							client[keysClient[key]] = item[keysClient[key]];
+						}
+
+						client.mobileNumber2 = item.mobileNumber2;
+						client.registrationDate = moment(
+							common.momentFunction.UnixMiliSecondsIntoDate(
+								item.clientInputDateTimeTS
+							)
+						).format("YYYY-MM-DD");
+
+						client.phone = "";
+
+						if (client.mobileNumber !== null) client.phone += common.commonFunctions.formatPhoneNumber(client.mobileNumber);
+
+						if (client.mobileNumber2 !== null) client.phone += common.commonFunctions.formatPhoneNumber(client.mobileNumber2);
+						
+						if (client.phone[0] === "/") client.phone.splice(0, 1);
+
+						client.totalSales = common.commonFunctions.formatMoneyNumber(client.totalSalesAmount);
+
+						return client;
+					});
+
+					this.isLoading = false;
+				} else {
+					this.isLoading = false;
+					console.log(res.data)
+				}
+			}
+			catch (errors) {
+				console.log(errors)
+			}
 		},
 
 		async loadStaffActive() {
@@ -264,7 +316,8 @@ export default {
 				if (resStaffActive.data.isOK)
 					session.shopSession.setStaffActive(resStaffActive.data.result);
 				else alert("Error Staff Active");
-			} catch (errors) {
+			} 
+			catch (errors) {
 				console.log(errors);
 			}
 		},
@@ -329,8 +382,8 @@ export default {
 
 		async handleClickEditClient(client) {
 			const data = {
-				shopId: session.shopSession.getShopId(),
 				clientId: client.clientId,
+				shopId: session.shopSession.getShopId(),
 			};
 			try {
 				const resDataClient = await apis.clientApi.getClientByClientId(
@@ -348,7 +401,8 @@ export default {
 				} else {
 					alert("Get Client Error");
 				}
-			} catch (errors) {
+			} 
+			catch (errors) {
 				console.log("Errors", errors);
 			}
 		},
@@ -386,13 +440,16 @@ export default {
 			// set header
 			worksheet.mergeCells("A1:F1");
 			const headerExcel = worksheet.getCell("A1");
+
 			headerExcel.value = "Client List";
+			
 			headerExcel.font = {
 				family: 4,
 				size: 18,
 				bold: true,
 				name: "Time New Roman",
 			};
+
 			headerExcel.height = 40;
 			headerExcel.alignment = { vertical: "middle", horizontal: "center" };
 
@@ -405,20 +462,23 @@ export default {
 				"Note",
 				"Registered Date",
 			]);
+
 			row.height = 30;
 			row.alignment = { vertical: "middle", horizontal: "center" };
+
 			row._cells[0]._column.width = 10;
 			row._cells[1]._column.width = 30;
 			row._cells[2]._column.width = 15;
 			row._cells[3]._column.width = 20;
 			row._cells[4]._column.width = 50;
 			row._cells[5]._column.width = 20;
+
 			for (let i = 0; i < row._cells.length; i++) {
 				row._cells[i].border = {
 					top: { style: "thin" },
 					left: { style: "thin" },
-					bottom: { style: "thin" },
 					right: { style: "thin" },
+					bottom: { style: "thin" },
 				};
 			}
 
@@ -427,8 +487,16 @@ export default {
 				const clientRow = [];
 				clientRow.push(client.memberNumber);
 				clientRow.push(client.clientName);
-				clientRow.push(client.mobileNumber ?? "");
-				clientRow.push(client.totalSalesAmount ?? 0);
+
+				let mobileNumber = client.mobileNumber;
+				if(mobileNumber) {
+					mobileNumber = common.commonFunctions.formatPhoneNumber(mobileNumber)
+				}
+				clientRow.push(mobileNumber ?? "");
+
+				let totalSalesAmount = common.commonFunctions.formatMoneyNumber(client.totalSalesAmount);
+				clientRow.push(totalSalesAmount ?? 0);
+
 				clientRow.push(client.notes ?? "");
 				clientRow.push(client.registrationDate);
 
@@ -445,8 +513,8 @@ export default {
 					rowClient._cells[i].border = {
 						top: { style: "thin" },
 						left: { style: "thin" },
-						bottom: { style: "thin" },
 						right: { style: "thin" },
+						bottom: { style: "thin" },
 					};
 				}
 			});
@@ -461,6 +529,10 @@ export default {
 				)
 				.catch(err => console.log("Error writing excel export", err));
 		},
+
+		handleSetLoading(valueLoading) {
+			this.isLoading = valueLoading
+		}
 	},
 };
 </script>

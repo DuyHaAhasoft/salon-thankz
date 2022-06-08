@@ -1,13 +1,14 @@
 <template>
 	<div class="nofication-modal">
 		<b-modal
-			ref="modal"
-			:title="modalTitle"
-			:no-close-on-backdrop="true"
-			:modal-class="'modal nofication-modal__modal'"
 			static
 			scrollable
 			hide-footer
+			ref="modal"
+			:title="modalTitle"
+			header-bg-variant="warning"
+			:no-close-on-backdrop="true"
+			:modal-class="'modal nofication-modal__modal'"
 		>
 			<div
 				class="message modal__message"
