@@ -1,66 +1,49 @@
 // Utils
-import axios from 'axios'
+// import axios from 'axios'
 
 import http from './http'
-import constant from "../utils/constant";
+// import constant from "../utils/constant";
 
-const DEFAULT_API_GATEWAY = constant.api.DEFAULT_API_GATEWAY
+// const DEFAULT_API_GATEWAY = constant.api.DEFAULT_API_GATEWAY
 
-const clientApis = {
-    getAllClientByShop(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/clients/Client/Active'
-        return axios.post(url, payload, { headers: http.getHeader() })
+const clientApi = {
+    getAllClientByShop(payload) {
+        // const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/clients/Client/Active'
+        // return axios.post(url, payload, { headers: http.getHeader() })
+        const url = '/api/read/v1/clients/Client/Active'
+        return http.post(url, payload)
     },
 
-    createNewClient(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/aggr/v1/Client/CreateClient'
-        return axios.post(url, payload, { headers: http.getHeader() })
+    createNewClient(payload) {
+        const url = '/api/aggr/v1/Client/CreateClient'
+        return http.post(url, payload)
     },
 
-    editClient(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/aggr/v1/Client/EditClient'
-        return axios.put(url, payload, { headers: http.getHeader() })
+    editClient(payload) {
+        const url = '/api/aggr/v1/Client/EditClient'
+        return http.put(url, payload)
     },
 
-    getNextMemberNumber(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/clients/Client/NextMemberNumber'
-        return axios.post(url, payload, { headers: http.getHeader() })
+    getNextMemberNumber(payload) {
+        const url = '/api/read/v1/clients/Client/NextMemberNumber'
+        return http.post(url, payload)
     },
 
-    getClientByClientId(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/aggr/v1/Client/GetClient'
-        return axios.post(url, payload, { headers: http.getHeader() })
+    getClientByClientId(payload) {
+        const url = '/api/aggr/v1/Client/GetClient'
+        return http.post(url, payload)
     },
 
-    uploadClientImage(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/cmd/v1/clients/ClientImage'
-        return axios.post(url, payload, { headers: http.getHeader() })
+    uploadClientImage(payload) {
+        const url = '/api/cmd/v1/clients/ClientImage'
+        return http.post(url, payload)
     },
 
-    deleteClientImage(env, data) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/cmd/v1/clients/ClientImage'
-        return axios.delete(url, { headers: http.getHeader(), data: data })
-    },
-
-    getClientPrepaidServices(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/ClientPrepaidService/ClientPrepaidServices/Live'
-        return axios.post(url, payload, { headers: http.getHeader() })
-    },
-
-    getClientPrepaidCards(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/ClientPrepaidCard/ClientPrepaidCards/Live'
-        return axios.post(url, payload, { headers: http.getHeader() })
-    },
-
-    getTotalValidPrepaidGoods(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/SalesSetup/PriorityPrepaidGoodsDisplay/Live'
-        return axios.post(url, payload, { headers: http.getHeader() })
-    },
-
-    getClientWithSales(env, payload) {
-        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/ClientAccount/ClientAccounts/Live'
-        return axios.post(url, payload, { headers: http.getHeader() })
+    deleteClientImage(data) {
+        const url = '/api/cmd/v1/clients/ClientImage'
+        // return http.delete(url, { headers: http.getHeader(), data: data })
+        return http.delete(url, { data: data })
     },
 }
 
-export default clientApis
+export default clientApi

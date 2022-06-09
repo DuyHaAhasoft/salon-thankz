@@ -305,8 +305,11 @@ export default {
 			}
 
 			if (this.dataClient.imageName && this.dataClient.imagePath) {
-				const pathURL = [ this.dataClient.imagePath, this.dataClient.imageName ]
-				this.urlImageAvatar = common.commonFunctions.concatURL({defaultURL: constant.api.DEFAULT_URL_IMAGE.CLIENT, pathURL})
+				const pathURL = [this.dataClient.imagePath, this.dataClient.imageName];
+				this.urlImageAvatar = common.commonFunctions.concatURL({
+					defaultURL: constant.api.DEFAULT_URL_IMAGE.CLIENT,
+					pathURL,
+				});
 			}
 			this.$refs.clientActionsModal && this.$refs.clientActionsModal.show();
 		},
@@ -342,7 +345,7 @@ export default {
 						this.dataClient
 					);
 
-					res = await apis.clientApis.createNewClient("DEV", this.dataClient);
+					res = await apis.clientApi.createNewClient(this.dataClient);
 				} else {
 					this.dataClient.editedDateTimeTS =
 						common.momentFunction.DateNowIntoUnix();
@@ -351,7 +354,7 @@ export default {
 						this.dataClient
 					);
 
-					res = await apis.clientApis.editClient("DEV", this.dataClient);
+					res = await apis.clientApi.editClient(this.dataClient);
 				}
 
 				if (res.status !== 200) throw res.message;

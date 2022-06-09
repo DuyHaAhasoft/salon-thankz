@@ -250,7 +250,7 @@ export default {
 			this.isLoading = true;
 
 			try {
-				const res = await apis.clientApis.getAllClientByShop("DEV", data);
+				const res = await apis.clientApi.getAllClientByShop(data);
 
 				if (res.status !== 200) {
 					this.isLoading = false;
@@ -317,7 +317,7 @@ export default {
 			};
 
 			try {
-				const resStaffActive = await apis.shopApis.getStaffActive("DEV", data);
+				const resStaffActive = await apis.shopApi.getStaffActive(data);
 
 				if (resStaffActive.status !== 200) throw resStaffActive.message;
 
@@ -393,10 +393,7 @@ export default {
 				shopId: session.shopSession.getShopId(),
 			};
 			try {
-				const resDataClient = await apis.clientApis.getClientByClientId(
-					"DEV",
-					data
-				);
+				const resDataClient = await apis.clientApi.getClientByClientId(data);
 
 				if (resDataClient.status !== 200) throw resDataClient.message;
 
@@ -419,8 +416,7 @@ export default {
 			};
 
 			try {
-				const resNextMemberNumber = await apis.clientApis.getNextMemberNumber(
-					"DEV",
+				const resNextMemberNumber = await apis.clientApi.getNextMemberNumber(
 					data
 				);
 
