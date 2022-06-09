@@ -6,11 +6,11 @@ import constant from "../utils/constant";
 
 const DEFAULT_API_GATEWAY = constant.api.DEFAULT_API_GATEWAY
 
-const userApi = {
+const userApis = {
     login(env, payload) {
         const url = DEFAULT_API_GATEWAY[env] + '/api/aggr/v1/auth/login/subscriber?culture=en-US&ui-culture=en-US'
         return axios.post(url, payload, {headers: http.DEFAULT_HEADER})
     }
 }
 
-export default userApi
+export default userApis

@@ -6,7 +6,7 @@ import constant from "../utils/constant";
 
 const DEFAULT_API_GATEWAY = constant.api.DEFAULT_API_GATEWAY
 
-const shopApi = {
+const shopApis = {
     getStaffActive(env, payload) {
         const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/staffs/Staff/Active'
         return axios.post(url, payload, {headers: http.getHeader()})
@@ -21,6 +21,11 @@ const shopApi = {
         const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/clients/Client/NextMemberNumber'
         return axios.post(url, payload, {headers: http.getHeader()})
     },
+
+    getSalesSetUp(env, payload) {
+        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/SalesSetup/AllSalesSetups/Live'
+        return axios.post(url, payload, {headers: http.getHeader()})
+    }
 }
 
-export default shopApi
+export default shopApis

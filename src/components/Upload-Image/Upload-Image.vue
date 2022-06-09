@@ -113,7 +113,7 @@ export default {
 			this.$emit("loading", true);
 
 			try {
-				const res = await apis.clientApi.uploadClientImage("DEV", formData);
+				const res = await apis.clientApis.uploadClientImage("DEV", formData);
 
 				if (res.status !== 200) throw res;
 
@@ -163,7 +163,7 @@ export default {
 			this.$emit("loading", true);
 
 			try {
-				const res = await apis.clientApi.deleteClientImage("DEV", data);
+				const res = await apis.clientApis.deleteClientImage("DEV", data);
 
 				if (res.status !== 200) throw res;
 

@@ -6,10 +6,10 @@ import constant from "../utils/constant";
 
 const DEFAULT_API_GATEWAY = constant.api.DEFAULT_API_GATEWAY
 
-const clientApi = {
+const clientApis = {
     getAllClientByShop(env, payload) {
         const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/clients/Client/Active'
-        return axios.post(url, payload, { headers: http.getHeader() }) // Non 
+        return axios.post(url, payload, { headers: http.getHeader() })
     },
 
     createNewClient(env, payload) {
@@ -41,6 +41,26 @@ const clientApi = {
         const url = DEFAULT_API_GATEWAY[env] + '/api/cmd/v1/clients/ClientImage'
         return axios.delete(url, { headers: http.getHeader(), data: data })
     },
+
+    getClientPrepaidServices(env, payload) {
+        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/ClientPrepaidService/ClientPrepaidServices/Live'
+        return axios.post(url, payload, { headers: http.getHeader() })
+    },
+
+    getClientPrepaidCards(env, payload) {
+        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/ClientPrepaidCard/ClientPrepaidCards/Live'
+        return axios.post(url, payload, { headers: http.getHeader() })
+    },
+
+    getTotalValidPrepaidGoods(env, payload) {
+        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/SalesSetup/PriorityPrepaidGoodsDisplay/Live'
+        return axios.post(url, payload, { headers: http.getHeader() })
+    },
+
+    getClientWithSales(env, payload) {
+        const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/sales/ClientAccount/ClientAccounts/Live'
+        return axios.post(url, payload, { headers: http.getHeader() })
+    },
 }
 
-export default clientApi
+export default clientApis
