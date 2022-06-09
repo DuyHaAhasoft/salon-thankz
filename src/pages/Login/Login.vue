@@ -117,7 +117,7 @@ export default {
 				// e.preventDefault();
 				try {
 					this.isLoading = true;
-					const res = await apis.userApi.login(data);
+					const res = await apis.userApis.login(data);
 
 					if (res.status !== 200) {
 						throw res.statusText;
@@ -151,7 +151,7 @@ export default {
 			};
 
 			try {
-				const resShopInfo = await apis.shopApi.getShopInfo(data);
+				const resShopInfo = await apis.shopApis.getShopInfo(data);
 
 				if (resShopInfo.status !== 200) throw resShopInfo.message;
 

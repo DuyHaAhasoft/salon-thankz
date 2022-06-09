@@ -345,7 +345,7 @@ export default {
 						this.dataClient
 					);
 
-					res = await apis.clientApi.createNewClient(this.dataClient);
+					res = await apis.clientApis.createNewClient(this.dataClient);
 				} else {
 					this.dataClient.editedDateTimeTS =
 						common.momentFunction.DateNowIntoUnix();
@@ -354,7 +354,7 @@ export default {
 						this.dataClient
 					);
 
-					res = await apis.clientApi.editClient(this.dataClient);
+					res = await apis.clientApis.editClient(this.dataClient);
 				}
 
 				if (res.status !== 200) throw res.message;

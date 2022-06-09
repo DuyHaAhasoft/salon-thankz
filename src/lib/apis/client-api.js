@@ -41,7 +41,6 @@ const clientApi = {
 
     deleteClientImage(data) {
         const url = '/api/cmd/v1/clients/ClientImage'
-        // return http.delete(url, { headers: http.getHeader(), data: data })
         return http.delete(url, { data: data })
     },
 }
