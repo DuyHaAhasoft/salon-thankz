@@ -304,14 +304,10 @@ export default {
 				);
 			}
 
-			if (this.dataClient.imageName && this.dataClient.imagePath)
-				this.urlImageAvatar =
-					constant.api.DEFAULT_URL_IMAGE.CLIENT +
-					"/" +
-					this.dataClient.imagePath +
-					"/" +
-					this.dataClient.imageName;
-
+			if (this.dataClient.imageName && this.dataClient.imagePath) {
+				const pathURL = [ this.dataClient.imagePath, this.dataClient.imageName ]
+				this.urlImageAvatar = common.commonFunctions.concatURL({defaultURL: constant.api.DEFAULT_URL_IMAGE.CLIENT, pathURL})
+			}
 			this.$refs.clientActionsModal && this.$refs.clientActionsModal.show();
 		},
 

@@ -1,4 +1,5 @@
 const commonFunctions = {
+    concatURL,
     formatPhoneNumber,
     formatMoneyNumber,
     trimAllDataObject,
@@ -31,6 +32,17 @@ function trimAllDataObject(dataObject) {
     }
 
     return dataObject
+}
+
+function concatURL({defaultURL, pathURL}) {
+    let url = defaultURL;
+
+    for(let i = 0; i < pathURL.length; i++) {
+        if(pathURL[i].trim())
+            url += '/' + pathURL[i].trim();
+    }
+
+    return url;
 }
 
 export default commonFunctions

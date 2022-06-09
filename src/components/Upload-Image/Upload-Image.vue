@@ -27,10 +27,10 @@
 			</div>
 
 			<group-button
+				:disableConfirm="!file"
 				@cancel="onClickCancel"
 				@confirm="onClickSaveImage"
 				@delete="onClickDeleleImage"
-				:disableConfirm="!file"
 				:isShowButton="isShowGroupButton"
 			/>
 		</b-modal>
@@ -43,6 +43,7 @@
 import apis from "../../lib/apis";
 import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
+import common from '@/lib/utils/common';
 
 export default {
 	name: "SalonThankzUploadImage",
@@ -117,12 +118,10 @@ export default {
 				if (res.status !== 200) throw res;
 
 				if (res.data.isOK) {
-					const urlImageAvatar =
-						constant.api.DEFAULT_URL_IMAGE.CLIENT +
-						"/" +
-						res.data.result.imagePath +
-						"/" +
-						res.data.result.imageName;
+					const pathURL = [ res.data.result.imagePath, res.data.result.imageName ]
+
+					const urlImageAvatar = common.commonFunctions.concatURL({defaultURL: constant.api.DEFAULT_URL_IMAGE.CLIENT, pathURL})
+					
 					this.$emit("updateUrlImageAvatar", {
 						clientImageId: res.data.result.clientImageId,
 						urlImageAvatar,
