@@ -1,5 +1,5 @@
 <template>
-	<validation-observer v-slot="{invalid}">
+	<validation-observer v-slot="{ invalid }">
 		<div class="login-page">
 			<img
 				class="image login-page__image"
@@ -7,39 +7,47 @@
 			/>
 
 			<div class="title login-page__title">SALON ADMIN</div>
-				<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
-					<validation-provider name="user" rules="required|min:3|max:16|alpha_dash" v-slot="{ errors }">
-						<input
-							required
-							autofocus
-							maxlength="16"
-							placeholder="Enter ID"
-							v-model="dataUser.username"
-						/>
-						<div class="error-message form__error-message">{{ errors[0] }}</div>
-					</validation-provider>
+			<form class="form login-page__form" action="#" @submit.prevent="onSubmit">
+				<validation-provider
+					name="user"
+					rules="required|min:3|max:16|alpha_dash"
+					v-slot="{ errors }"
+				>
+					<input
+						required
+						autofocus
+						maxlength="16"
+						placeholder="Enter ID"
+						v-model="dataUser.username"
+					/>
+					<div class="error-message form__error-message">{{ errors[0] }}</div>
+				</validation-provider>
 
-					<validation-provider name="password" rules="required|min:8|max:16" v-slot="{ errors }">
-						<input
-							required
-							maxlength="16"
-							type="password"
-							autocomplete="off"
-							v-model="dataUser.password"
-							placeholder="Enter password"
-						/>
-						<div class="error-message form__error-message">{{ errors[0] }}</div>
-					</validation-provider>
+				<validation-provider
+					name="password"
+					rules="required|min:8|max:16"
+					v-slot="{ errors }"
+				>
+					<input
+						required
+						maxlength="16"
+						type="password"
+						autocomplete="off"
+						v-model="dataUser.password"
+						placeholder="Enter password"
+					/>
+					<div class="error-message form__error-message">{{ errors[0] }}</div>
+				</validation-provider>
 
-					<button
-						type="submit"
-						class="login-page__btn"
-						:class="{ 'login-page__btn--disabled': disabledBtn || invalid }"
-						:disabled="disabledBtn || invalid"
-					>
-						Login
-					</button>
-				</form>
+				<button
+					type="submit"
+					class="login-page__btn"
+					:class="{ 'login-page__btn--disabled': disabledBtn || invalid }"
+					:disabled="disabledBtn || invalid"
+				>
+					Login
+				</button>
+			</form>
 
 			<notification-modal ref="notificationRef" modalTitle="Login Failed" />
 		</div>
@@ -59,7 +67,7 @@ import constant from "../../lib/utils/constant";
 
 // Components
 import NotificationModal from "../../components/Notification/Notification.vue";
-import Loading from "../../components/Loading/Loading.vue"
+import Loading from "../../components/Loading/Loading.vue";
 
 export default {
 	name: "LoginPage",
@@ -109,7 +117,7 @@ export default {
 				// e.preventDefault();
 				try {
 					this.isLoading = true;
-					const res = await apis.userApi.login("DEV", data);
+					const res = await apis.userApi.login(data);
 
 					if (res.status !== 200) {
 						throw res.statusText;
@@ -131,8 +139,7 @@ export default {
 							listMessage: res.data.errorMessages,
 						});
 					}
-				} 
-				catch (errors) {
+				} catch (errors) {
 					console.log(errors);
 				}
 			}
@@ -144,15 +151,14 @@ export default {
 			};
 
 			try {
-				const resShopInfo = await apis.shopApi.getShopInfo("DEV", data);
+				const resShopInfo = await apis.shopApi.getShopInfo(data);
 
 				if (resShopInfo.status !== 200) throw resShopInfo.message;
 
 				if (resShopInfo.data.isOK)
 					session.clientSession.setClientSetup(resShopInfo.data.result);
 				else alert("Error Set up client");
-			} 
-			catch (errors) {
+			} catch (errors) {
 				console.log(errors);
 			}
 		},
