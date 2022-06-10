@@ -10,7 +10,9 @@
         }
 
         .modal__footer {
-
+            display: flex;
+            justify-content:center;
+            
             .footer__btn {
                 width: 30%;
                 color: white;

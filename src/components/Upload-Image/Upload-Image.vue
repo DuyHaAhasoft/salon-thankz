@@ -14,7 +14,7 @@
 				type="file"
 				ref="inputFileImage"
 				@change="onClickChangeFile"
-				accept="image/png image/jpg image/jpg"
+				accept="image/*"
 			/>
 
 			<div class="input-data modal__input-data" v-if="typeUploadImage">
@@ -30,12 +30,13 @@
 				:disableConfirm="!file"
 				@cancel="onClickCancel"
 				@confirm="onClickSaveImage"
-				@delete="onClickDeleleImage"
+				@delete="onClickDeleteImage"
 				:isShowButton="isShowGroupButton"
 			/>
 		</b-modal>
 
-		<confirm-modal ref="confirmModal" @confirm="handleDeleleImage" />
+		<confirm-modal ref="confirmModal" @confirm="handleDeleteImage" />
+		<notification ref="notificationModal" modalTitle="Error Image Action" />
 	</div>
 </template>
 
@@ -44,6 +45,11 @@ import apis from "../../lib/apis";
 import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
 import common from "@/lib/utils/common";
+
+// Components
+import GroupButton from "../Group-Button/Group-Button.vue";
+import Notification from "../Notification/Notification.vue";
+import ConfirmModal from "../Confirm-Modal/Confirm-Modal.vue";
 
 export default {
 	name: "SalonThankzUploadImage",
@@ -66,8 +72,9 @@ export default {
 	props: {},
 
 	components: {
-		"confirm-modal": () => import("../Confirm-Modal/Confirm-Modal.vue"),
-		"group-button": () => import("../Group-Button/Group-Button.vue"),
+		GroupButton,
+		ConfirmModal,
+		Notification,
 	},
 
 	created() {},
@@ -153,14 +160,14 @@ export default {
 			this.handleReset();
 		},
 
-		onClickDeleleImage() {
+		onClickDeleteImage() {
 			this.$refs.confirmModal.showModal({
 				title: "Delete Avatar Client",
 				message: "Are you sure you want to delete this avatar?",
 			});
 		},
 
-		async handleDeleleImage() {
+		async handleDeleteImage() {
 			const data = {
 				shopId: session.shopSession.getShopId(),
 				clientImageId: this.dataClient.clientImageId,
@@ -195,6 +202,25 @@ export default {
 
 		onClickChangeFile(event) {
 			const dataFile = event.target.files[0];
+
+			//covert MB
+			const dataSize = common.commonFunctions.covertSizeFileIntoMB(
+				dataFile.size
+			);
+
+			if (dataSize >= 1) {
+				this.$refs.notificationModal.showModal({
+					listMessage: [
+						{
+							errorCode: "FileSize",
+							errorMessage: "Data size is not larger than 1M",
+						},
+					],
+				});
+
+				this.handleReset();
+				return;
+			}
 
 			if (dataFile) {
 				this.file = dataFile?.name;

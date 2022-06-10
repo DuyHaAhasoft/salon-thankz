@@ -3,6 +3,7 @@ const commonFunctions = {
     formatPhoneNumber,
     formatMoneyNumber,
     trimAllDataObject,
+    covertSizeFileIntoMB,
 }
 
 function formatPhoneNumber(phone) {
@@ -43,6 +44,10 @@ function concatURL({defaultURL, pathURL}) {
     }
 
     return url;
+}
+
+function covertSizeFileIntoMB(sizeFile) {
+    return ((sizeFile / 1024) / 1024).toFixed(4);
 }
 
 export default commonFunctions

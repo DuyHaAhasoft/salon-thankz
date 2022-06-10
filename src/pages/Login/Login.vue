@@ -111,7 +111,12 @@ export default {
 
 			if (data.userID.trim() === "" || data.password.trim() === "") {
 				this.$refs.notificationRef.showModal({
-					listMessage: "Username and password cannot be empty",
+					listMessage: [
+						{
+							errorCode: "Login",
+							errorMessage: "Username and password cannot be empty",
+						},
+					],
 				});
 			} else {
 				// e.preventDefault();
