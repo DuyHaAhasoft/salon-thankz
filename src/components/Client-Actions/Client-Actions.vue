@@ -26,7 +26,11 @@
 								v-slot="{ errors }"
 							>
 								<label>Client Name <span>*</span></label>
-								<input v-model="dataClient.clientName" maxlength="50" />
+								<input
+									maxlength="50"
+									placeholder="Ex: ThankZ"
+									v-model="dataClient.clientName"
+								/>
 								<div class="error-text group-input__error-text">
 									{{ errors[0] }}
 								</div>
@@ -43,10 +47,11 @@
 							>
 								<label>Client Number</label>
 								<input
-									type="number"
-									v-model="dataClient.memberNumber"
 									minlength="1"
+									type="number"
 									maxlength="16"
+									placeholder="Ex: 1703"
+									v-model="dataClient.memberNumber"
 									oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
 								/>
 								<div class="error-text group-input__error-text">
@@ -68,8 +73,9 @@
 									type="number"
 									minlength="10"
 									maxlength="11"
-									class="no-arrow group-input--no-arrow"
+									placeholder="Ex: 0385076161"
 									v-model="dataClient.mobileNumber"
+									class="no-arrow group-input--no-arrow"
 									oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
 								/>
 								<div class="error-text group-input__error-text">
@@ -163,8 +169,10 @@
 
 		<upload-image-modal
 			ref="uploadImageModal"
-			@updateUrlImageAvatar="updateUrlImageAvatar"
 			@loading="handleLoading"
+			@uploadImage="handleUploadAvatar"
+			@deleteImage="handleDeleteAvatar"
+			@updateUrlImage="updateUrlImageAvatar"
 		/>
 	</div>
 </template>
@@ -176,6 +184,10 @@ import apis from "../../lib/apis";
 import common from "../../lib/utils/common";
 import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
+
+//Components
+import GroupButton from "../Group-Button/Group-Button.vue";
+import UploadImageModal from "../Upload-Image/Upload-Image.vue";
 
 const DEFAULT_TITLE_MODAL = ["Add Client", "Edit Client"];
 
@@ -247,11 +259,13 @@ export default {
 	props: {},
 
 	components: {
+		GroupButton,
+		UploadImageModal,
 		ValidationProvider,
 		ValidationObserver,
 
-		"group-button": () => import("../Group-Button/Group-Button.vue"),
-		"upload-image-modal": () => import("../Upload-Image/Upload-Image.vue"),
+		// "group-button": () => import("../Group-Button/Group-Button.vue"),
+		// "upload-image-modal": () => import("../Upload-Image/Upload-Image.vue"),
 	},
 
 	created() {},
@@ -425,6 +439,72 @@ export default {
 
 		handleLoading(value) {
 			this.$emit("loading", value);
+		},
+
+		async handleUploadAvatar(file) {
+			const formData = new FormData();
+
+			formData.append("fomrFile", file);
+			formData.append("clientId", this.dataClient.clientId);
+			formData.append("shopId", session.shopSession.getShopId());
+			formData.append("countryCode", constant.payload.DEFAULT_COUNTRY);
+
+			this.$emit("loading", true);
+
+			try {
+				const res = await apis.clientApis.uploadClientImage(formData);
+
+				if (res.status !== 200) throw res;
+
+				if (res.data.isOK) {
+					const pathURL = [
+						res.data.result.imagePath,
+						res.data.result.imageName,
+					];
+
+					this.urlImageAvatar = common.commonFunctions.concatURL({
+						defaultURL: constant.api.DEFAULT_URL_IMAGE.CLIENT,
+						pathURL,
+					});
+
+					this.dataClient.clientImageId = res.data.result.clientImageId;
+
+					this.$emit("loading", false);
+				} else {
+					this.$emit("loading", false);
+
+					console.log(res.data);
+				}
+			} catch (errors) {
+				console.log("errors", errors);
+			}
+		},
+
+		async handleDeleteAvatar() {
+			const data = {
+				shopId: session.shopSession.getShopId(),
+				clientImageId: this.dataClient.clientImageId,
+			};
+
+			this.$emit("loading", true);
+
+			try {
+				const res = await apis.clientApis.deleteClientImage(data);
+
+				if (res.status !== 200) throw res;
+
+				if (res.data.isOK) {
+					this.urlImageAvatar = "";
+					this.dataClient.clientImageId = null;
+
+					this.$emit("loading", false);
+				} else {
+					this.$emit("loading", false);
+					console.log(res);
+				}
+			} catch (errors) {
+				console.log(errors);
+			}
 		},
 	},
 };

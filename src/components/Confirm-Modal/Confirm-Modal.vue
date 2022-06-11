@@ -9,9 +9,9 @@
 			:no-close-on-backdrop="true"
 			:modal-class="'modal confirm-modal__modal'"
 		>
-			<div class="message modal__message">{{message}}</div>
-			
-			<group-button 
+			<div class="message modal__message">{{ message }}</div>
+
+			<group-button
 				@cancel="onClickCancel"
 				@delete="onClickDelete"
 				:isShowButton="isShowGroupButton"
@@ -21,25 +21,28 @@
 </template>
 
 <script>
+import GroupButton from "../Group-Button/Group-Button.vue";
+
 export default {
 	name: "SalonThankzConfirmModal",
 
 	data() {
 		return {
 			title: "",
-            message: "",
+			message: "",
 			isShowGroupButton: {
 				cancel: true,
 				delete: true,
 				confirm: false,
-			}
+			},
 		};
 	},
 
 	props: {},
 
 	components: {
-		"group-button": () => import("../Group-Button/Group-Button.vue")
+		GroupButton,
+		// "group-button": () => import("../Group-Button/Group-Button.vue")
 	},
 
 	created() {},
@@ -51,7 +54,7 @@ export default {
 	methods: {
 		showModal(dataModal) {
 			this.title = dataModal.title;
-            this.message = dataModal.message;
+			this.message = dataModal.message;
 			this.$refs.confirmModal && this.$refs.confirmModal.show();
 		},
 
@@ -59,10 +62,10 @@ export default {
 			this.$refs.confirmModal && this.$refs.confirmModal.hide();
 		},
 
-        onClickDelete() {
-            this.$emit("confirm")
-            this.hideModal();
-        },
+		onClickDelete() {
+			this.$emit("confirm");
+			this.hideModal();
+		},
 
 		onClickCancel() {
 			this.hideModal();

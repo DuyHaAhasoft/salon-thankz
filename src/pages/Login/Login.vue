@@ -17,10 +17,15 @@
 						required
 						autofocus
 						maxlength="16"
-						placeholder="Enter ID"
+						placeholder="Ex: ThankZ, ThankZ_Salon"
 						v-model="dataUser.username"
 					/>
-					<div class="error-message form__error-message">{{ errors[0] }}</div>
+					<div
+						class="error-message form__error-message"
+						:class="{ 'error-message-text': !!errors[0] }"
+					>
+						{{ errors[0] ? errors[0] : "Ex: ThankZ, ThankZ_Salon" }}
+					</div>
 				</validation-provider>
 
 				<validation-provider
@@ -34,9 +39,14 @@
 						type="password"
 						autocomplete="off"
 						v-model="dataUser.password"
-						placeholder="Enter password"
+						placeholder="Ex: abcd@1234"
 					/>
-					<div class="error-message form__error-message">{{ errors[0] }}</div>
+					<div
+						class="error-message form__error-message"
+						:class="{ 'error-message-text': !!errors[0] }"
+					>
+						{{ errors[0] ? errors[0] : "Ex: abcd@1234" }}
+					</div>
 				</validation-provider>
 
 				<button

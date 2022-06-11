@@ -41,9 +41,9 @@
 </template>
 
 <script>
-import apis from "../../lib/apis";
-import session from "../../lib/utils/session";
-import constant from "../../lib/utils/constant";
+// import apis from "../../lib/apis";
+// import session from "../../lib/utils/session";
+// import constant from "../../lib/utils/constant";
 import common from "@/lib/utils/common";
 
 // Components
@@ -110,49 +110,54 @@ export default {
 
 			if (!file) return;
 
-			const formData = new FormData();
+			await this.$emit("uploadImage", file);
 
-			formData.append("fomrFile", file);
-			formData.append("clientId", this.dataClient.clientId);
-			formData.append("shopId", session.shopSession.getShopId());
-			formData.append("countryCode", constant.payload.DEFAULT_COUNTRY);
+			this.hideModal();
 
-			this.$emit("loading", true);
+			this.handleReset();
+			// const formData = new FormData();
 
-			try {
-				const res = await apis.clientApis.uploadClientImage(formData);
+			// formData.append("fomrFile", file);
+			// formData.append("clientId", this.dataClient.clientId);
+			// formData.append("shopId", session.shopSession.getShopId());
+			// formData.append("countryCode", constant.payload.DEFAULT_COUNTRY);
 
-				if (res.status !== 200) throw res;
+			// this.$emit("loading", true);
 
-				if (res.data.isOK) {
-					const pathURL = [
-						res.data.result.imagePath,
-						res.data.result.imageName,
-					];
+			// try {
+			// 	const res = await apis.clientApis.uploadClientImage(formData);
 
-					const urlImageAvatar = common.commonFunctions.concatURL({
-						defaultURL: constant.api.DEFAULT_URL_IMAGE.CLIENT,
-						pathURL,
-					});
+			// 	if (res.status !== 200) throw res;
 
-					this.$emit("updateUrlImageAvatar", {
-						clientImageId: res.data.result.clientImageId,
-						urlImageAvatar,
-					});
+			// 	if (res.data.isOK) {
+			// 		const pathURL = [
+			// 			res.data.result.imagePath,
+			// 			res.data.result.imageName,
+			// 		];
 
-					this.$emit("loading", false);
+			// 		const urlImageAvatar = common.commonFunctions.concatURL({
+			// 			defaultURL: constant.api.DEFAULT_URL_IMAGE.CLIENT,
+			// 			pathURL,
+			// 		});
 
-					this.hideModal();
+			// 		this.$emit("updateUrlImage", {
+			// 			clientImageId: res.data.result.clientImageId,
+			// 			urlImageAvatar,
+			// 		});
 
-					this.handleReset();
-				} else {
-					this.$emit("loading", false);
+			// 		this.$emit("loading", false);
 
-					console.log(res.data);
-				}
-			} catch (errors) {
-				console.log("errors", errors);
-			}
+			// 		this.hideModal();
+
+			// 		this.handleReset();
+			// 	} else {
+			// 		this.$emit("loading", false);
+
+			// 		console.log(res.data);
+			// 	}
+			// } catch (errors) {
+			// 	console.log("errors", errors);
+			// }
 		},
 
 		onClickCancel() {
@@ -168,36 +173,42 @@ export default {
 		},
 
 		async handleDeleteImage() {
-			const data = {
-				shopId: session.shopSession.getShopId(),
-				clientImageId: this.dataClient.clientImageId,
-			};
+			await this.$emit("deleteImage");
 
-			this.$emit("loading", true);
+			this.hideModal();
 
-			try {
-				const res = await apis.clientApis.deleteClientImage(data);
+			this.handleReset();
 
-				if (res.status !== 200) throw res;
+			// const data = {
+			// 	shopId: session.shopSession.getShopId(),
+			// 	clientImageId: this.dataClient.clientImageId,
+			// };
 
-				if (res.data.isOK) {
-					this.$emit("updateUrlImageAvatar", {
-						clientImageId: null,
-						urlImageAvatar: "",
-					});
+			// this.$emit("loading", true);
 
-					this.$emit("loading", false);
+			// try {
+			// 	const res = await apis.clientApis.deleteClientImage(data);
 
-					this.hideModal();
+			// 	if (res.status !== 200) throw res;
 
-					this.handleReset();
-				} else {
-					this.$emit("loading", false);
-					console.log(res);
-				}
-			} catch (errors) {
-				console.log(errors);
-			}
+			// 	if (res.data.isOK) {
+			// 		this.$emit("updateUrlImageAvatar", {
+			// 			clientImageId: null,
+			// 			urlImageAvatar: "",
+			// 		});
+
+			// 		this.$emit("loading", false);
+
+			// 		this.hideModal();
+
+			// 		this.handleReset();
+			// 	} else {
+			// 		this.$emit("loading", false);
+			// 		console.log(res);
+			// 	}
+			// } catch (errors) {
+			// 	console.log(errors);
+			// }
 		},
 
 		onClickChangeFile(event) {

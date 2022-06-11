@@ -1,5 +1,5 @@
 <template>
-	<div class="nofication-modal">
+	<div class="notification-modal">
 		<b-modal
 			static
 			scrollable
@@ -8,7 +8,7 @@
 			:title="modalTitle"
 			header-bg-variant="warning"
 			:no-close-on-backdrop="true"
-			:modal-class="'modal nofication-modal__modal'"
+			:modal-class="'modal notification-modal__modal'"
 		>
 			<div
 				class="message modal__message"

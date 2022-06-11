@@ -1,5 +1,9 @@
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+
 const commonFunctions = {
     concatURL,
+    exportExcel,
     formatPhoneNumber,
     formatMoneyNumber,
     trimAllDataObject,
@@ -48,6 +52,78 @@ function concatURL({defaultURL, pathURL}) {
 
 function covertSizeFileIntoMB(sizeFile) {
     return ((sizeFile / 1024) / 1024).toFixed(4);
+}
+
+function exportExcel(data) {
+const workbook = new ExcelJS.Workbook();
+let worksheet = workbook.addWorksheet(
+    data.title
+);
+            
+
+// set header
+worksheet.mergeCells("A1:F1");
+const headerExcel = worksheet.getCell("A1");
+
+headerExcel.value = data.header;
+
+headerExcel.font = {
+    family: 4,
+    size: 18,
+    bold: true,
+    name: "Time New Roman",
+};
+
+headerExcel.height = 40;
+headerExcel.alignment = { vertical: "middle", horizontal: "center" };
+
+// set column
+const columns = data.columns.map(column => column.text)
+const row = worksheet.addRow([...columns]);
+
+row.height = 30;
+row.alignment = { vertical: "middle", horizontal: "center" };
+
+for (let i = 0; i < data.columns.length; i++) {
+    console.log(data.columns[i].width, row);
+
+    row._cells[i]._column.width = data.columns[i].width;
+    row._cells[i].border = {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        right: { style: "thin" },
+        bottom: { style: "thin" },
+    };
+}
+
+// set row
+data.rows.map(function (dataRow) {
+    const row = [...dataRow];
+
+    const rowData = worksheet.addRow(row);
+
+    rowData.height = 20;
+
+    for (let i = 0; i < row.length; i++) {
+        rowData._cells[i].alignment = { horizontal: "center" };
+        rowData._cells[i].border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" },
+            bottom: { style: "thin" },
+        };
+    }
+});
+
+workbook.xlsx
+    .writeBuffer()
+    .then(buffer =>
+        saveAs(
+            new Blob([buffer]),
+            `${data.fileName}.xlsx`
+        )
+    )
+    .catch(err => console.log("Error writing excel export", err));
 }
 
 export default commonFunctions

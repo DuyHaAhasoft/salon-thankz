@@ -64,10 +64,13 @@
         }
         
         .form__error-message {
-            color: red;
             width: 100%;
             font-size: 12px;
         }
+    }
+
+    .error-message-text {
+        color: red;
     }
 }
 
