@@ -9,7 +9,7 @@
 				header-bg-variant="info"
 				ref="clientActionsModal"
 				:no-close-on-backdrop="true"
-				:size="typeModal ? 'lg' : 'lg'"
+				:size="typeModal ? 'xl' : 'lg'"
 				:modal-class="'modal client-actions-modal__modal'"
 			>
 				<div
@@ -164,6 +164,16 @@
 						:disableConfirm="invalid"
 					/>
 				</footer>
+				<div>
+					<client-tabs
+						v-if="typeModal"
+						ref="refClientTabs"
+						:dataPrepaidCards="dataPrepaidCards"
+						@getPrepaidCard="handleGetPrepaidCard"
+						:dataPrepaidServices="dataPrepaidServices"
+						@getPrepaidService="handleGetPrepaidService"
+					/>
+				</div>
 			</b-modal>
 		</validation-observer>
 
@@ -186,8 +196,9 @@ import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
 
 //Components
-import GroupButton from "../Group-Button/Group-Button.vue";
-import UploadImageModal from "../Upload-Image/Upload-Image.vue";
+import ClientTabs from "@components/Client-Tabs/Client-Tabs.vue";
+import GroupButton from "@components/Group-Button/Group-Button.vue";
+import UploadImageModal from "@components/Upload-Image/Upload-Image.vue";
 
 const DEFAULT_TITLE_MODAL = ["Add Client", "Edit Client"];
 
@@ -243,6 +254,8 @@ export default {
 		return {
 			typeModal: 0,
 			urlImageAvatar: "",
+			dataPrepaidCards: {},
+			dataPrepaidServices: {},
 			registeredDate: Date.now(),
 			groupClient: Object.assign({}, DEFAULT_GROUP_CLIENT),
 			dataClient: Object.assign({}, DEFAULT_DATA_CREATE_CLIENT),
@@ -259,6 +272,7 @@ export default {
 	props: {},
 
 	components: {
+		ClientTabs,
 		GroupButton,
 		UploadImageModal,
 		ValidationProvider,
@@ -300,7 +314,7 @@ export default {
 	},
 
 	methods: {
-		showModal(dataModal) {
+		async showModal(dataModal) {
 			this.typeModal = dataModal.typeModal;
 			this.dataClient.memberNumber = dataModal?.memberNumber || 0;
 
@@ -325,6 +339,9 @@ export default {
 					pathURL,
 				});
 			}
+
+			await this.handleGetPrepaidCard();
+
 			this.$refs.clientActionsModal && this.$refs.clientActionsModal.show();
 		},
 
@@ -415,6 +432,10 @@ export default {
 
 			//Reset URL Image Avatar
 			this.urlImageAvatar = "";
+
+			//Reset Prepaid Goods
+			this.dataPrepaidCards = {};
+			this.dataPrepaidServices = {};
 		},
 
 		showUploadImageModal() {
@@ -504,6 +525,83 @@ export default {
 				}
 			} catch (errors) {
 				console.log(errors);
+			}
+		},
+
+		async handleGetPrepaidCard(expired = false) {
+			const data = {
+				pageSize: 10,
+				pageNumber: 1,
+				prepaidCardType: -1,
+				includeExpired: expired,
+				includeFamilyService: true,
+				clientId: this.dataClient.clientId,
+				shopId: session.shopSession.getShopId(),
+			};
+
+			try {
+				this.$emit("loading", true);
+				const res = await apis.clientApis.getClientPrepaidCards(data);
+
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					throw res;
+				}
+
+				if (res.data.isOK) {
+					this.dataPrepaidCards = res.data.result;
+					this.dataPrepaidCards.cards = res.data.result.items;
+
+					this.$refs.refClientTabs &&
+						this.$refs.refClientTabs.handleSetPrepaidGoods(
+							this.dataPrepaidCards
+						);
+
+					this.$emit("loading", false);
+				} else {
+					this.$emit("loading", false);
+				}
+			} catch (errors) {
+				console.log(errors);
+				this.$emit("loading", false);
+			}
+		},
+
+		async handleGetPrepaidService(expired = false) {
+			const data = {
+				pageSize: 10,
+				pageNumber: 1,
+				includeExpired: expired,
+				includeFamilyService: true,
+				clientId: this.dataClient.clientId,
+				shopId: session.shopSession.getShopId(),
+			};
+
+			try {
+				this.$emit("loading", true);
+				const res = await apis.clientApis.getClientPrepaidServices(data);
+
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					throw res;
+				}
+
+				if (res.data.isOK) {
+					this.dataPrepaidServices = res.data.result;
+					this.dataPrepaidServices.services = res.data.result.items;
+
+					this.$refs.refClientTabs &&
+						this.$refs.refClientTabs.handleSetPrepaidGoods(
+							this.dataPrepaidServices
+						);
+
+					this.$emit("loading", false);
+				} else {
+					this.$emit("loading", false);
+				}
+			} catch (errors) {
+				console.log(errors);
+				this.$emit("loading", false);
 			}
 		},
 	},

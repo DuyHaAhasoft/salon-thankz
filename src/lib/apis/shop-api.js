@@ -21,6 +21,11 @@ const shopApi = {
         const url = '/api/read/v1/clients/Client/NextMemberNumber'
         return http.post(url, payload)
     },
+
+    getSalesSetUp(payload) {
+        const url = '/api/read/v1/sales/SalesSetup/AllSalesSetups/Live'
+        return http.post(url, payload)
+    }
 }
 
 export default shopApi

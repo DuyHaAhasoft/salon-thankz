@@ -23,6 +23,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
     "node-sass": "^7.0.1",
+    "path": "^0.12.7",
     "sass-loader": "^13.0.0",
     "style-loader": "^3.3.1",
     "v-calendar": "^2.4.1",

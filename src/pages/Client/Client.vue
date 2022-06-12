@@ -398,6 +398,7 @@ export default {
 				clientId: client.clientId,
 				shopId: session.shopSession.getShopId(),
 			};
+
 			try {
 				const resDataClient = await apis.clientApis.getClientByClientId(data);
 

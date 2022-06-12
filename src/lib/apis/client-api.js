@@ -43,6 +43,26 @@ const clientApi = {
         const url = '/api/cmd/v1/clients/ClientImage'
         return http.delete(url, { data: data })
     },
+
+    getClientPrepaidServices(payload) {
+        const url = '/api/read/v1/sales/ClientPrepaidService/ClientPrepaidServices/Live'
+        return http.post(url, payload)
+    },
+
+    getClientPrepaidCards(payload) {
+        const url = '/api/read/v1/sales/ClientPrepaidCard/ClientPrepaidCards/Live'
+        return http.post(url, payload)
+    },
+
+    getTotalValidPrepaidGoods(payload) {
+        const url = '/api/read/v1/sales/SalesSetup/PriorityPrepaidGoodsDisplay/Live'
+        return http.post(url, payload)
+    },
+
+    getClientWithSales(payload) {
+        const url = '/api/read/v1/sales/ClientAccount/ClientAccounts/Live'
+        return http.post(url, payload)
+    }
 }
 
 export default clientApi
