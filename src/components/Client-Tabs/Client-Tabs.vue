@@ -27,7 +27,7 @@
 						</thead>
 						<tbody>
 							<tr v-for="card in dataPrepaidGoods.cards" :key="card.id">
-								<td class="table__table-data table__table--prepaid-name">
+								<td class="table__table-data table__table-data--prepaid-name">
 									{{ card.prepaidCardName }}
 								</td>
 								<td class="table__table-data table__table-data--balance">
@@ -49,7 +49,7 @@
 									{{ handleFormatDate(card.invoiceDateTimeTS) }}
 								</td>
 								<td class="table__table-data table__table-data--btn">
-									<button class="data--btn__btn data--btn__btn--edit">
+									<button class="data--btn__btn data--btn__btn--edit" @click="handleClickEdit">
 										Edit
 									</button>
 								</td>
@@ -93,28 +93,28 @@
 								v-for="service in dataPrepaidGoods.services"
 								:key="service.id"
 							>
-								<td class="table__table-data table__table--prepaid-name">
+								<td class="table__table-data table__table-data--prepaid-name">
 									{{ service.prepaidServiceName }}
 								</td>
-								<td class="table__table-data table__table--quantity">
-									{{ handleFormatNumber(service.quantity) }}
+								<td class="table__table-data table__table-data--quantity">
+									{{ handleFormatNumber(service.quantity) }} <button class="data--btn__btn data--btn__btn--deduct" @click="onClickDeduct">Deduct</button>
 								</td>
-								<td class="table__table-data table__table--date">
+								<td class="table__table-data table__table-data--date">
 									{{ handleFormatDate(service.expiryDateTS) }}
 								</td>
-								<td class="table__table-data table__table--quantity">
+								<td class="table__table-data table__table-data--quantity">
 									{{ handleFormatNumber(service.initialQuantity) }}
 								</td>
-								<td class="table__table-data table__table--date">
+								<td class="table__table-data table__table-data--date">
 									{{ handleFormatDate(service.invoiceDateTimeTS) }}
 								</td>
 								<td class="table__table-data table__table-data--btn">
-									<button class="data--btn__btn data--btn__btn--edit">
+									<button class="data--btn__btn data--btn__btn--edit" @click="handleClickEdit">
 										Edit
 									</button>
 								</td>
 								<td class="table__table-data table__table-data--btn">
-									<button class="data--btn__btn data--btn__btn--view">
+									<button class="data--btn__btn data--btn__btn--view" @click="onClickViewPrepaidService">
 										View
 									</button>
 								</td>
@@ -126,7 +126,10 @@
 			<b-tab title="Messages" disabled></b-tab>
 			<b-tab title="Photos" disabled></b-tab>
 		</b-tabs>
+
 		<prepaid-good-history ref="refPrepaidGoodHistory" />
+
+		<notification modalTitle="Notification" ref="refNotification" />
 	</div>
 </template>
 
@@ -135,7 +138,27 @@ import apis from "../../lib/apis";
 import common from "../../lib/utils/common";
 import session from "../../lib/utils/session";
 
+import Notification from "../Notification/Notification.vue";
 import PrepaidGoodHistory from "../Prepaid-Good-History/Prepaid-Good-History.vue";
+
+const DEFAULT_FIELDS_TABLE = {
+	prepaidCard: {
+		cardName: { text: "Card Name" },
+		balance: { text: "Balance" },
+		expiryDate: { text: "Expiry Date" },
+		earnedAmount: { text: "Earned Amount" },
+		serviceDC: { text: "Service DC" },
+		productDC: { text: "Product DC" },
+		issueDate: { text: "Issue Date" },
+	},
+	prepaidService: {
+		prepaidServiceName: { text: "Prepaid Service Name" },
+		remainingQuantity: { text: "Remaining Quantity" },
+		expiryDate: { text: "Expiry Date" },
+		initialQuantity: { text: "Initial Quantity" },
+		issueDate: { text: "Issue Date" },
+	},
+}
 
 export default {
 	name: "SalonThankzClientTabs",
@@ -143,24 +166,7 @@ export default {
 	data() {
 		return {
 			dataPrepaidGoods: {},
-			fields: {
-				prepaidCard: {
-					cardName: { text: "Card Name" },
-					balance: { text: "Balance" },
-					expiryDate: { text: "Expiry Date" },
-					earnedAmount: { text: "Earned Amount" },
-					serviceDC: { text: "Service DC" },
-					productDC: { text: "Product DC" },
-					issueDate: { text: "Issue Date" },
-				},
-				prepaidService: {
-					prepaidServiceName: { text: "Prepaid Service Name" },
-					remainingQuantity: { text: "Remaining Quantity" },
-					expiryDate: { text: "Expiry Date" },
-					initialQuantity: { text: "Initial Quantity" },
-					issueDate: { text: "Issue Date" },
-				},
-			},
+			fields: Object.assign({}, DEFAULT_FIELDS_TABLE),
 
 			expired: {
 				card: false,
@@ -172,6 +178,7 @@ export default {
 	props: {},
 
 	components: {
+		Notification,
 		"prepaid-good-history": PrepaidGoodHistory,
 	},
 
@@ -224,11 +231,11 @@ export default {
 				}
 
 				if (res.data.isOK) {
-					const result = res.data.result;
-					console.log("result", result);
+					const dataPrepaidCard = res.data.result;
+					console.log("result", dataPrepaidCard);
 					this.$refs.refPrepaidGoodHistory.showModal({
 						title: "Prepaid Card Balance History",
-						result,
+						dataPrepaidCard,
 					});
 				} else {
 					console.log(res);
@@ -236,6 +243,29 @@ export default {
 			} catch (errors) {
 				console.log(errors);
 			}
+		},
+
+		handleClickEdit() {
+			this.handleNotification();
+		},
+
+		onClickViewPrepaidService() {
+			this.handleNotification();
+		},
+
+		onClickDeduct() {
+			this.handleNotification();
+		},
+
+		handleNotification() {
+			this.$refs.refNotification.showModal({
+				listMessage: [
+					{
+						errorCode: "Error",
+						errorMessage: "Not Support Yet!",
+					},
+				],
+			})
 		},
 	},
 };

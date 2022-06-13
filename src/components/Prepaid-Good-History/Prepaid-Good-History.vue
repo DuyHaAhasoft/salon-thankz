@@ -2,17 +2,53 @@
 	<div class="prepaid-good-history-modal">
 		<b-modal
 			static
+			size="xl"
 			hide-footer
 			:title="title"
-			ref="prepaidGoodHistoryModal"
 			header-bg-variant="info"
 			:no-close-on-backdrop="true"
+			ref="prepaidGoodHistoryModal"
 			:modal-class="'modal prepaid-good-history-modal__modal'"
 		>
-			<div class="">A</div>
-			<button class="" @click="onClickShowSalesDetail">Sales Detail</button>
-
-			<group-button @cancel="onClickCancel" :isShowButton="isShowGroupButton" />
+			<div class="">{{!!infoPrepaidGood && infoPrepaidGood.cardName}}</div>
+			<table class="table tab__table" v-if="!!infoPrepaidGood">
+						<thead>
+							<tr>
+								<th v-for="field in fields" :key="field.text">
+									{{ field.text }}
+								</th>
+								<th>Detail</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="good in infoPrepaidGood" :key="good.id">
+								<td class="table__table-data table__table-data--created-date-time">
+									{{ hanleFormatDateTime(good.createdDateTimeTS) }}
+								</td>
+								<td class="table__table-data table__table-data--action">
+									{{ good.salesStatus }}
+								</td>
+								<td class="table__table-data table__table-data--balance">
+									{{ handleFormatNumber(good.changedBalance) }}
+								</td>
+								<td class="table__table-data table__table-data--notes">
+									{{ good.notes }} ?? 'A'
+								</td>
+								<td class="table__table-data table__table-data--btn">
+									<button
+										class="data--btn__btn data--btn__btn--view"
+										@click="onClickShowSalesDetail"
+									>
+										View
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+			<footer class="footer modal__footer">
+				<group-button @cancel="onClickCancel" :isShowButton="isShowGroupButton" />
+			</footer>
+			
 		</b-modal>
 
 		<sales-detail ref="refSalesDetail" />
@@ -22,9 +58,18 @@
 <script>
 import apis from "../../lib/apis";
 import session from "../../lib/utils/session";
+import common from "@/lib/utils/common";
 
 import SalesDetail from "../Sales-Detail/Sales-Detail.vue";
 import GroupButton from "../Group-Button/Group-Button.vue";
+
+const DEFAULT_FIELDS_TABLE = {
+	createdDateTime: {text: "Created Date Time"},
+	action: {text: "Action"},
+	change: {text: "Change"},
+	balance: {text: "Balance"},
+	notes: {text: "Notes"},
+}
 
 export default {
 	name: "SalonThankzPrepaidGoodHistory",
@@ -33,6 +78,7 @@ export default {
 		return {
 			title: "",
 			infoPrepaidGood: null,
+			fields: Object.assign({}, DEFAULT_FIELDS_TABLE),
 			isShowGroupButton: {
 				cancel: true,
 				delete: false,
@@ -51,8 +97,8 @@ export default {
 	methods: {
 		showModal(dataModal) {
 			this.title = dataModal.title;
-			this.infoPrepaidGood = dataModal.result.items[0];
-			console.log("dataModal", dataModal);
+			this.infoPrepaidGood = dataModal.dataPrepaidCard.items[0];
+			console.log("dataModal", this.infoPrepaidGood);
 			this.$refs.prepaidGoodHistoryModal &&
 				this.$refs.prepaidGoodHistoryModal.show();
 		},
@@ -93,6 +139,17 @@ export default {
 				console.log(errors);
 			}
 		},
+
+		hanleFormatDateTime(date) {
+			return common.momentFunction.FormatDateTime(common.momentFunction.UnixMiliSecondsIntoDate(date));
+		},
+
+		handleFormatNumber(data) {
+			const number = !!data && common.commonFunctions.formatMoneyNumber(data)
+			if(data > 0)
+				return `+${number}`
+			return number;
+		}
 	},
 };
 </script>

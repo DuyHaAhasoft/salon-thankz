@@ -3,6 +3,7 @@ import moment from 'moment'
 const momentFunction = {
     FormatDate,
     DateIntoUnix,
+    FormatDateTime,
     DateNowIntoUnix,
     UnixSecondsIntoDate,
     UnixMiliSecondsIntoDate,
@@ -27,6 +28,10 @@ function UnixMiliSecondsIntoDate(unix) {
 
 function FormatDate(date) {
     return moment(date).format('YYYY-MM-DD')
+}
+
+function FormatDateTime(date) {
+    return moment(date).format('YYYY-MM-DD HH:MM')
 }
 
 export default momentFunction

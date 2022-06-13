@@ -161,6 +161,7 @@
 					<group-button
 						@cancel="onClickCancel"
 						@confirm="onClickConfirm"
+						@delete="onClickDelete"
 						:disableConfirm="invalid"
 					/>
 				</footer>
@@ -184,6 +185,8 @@
 			@deleteImage="handleDeleteAvatar"
 			@updateUrlImage="updateUrlImageAvatar"
 		/>
+
+		<notification modalTitle="Notification" ref="refNotification" />
 	</div>
 </template>
 
@@ -198,6 +201,7 @@ import constant from "../../lib/utils/constant";
 //Components
 import ClientTabs from "@components/Client-Tabs/Client-Tabs.vue";
 import GroupButton from "@components/Group-Button/Group-Button.vue";
+import Notification from "@components/Notification/Notification.vue";
 import UploadImageModal from "@components/Upload-Image/Upload-Image.vue";
 
 const DEFAULT_TITLE_MODAL = ["Add Client", "Edit Client"];
@@ -274,6 +278,7 @@ export default {
 	components: {
 		ClientTabs,
 		GroupButton,
+		Notification,
 		UploadImageModal,
 		ValidationProvider,
 		ValidationObserver,
@@ -603,6 +608,17 @@ export default {
 				console.log(errors);
 				this.$emit("loading", false);
 			}
+		},
+
+		onClickDelete() {
+			this.$refs.refNotification.showModal({
+				listMessage: [
+					{
+						errorCode: "Error",
+						errorMessage: "Not Support Yet!",
+					},
+				],
+			})
 		},
 	},
 };
