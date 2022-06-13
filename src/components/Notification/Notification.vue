@@ -27,7 +27,7 @@
 
 <script>
 export default {
-	name: "NoficationModal",
+	name: "NotificationModal",
 	data() {
 		return {
 			listMessage: [],

@@ -5,6 +5,7 @@ const momentFunction = {
     DateIntoUnix,
     FormatDateTime,
     DateNowIntoUnix,
+    FormatFullDateTime,
     UnixSecondsIntoDate,
     UnixMiliSecondsIntoDate,
 }
@@ -32,6 +33,10 @@ function FormatDate(date) {
 
 function FormatDateTime(date) {
     return moment(date).format('YYYY-MM-DD HH:MM')
+}
+
+function FormatFullDateTime(date) {
+    return moment(date).format('dddd, YYYY-MM-DD')
 }
 
 export default momentFunction

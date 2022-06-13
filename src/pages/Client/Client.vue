@@ -94,7 +94,10 @@
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
 						>
-							<button class="data--btn__btn data--btn__btn--calendar">
+							<button
+								class="data--btn__btn data--btn__btn--calendar"
+								@click="onClickCalendar"
+							>
 								Calender
 							</button>
 						</td>
@@ -102,7 +105,10 @@
 						<td
 							class="table-data table-data--btn table__table-data table__table-data--btn"
 						>
-							<button class="data--btn__btn data--btn__btn--sales">
+							<button
+								class="data--btn__btn data--btn__btn--sales"
+								@click="onClickSales"
+							>
 								Sales
 							</button>
 						</td>
@@ -169,6 +175,7 @@
 			@loadClient="loadDataClient"
 			@loading="handleSetLoading"
 		/>
+		<notification ref="refNotification" modalTitle="Notification" />
 	</div>
 </template>
 
@@ -184,6 +191,7 @@ import common from "@/lib/utils/common";
 
 // Components
 import Loading from "../../components/Loading/Loading.vue";
+import Notification from "@/components/Notification/Notification.vue";
 import ClientActions from "../../components/Client-Actions/Client-Actions.vue";
 
 export default {
@@ -217,6 +225,7 @@ export default {
 
 	components: {
 		Loading,
+		Notification,
 		ClientActions,
 		// "client-actions": () =>
 		// 	import("../../components/Client-Actions/Client-Actions.vue"),
@@ -582,6 +591,28 @@ export default {
 
 		handleSetLoading(valueLoading) {
 			this.isLoading = valueLoading;
+		},
+
+		onClickSales() {
+			this.$refs.refNotification.showModal({
+				listMessage: [
+					{
+						errorCode: "Error",
+						errorMessage: "Not Support Yet!",
+					},
+				],
+			});
+		},
+
+		onClickCalendar() {
+			this.$refs.refNotification.showModal({
+				listMessage: [
+					{
+						errorCode: "Error",
+						errorMessage: "Not Support Yet!",
+					},
+				],
+			});
 		},
 	},
 };
