@@ -42,11 +42,15 @@
 							</td>
 							<td class="table__table-data table__table-data--price">
 								{{ handleFormatNumber(item.amount) }}
-								<small>{{
-									item.prepaidCardInitialBalance
-										? handleFormatNumber(item.prepaidCardInitialBalance)
-										: ""
-								}}</small>
+								<div class="table-data--price--initial">
+									{{
+										item.prepaidCardInitialBalance
+											? `(${handleFormatNumber(
+													item.prepaidCardInitialBalance
+											  )})`
+											: ""
+									}}
+								</div>
 							</td>
 							<td class="table__table-data table__table-data--staff">
 								{{ item.staffs }}
@@ -78,11 +82,11 @@
 				<div class="payment-notes footer__payment-notes">
 					<div class="total-sales payment-notes__total-sales">
 						<div class="total-amount total-sales__total-amount">
-							Total Amount
+							Total Amount &emsp;
 							{{ !!salesDetail && handleFormatNumber(salesDetail.totalAmount) }}
 						</div>
 						<div class="point total-sales__point">
-							Point Deduction
+							Point Deduction &emsp;
 							{{
 								!!salesDetail && handleFormatNumber(salesDetail.deductionPoints)
 							}}
@@ -91,32 +95,37 @@
 						<div
 							v-for="(payment, index) in !!salesDetail && salesDetail.payments"
 							:key="index"
+							class="payment-used total-sales__payment-used"
 						>
-							<div>
-								<div>{{ payment.paymentMethodName }}</div>
-								<div>{{ handleFormatNumber(payment.paymentAmount) }}</div>
+							<div class="payment-type payment-used__payment-type">
+								<div class="payment-name payment-type__payment-name">
+									{{ payment.paymentMethodName }} &emsp;
+								</div>
+								<div class="payment-value payment-type__payment-value">
+									{{ handleFormatNumber(payment.paymentAmount) }}
+								</div>
 							</div>
-							<div>
+							<div class="payment-date payment-used__payment-date">
 								{{ `[Paid ] ${handleFormatDateTime(payment.paidDateTimeTS)}` }}
 							</div>
 						</div>
 						<div class="outstanding total-sales__outstanding">
-							Outstanding
+							Outstanding &emsp;
 							{{ !!salesDetail && handleFormatNumber(salesDetail.outstanding) }}
 						</div>
 						<div class="loyalty-point total-sales__loyalty-point">
-							Earn Loyalty Points
+							Earn Loyalty Points &emsp;
 							{{
 								!!salesDetail && handleFormatNumber(salesDetail.earnedPoints)
 							}}
 						</div>
 					</div>
 
-					<div>
-						<textarea />
+					<div class="notes payment-notes__text-notes">
+						<textarea v-modal="salesDetail && salesDetail.notes" disabled />
 					</div>
 
-					<div>
+					<div class="payment-notes__button--close">
 						<group-button
 							@cancel="onClickCancel"
 							:isShowButton="isShowGroupButton"
