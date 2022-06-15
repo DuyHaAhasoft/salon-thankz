@@ -8,12 +8,12 @@
 					<div class="tab__checkbox">
 						<b-form-checkbox
 							value="true"
-							id="checkbox-1"
+							id="checkbox-card"
 							unchecked-value="false"
 							v-model="expired.card"
 							name="checkbox-expired"
 						>
-							Show Expired
+							Show Expired {{ expired.card }}
 						</b-form-checkbox>
 					</div>
 					<table class="table tab__table">
@@ -49,7 +49,10 @@
 									{{ handleFormatDate(card.invoiceDateTimeTS) }}
 								</td>
 								<td class="table__table-data table__table-data--btn">
-									<button class="data--btn__btn data--btn__btn--edit" @click="handleClickEdit">
+									<button
+										class="data--btn__btn data--btn__btn--edit"
+										@click="handleClickEdit"
+									>
 										Edit
 									</button>
 								</td>
@@ -71,7 +74,7 @@
 					<div class="tab__checkbox">
 						<b-form-checkbox
 							value="true"
-							id="checkbox-1"
+							id="checkbox-service"
 							unchecked-value="false"
 							v-model="expired.service"
 							name="checkbox-expired"
@@ -97,7 +100,13 @@
 									{{ service.prepaidServiceName }}
 								</td>
 								<td class="table__table-data table__table-data--quantity">
-									{{ handleFormatNumber(service.quantity) }} <button class="data--btn__btn data--btn__btn--deduct" @click="onClickDeduct">Deduct</button>
+									{{ handleFormatNumber(service.quantity) }}
+									<button
+										class="data--btn__btn data--btn__btn--deduct"
+										@click="onClickDeduct"
+									>
+										Deduct
+									</button>
 								</td>
 								<td class="table__table-data table__table-data--date">
 									{{ handleFormatDate(service.expiryDateTS) }}
@@ -109,12 +118,18 @@
 									{{ handleFormatDate(service.invoiceDateTimeTS) }}
 								</td>
 								<td class="table__table-data table__table-data--btn">
-									<button class="data--btn__btn data--btn__btn--edit" @click="handleClickEdit">
+									<button
+										class="data--btn__btn data--btn__btn--edit"
+										@click="handleClickEdit"
+									>
 										Edit
 									</button>
 								</td>
 								<td class="table__table-data table__table-data--btn">
-									<button class="data--btn__btn data--btn__btn--view" @click="onClickViewPrepaidService">
+									<button
+										class="data--btn__btn data--btn__btn--view"
+										@click="onClickViewPrepaidService"
+									>
 										View
 									</button>
 								</td>
@@ -127,7 +142,10 @@
 			<b-tab title="Photos" disabled></b-tab>
 		</b-tabs>
 
-		<prepaid-good-history ref="refPrepaidGoodHistory" />
+		<prepaid-good-history
+			ref="refPrepaidGoodHistory"
+			@loading="handleLoading"
+		/>
 
 		<notification modalTitle="Notification" ref="refNotification" />
 	</div>
@@ -158,7 +176,7 @@ const DEFAULT_FIELDS_TABLE = {
 		initialQuantity: { text: "Initial Quantity" },
 		issueDate: { text: "Issue Date" },
 	},
-}
+};
 
 export default {
 	name: "SalonThankzClientTabs",
@@ -184,13 +202,24 @@ export default {
 
 	mounted() {},
 
+	computed: {},
+
+	watch: {
+		"expired.card": function (before, after) {
+			if (before !== after) this.handleGetPrepaidCard();
+		},
+		"expired.service": function (before, after) {
+			if (before !== after) this.handleGetPrepaidService();
+		},
+	},
+
 	methods: {
 		handleGetPrepaidCard() {
 			this.$emit("getPrepaidCard", this.expired.card);
 		},
 
 		handleGetPrepaidService() {
-			this.$emit("getPrepaidService", this.expired.card);
+			this.$emit("getPrepaidService", this.expired.service);
 		},
 
 		handleSetPrepaidGoods(data) {
@@ -224,21 +253,26 @@ export default {
 				shopId: session.shopSession.getShopId(),
 			};
 			try {
+				this.$emit("loading", true);
+
 				const res = await apis.salesApis.getPrepaidCardHistory(data);
 
 				if (res.status !== 200) {
+					this.$emit("loading", false);
 					throw res;
 				}
 
 				if (res.data.isOK) {
 					const dataPrepaidCard = res.data.result;
 					console.log("result", dataPrepaidCard);
+					this.$emit("loading", false);
 					this.$refs.refPrepaidGoodHistory.showModal({
 						title: "Prepaid Card Balance History",
 						dataPrepaidCard,
 					});
 				} else {
 					console.log(res);
+					this.$emit("loading", false);
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -265,7 +299,11 @@ export default {
 						errorMessage: "Not Support Yet!",
 					},
 				],
-			})
+			});
+		},
+
+		handleLoading(value) {
+			this.$emit("loading", value);
 		},
 	},
 };

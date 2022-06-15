@@ -169,6 +169,7 @@
 					<client-tabs
 						v-if="typeModal"
 						ref="refClientTabs"
+						@loading="handleLoading"
 						:dataPrepaidCards="dataPrepaidCards"
 						@getPrepaidCard="handleGetPrepaidCard"
 						:dataPrepaidServices="dataPrepaidServices"
@@ -618,7 +619,7 @@ export default {
 						errorMessage: "Not Support Yet!",
 					},
 				],
-			})
+			});
 		},
 	},
 };

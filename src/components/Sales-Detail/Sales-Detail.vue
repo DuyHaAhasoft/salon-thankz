@@ -32,22 +32,20 @@
 								{{ item.goodsName }}
 							</td>
 							<td class="table__table-data table__table-data--price">
-								{{ handleFormatNumber(item.unitPrice) }}
+								{{ handleNumber(item.unitPrice) }}
 							</td>
 							<td class="table__table-data table__table-data--quantity">
-								{{ handleFormatNumber(item.quantity) }}
+								{{ handleNumber(item.quantity) }}
 							</td>
 							<td class="table__table-data table__table-data--discount">
 								{{ item.discountValue ? `${item.discountValue}%` : "" }}
 							</td>
 							<td class="table__table-data table__table-data--price">
-								{{ handleFormatNumber(item.amount) }}
+								{{ handleNumber(item.amount) }}
 								<div class="table-data--price--initial">
 									{{
 										item.prepaidCardInitialBalance
-											? `(${handleFormatNumber(
-													item.prepaidCardInitialBalance
-											  )})`
+											? `(${handleNumber(item.prepaidCardInitialBalance)})`
 											: ""
 									}}
 								</div>
@@ -60,16 +58,12 @@
 							</td>
 							<td class="table__table-data table__table-data--point-deduct">
 								{{
-									item.deductionPoints
-										? handleFormatNumber(item.deductionPoints)
-										: ""
+									item.deductionPoints ? handleNumber(item.deductionPoints) : ""
 								}}
 							</td>
 							<td class="table__table-data table__table-data--balance-deduct">
 								{{
-									item.deductionAmount
-										? handleFormatNumber(item.deductionAmount)
-										: ""
+									item.deductionAmount ? handleNumber(item.deductionAmount) : ""
 								}}
 							</td>
 						</tr>
@@ -83,13 +77,11 @@
 					<div class="total-sales payment-notes__total-sales">
 						<div class="total-amount total-sales__total-amount">
 							Total Amount &emsp;
-							{{ !!salesDetail && handleFormatNumber(salesDetail.totalAmount) }}
+							{{ !!salesDetail && handleNumber(salesDetail.totalAmount) }}
 						</div>
 						<div class="point total-sales__point">
 							Point Deduction &emsp;
-							{{
-								!!salesDetail && handleFormatNumber(salesDetail.deductionPoints)
-							}}
+							{{ !!salesDetail && handleNumber(salesDetail.deductionPoints) }}
 						</div>
 						<div class="balance total-sales__balance">Balance Deduction 0</div>
 						<div
@@ -102,7 +94,7 @@
 									{{ payment.paymentMethodName }} &emsp;
 								</div>
 								<div class="payment-value payment-type__payment-value">
-									{{ handleFormatNumber(payment.paymentAmount) }}
+									{{ handleNumber(payment.paymentAmount) }}
 								</div>
 							</div>
 							<div class="payment-date payment-used__payment-date">
@@ -111,18 +103,16 @@
 						</div>
 						<div class="outstanding total-sales__outstanding">
 							Outstanding &emsp;
-							{{ !!salesDetail && handleFormatNumber(salesDetail.outstanding) }}
+							{{ !!salesDetail && handleNumber(salesDetail.outstanding) }}
 						</div>
 						<div class="loyalty-point total-sales__loyalty-point">
 							Earn Loyalty Points &emsp;
-							{{
-								!!salesDetail && handleFormatNumber(salesDetail.earnedPoints)
-							}}
+							{{ !!salesDetail && handleNumber(salesDetail.earnedPoints) }}
 						</div>
 					</div>
 
 					<div class="notes payment-notes__text-notes">
-						<textarea v-modal="salesDetail && salesDetail.notes" disabled />
+						<textarea :value="salesDetail && salesDetail.notes" disabled />
 					</div>
 
 					<div class="payment-notes__button--close">
@@ -204,7 +194,7 @@ export default {
 			);
 		},
 
-		handleFormatNumber(data) {
+		handleNumber(data) {
 			const number = !!data && common.commonFunctions.formatMoneyNumber(data);
 			if (data > 0) return number;
 			if (number === false) return 0;

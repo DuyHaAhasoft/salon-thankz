@@ -132,20 +132,25 @@ export default {
 			};
 
 			try {
+				this.$emit("loading", true);
+
 				const res = await apis.salesApis.getSalesDetail(data);
 
 				if (res.status !== 200) {
+					this.$emit("loading", false);
 					throw res;
 				}
 
 				if (res.data.isOK) {
 					const salesDetail = res.data.result;
+					this.$emit("loading", false);
 					this.$refs.refSalesDetail.showModal({
 						title: "Sales Detail",
 						salesDetail,
 					});
 				} else {
 					console.log(res, data);
+					this.$emit("loading", false);
 				}
 			} catch (errors) {
 				console.log(errors);
