@@ -534,13 +534,13 @@ export default {
 			}
 		},
 
-		async handleGetPrepaidCard(expired = false) {
+		async handleGetPrepaidCard(dataInfo = { pageNumber: 1, expired: false }) {
 			const data = {
 				pageSize: 10,
-				pageNumber: 1,
 				prepaidCardType: -1,
-				includeExpired: expired,
 				includeFamilyService: true,
+				pageNumber: dataInfo.pageNumber,
+				includeExpired: dataInfo.expired,
 				clientId: this.dataClient.clientId,
 				shopId: session.shopSession.getShopId(),
 			};
@@ -562,7 +562,6 @@ export default {
 						this.$refs.refClientTabs.handleSetPrepaidGoods(
 							this.dataPrepaidCards
 						);
-
 					this.$emit("loading", false);
 				} else {
 					this.$emit("loading", false);
@@ -573,12 +572,14 @@ export default {
 			}
 		},
 
-		async handleGetPrepaidService(expired = false) {
+		async handleGetPrepaidService(
+			dataInfo = { expired: false, pageNumber: 1 }
+		) {
 			const data = {
 				pageSize: 10,
-				pageNumber: 1,
-				includeExpired: expired,
 				includeFamilyService: true,
+				pageNumber: dataInfo.pageNumber,
+				includeExpired: dataInfo.expired,
 				clientId: this.dataClient.clientId,
 				shopId: session.shopSession.getShopId(),
 			};

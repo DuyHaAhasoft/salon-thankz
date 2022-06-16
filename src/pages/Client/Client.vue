@@ -181,8 +181,6 @@
 
 <script>
 import moment from "moment";
-// import ExcelJS from "exceljs";
-// import { saveAs } from "file-saver";
 
 import apis from "../../lib/apis";
 import session from "../../lib/utils/session";
@@ -215,9 +213,6 @@ export default {
 				mobileNumber: { text: "Mobile / Phone" },
 				totalSalesAmount: { text: "Total Sales" },
 				notes: { text: "Notes" },
-				// edit: { text: "Edit" },
-				// calendar: { text: "Calendar" },
-				// sales: { text: "Sales" },
 			},
 		};
 	},
@@ -227,10 +222,6 @@ export default {
 		Loading,
 		Notification,
 		ClientActions,
-		// "client-actions": () =>
-		// 	import("../../components/Client-Actions/Client-Actions.vue"),
-
-		// loading: () => import("../../components/Loading/Loading.vue"),
 	},
 
 	created() {
@@ -450,105 +441,6 @@ export default {
 		},
 
 		async handleClickPrintListClient() {
-			// const workbook = new ExcelJS.Workbook();
-			// let worksheet = workbook.addWorksheet(
-			// 	`Client List Page ${this.page.pageNumber}`
-			// );
-
-			// set header
-			// worksheet.mergeCells("A1:F1");
-			// const headerExcel = worksheet.getCell("A1");
-
-			// headerExcel.value = "Client List";
-
-			// headerExcel.font = {
-			// 	family: 4,
-			// 	size: 18,
-			// 	bold: true,
-			// 	name: "Time New Roman",
-			// };
-
-			// headerExcel.height = 40;
-			// headerExcel.alignment = { vertical: "middle", horizontal: "center" };
-
-			// set column
-			// const row = worksheet.addRow([
-			// 	"Client No",
-			// 	"Client Name",
-			// 	"Mobile",
-			// 	"Total Sales",
-			// 	"Note",
-			// 	"Registered Date",
-			// ]);
-
-			// row.height = 30;
-			// row.alignment = { vertical: "middle", horizontal: "center" };
-
-			// row._cells[0]._column.width = 10;
-			// row._cells[1]._column.width = 30;
-			// row._cells[2]._column.width = 15;
-			// row._cells[3]._column.width = 20;
-			// row._cells[4]._column.width = 50;
-			// row._cells[5]._column.width = 20;
-
-			// for (let i = 0; i < row._cells.length; i++) {
-			// 	row._cells[i].border = {
-			// 		top: { style: "thin" },
-			// 		left: { style: "thin" },
-			// 		right: { style: "thin" },
-			// 		bottom: { style: "thin" },
-			// 	};
-			// }
-
-			// set row
-			// this.clients.map(function (client) {
-			// 	const clientRow = [];
-			// 	clientRow.push(client.memberNumber);
-			// 	clientRow.push(client.clientName);
-
-			// 	let mobileNumber = client.mobileNumber;
-			// 	if (mobileNumber) {
-			// 		mobileNumber = common.commonFunctions.formatPhoneNumber(mobileNumber);
-			// 	}
-			// 	clientRow.push(mobileNumber ?? "");
-
-			// 	let totalSalesAmount = common.commonFunctions.formatMoneyNumber(
-			// 		client.totalSalesAmount
-			// 	);
-			// 	clientRow.push(totalSalesAmount ?? 0);
-
-			// 	clientRow.push(client.notes ?? "");
-			// 	clientRow.push(client.registrationDate);
-
-			// 	const rowClient = worksheet.addRow(clientRow);
-
-			// 	rowClient.height = 20;
-			// 	rowClient._cells[4].alignment = { horizontal: "right" };
-			// 	rowClient._cells[2].alignment = { horizontal: "right" };
-			// 	rowClient._cells[0].alignment = { horizontal: "center" };
-			// 	rowClient._cells[3].alignment = { horizontal: "center" };
-			// 	rowClient._cells[5].alignment = { horizontal: "center" };
-
-			// 	for (let i = 0; i < rowClient._cells.length; i++) {
-			// 		rowClient._cells[i].border = {
-			// 			top: { style: "thin" },
-			// 			left: { style: "thin" },
-			// 			right: { style: "thin" },
-			// 			bottom: { style: "thin" },
-			// 		};
-			// 	}
-			// });
-
-			// workbook.xlsx
-			// 	.writeBuffer()
-			// 	.then(buffer =>
-			// 		saveAs(
-			// 			new Blob([buffer]),
-			// 			`Client_List_Page_${this.page.pageNumber}.xlsx`
-			// 		)
-			// 	)
-			// 	.catch(err => console.log("Error writing excel export", err));
-
 			const data = {};
 			data.header = "Client List";
 			data.title = `Client List Page ${this.page.pageNumber}`;

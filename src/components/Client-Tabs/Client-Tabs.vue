@@ -67,6 +67,7 @@
 							</tr>
 						</tbody>
 					</table>
+					<paging :page="page" @handlePaging="handleGetPrepaidCard" />
 				</div>
 			</b-tab>
 			<b-tab title="Prepaid Service" @click="handleGetPrepaidService">
@@ -136,6 +137,7 @@
 							</tr>
 						</tbody>
 					</table>
+					<paging :page="page" @handlePaging="handleGetPrepaidService" />
 				</div>
 			</b-tab>
 			<b-tab title="Messages" disabled></b-tab>
@@ -158,6 +160,7 @@ import session from "../../lib/utils/session";
 
 import Notification from "../Notification/Notification.vue";
 import PrepaidGoodHistory from "../Prepaid-Good-History/Prepaid-Good-History.vue";
+import Paging from "@components/Paging/Paging.vue";
 
 const DEFAULT_FIELDS_TABLE = {
 	prepaidCard: {
@@ -178,24 +181,32 @@ const DEFAULT_FIELDS_TABLE = {
 	},
 };
 
+const DEFAULT_PAGING = {
+	pageTotal: 1,
+	pageNumber: 1,
+};
+
+const DEFAULT_EXPIRED = {
+	card: false,
+	service: false,
+};
+
 export default {
 	name: "SalonThankzClientTabs",
 
 	data() {
 		return {
 			dataPrepaidGoods: {},
+			page: Object.assign({}, DEFAULT_PAGING),
+			expired: Object.assign({}, DEFAULT_EXPIRED),
 			fields: Object.assign({}, DEFAULT_FIELDS_TABLE),
-
-			expired: {
-				card: false,
-				service: false,
-			},
 		};
 	},
 
 	props: {},
 
 	components: {
+		Paging,
 		Notification,
 		"prepaid-good-history": PrepaidGoodHistory,
 	},
@@ -214,17 +225,25 @@ export default {
 	},
 
 	methods: {
-		handleGetPrepaidCard() {
-			this.$emit("getPrepaidCard", this.expired.card);
+		handleGetPrepaidCard({ pageNumber = 1 }) {
+			this.$emit("getPrepaidCard", { expired: this.expired.card, pageNumber });
 		},
 
-		handleGetPrepaidService() {
-			this.$emit("getPrepaidService", this.expired.service);
+		handleGetPrepaidService({ pageNumber = 1 }) {
+			this.$emit("getPrepaidService", {
+				expired: this.expired.service,
+				pageNumber: pageNumber,
+			});
 		},
 
 		handleSetPrepaidGoods(data) {
 			this.dataPrepaidGoods = data;
-			console.log("data", data);
+			this.page = {
+				pageTotal: Math.ceil(
+					data?.pagingInfo?.totalItems / data?.pagingInfo?.pageSize
+				),
+				pageNumber: data?.pagingInfo?.pageNumber,
+			};
 		},
 
 		handleFormatDate(date) {
