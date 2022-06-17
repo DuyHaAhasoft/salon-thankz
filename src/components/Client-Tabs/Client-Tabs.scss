@@ -80,6 +80,10 @@
                         }
                     }
                 }
+
+                .table__no-data {
+                    text-align: center;
+                }
             }
 
             &.tabs__tab--prepaid-card {

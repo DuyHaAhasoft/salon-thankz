@@ -63,6 +63,10 @@
                         font-size: 11px;
                         color: rgb(101, 202, 249);
                     }
+
+                    &.table__table-data--price, &.table__table-data--quantity, &.table__table-data--point-deduct {
+                        text-align: center;
+                    }
                 }
             }
         }
@@ -107,21 +111,37 @@
                         color: red;
                         border-bottom: 1px dotted black;
                     }
+
+                    .total-sales__total-amount,
+                    .total-sales__point,
+                    .total-sales__balance,
+                    .total-sales__outstanding,
+                    .total-sales__loyalty-point,
+                    .payment-used__payment-type {
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                }
+
+                .payment-notes__total-sales:hover {
+                    cursor: default;
                 }
 
                 .payment-notes__text-notes {
                     width: 40%;
-                    height: 100%;
                     margin: 10px;
 
                     textarea {
                         width: 100%;
                         height: 100%;
                     }
+
+                    textarea:hover {
+                        cursor: no-drop;
+                    }
                 }
 
                 .payment-notes__button--close {
-                    height: 100%;
                     width: calc(20% - 40px);
                     display: flex;
                     align-items: center;

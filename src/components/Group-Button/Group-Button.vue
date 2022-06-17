@@ -7,7 +7,7 @@
 			:class="{ 'group-button__btn--disable': disableConfirm }"
 			class="btn--confirm group-button__btn group-button__btn--confirm"
 		>
-			Save
+			{{ nameButton.confirm }}
 		</button>
 
 		<button
@@ -15,7 +15,7 @@
 			@click="handleClickDelete"
 			class="btn--delete group-button__btn group-button__btn--delete"
 		>
-			Delete
+			{{ nameButton.delete }}
 		</button>
 
 		<button
@@ -23,7 +23,7 @@
 			@click="handleClickCancel"
 			class="btn--cancel group-button__btn group-button__btn--cancel"
 		>
-			Cancel
+			{{ nameButton.cancel }}
 		</button>
 	</div>
 </template>
@@ -49,6 +49,17 @@ export default {
 					delete: true,
 					cancel: true,
 					confirm: true,
+				};
+			},
+		},
+
+		nameButton: {
+			type: Object,
+			default: function () {
+				return {
+					confirm: "Save",
+					delete: "Delete",
+					cancel: "Cancel",
 				};
 			},
 		},

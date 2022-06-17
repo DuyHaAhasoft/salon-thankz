@@ -76,11 +76,11 @@
 				<div class="payment-notes footer__payment-notes">
 					<div class="total-sales payment-notes__total-sales">
 						<div class="total-amount total-sales__total-amount">
-							Total Amount &emsp;
+							<span class="payment-method-name">Total Amount</span>
 							{{ !!salesDetail && handleNumber(salesDetail.totalAmount) }}
 						</div>
 						<div class="point total-sales__point">
-							Point Deduction &emsp;
+							<span class="payment-method-name">Point Deduction</span>
 							{{ !!salesDetail && handleNumber(salesDetail.deductionPoints) }}
 						</div>
 						<div class="balance total-sales__balance">Balance Deduction 0</div>
@@ -91,7 +91,9 @@
 						>
 							<div class="payment-type payment-used__payment-type">
 								<div class="payment-name payment-type__payment-name">
-									{{ payment.paymentMethodName }} &emsp;
+									<span class="payment-method-name">
+										{{ payment.paymentMethodName }}
+									</span>
 								</div>
 								<div class="payment-value payment-type__payment-value">
 									{{ handleNumber(payment.paymentAmount) }}
@@ -102,11 +104,11 @@
 							</div>
 						</div>
 						<div class="outstanding total-sales__outstanding">
-							Outstanding &emsp;
+							<span class="payment-method-name">Outstanding</span>
 							{{ !!salesDetail && handleNumber(salesDetail.outstanding) }}
 						</div>
 						<div class="loyalty-point total-sales__loyalty-point">
-							Earn Loyalty Points &emsp;
+							<span class="payment-method-name">Earn Loyalty Points</span>
 							{{ !!salesDetail && handleNumber(salesDetail.earnedPoints) }}
 						</div>
 					</div>
@@ -119,6 +121,7 @@
 						<group-button
 							@cancel="onClickCancel"
 							:isShowButton="isShowGroupButton"
+							:nameButton="nameButton"
 						/>
 					</div>
 				</div>
@@ -166,11 +169,20 @@ export default {
 
 	mounted() {},
 
+	computed: {
+		nameButton() {
+			return {
+				confirm: "Save",
+				cancel: "Close",
+				delete: "Delete",
+			};
+		},
+	},
+
 	methods: {
 		showModal(dataModal) {
 			this.title = dataModal.title;
 			this.salesDetail = dataModal.salesDetail;
-			console.log("dataModal", this.salesDetail);
 			this.$refs.salesDetailModal && this.$refs.salesDetailModal.show();
 		},
 

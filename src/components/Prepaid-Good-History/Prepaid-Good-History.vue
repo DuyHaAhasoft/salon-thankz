@@ -22,13 +22,13 @@
 						<th>Detail</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody v-if="isShowHistory">
 					<tr v-for="good in infoPrepaidGood" :key="good.id">
 						<td class="table__table-data table__table-data--created-date-time">
 							{{ handleFormatDateTime(good.createdDateTimeTS) }}
 						</td>
 						<td class="table__table-data table__table-data--action">
-							{{ good.salesStatus }}
+							{{ good.actionHistoryText }}
 						</td>
 						<td class="table__table-data table__table-data--balance">
 							{{
@@ -45,7 +45,7 @@
 						</td>
 						<td class="table__table-data table__table-data--btn">
 							<button
-								v-if="good.notes.systemNotes === 'Initial Balance'"
+								v-if="handleShowButtonView(good.prepaidCardHistoryType)"
 								class="data--btn__btn data--btn__btn--view"
 								@click="() => onClickShowSalesDetail(good)"
 							>
@@ -54,7 +54,17 @@
 						</td>
 					</tr>
 				</tbody>
+				<tbody v-else>
+					<tr>
+						<td class="table__no-data" colspan="6">No data</td>
+					</tr>
+				</tbody>
 			</table>
+			<paging
+				v-if="page.pageTotal > 1"
+				:page="page"
+				@handlePaging="handleGetHistoryPrepaidGood"
+			/>
 			<footer class="footer modal__footer">
 				<group-button
 					@cancel="onClickCancel"
@@ -69,9 +79,11 @@
 
 <script>
 import apis from "../../lib/apis";
-import session from "../../lib/utils/session";
 import common from "@/lib/utils/common";
+import session from "../../lib/utils/session";
+import constant from "../../lib/utils/constant";
 
+import Paging from "@components/Paging/Paging.vue";
 import SalesDetail from "../Sales-Detail/Sales-Detail.vue";
 import GroupButton from "../Group-Button/Group-Button.vue";
 
@@ -83,6 +95,17 @@ const DEFAULT_FIELDS_TABLE = {
 	notes: { text: "Notes" },
 };
 
+const DEFAULT_GROUP_BUTTON = {
+	cancel: true,
+	delete: false,
+	confirm: false,
+};
+
+const DEFAULT_PAGING = {
+	pageTotal: 1,
+	pageNumber: 1,
+};
+
 export default {
 	name: "SalonThankzPrepaidGoodHistory",
 
@@ -90,27 +113,47 @@ export default {
 		return {
 			title: "",
 			infoPrepaidGood: null,
+			page: Object.assign({}, DEFAULT_PAGING),
 			fields: Object.assign({}, DEFAULT_FIELDS_TABLE),
-			isShowGroupButton: {
-				cancel: true,
-				delete: false,
-				confirm: false,
-			},
+			isShowGroupButton: Object.assign({}, DEFAULT_GROUP_BUTTON),
 		};
 	},
 
 	components: {
+		Paging,
 		GroupButton,
 		SalesDetail,
 	},
 
 	mounted() {},
 
+	computed: {
+		isShowHistory() {
+			return this.infoPrepaidGood.length;
+		},
+	},
+
 	methods: {
 		showModal(dataModal) {
 			this.title = dataModal.title;
+
 			this.infoPrepaidGood = dataModal.dataPrepaidCard.items;
-			console.log("dataModal", this.infoPrepaidGood);
+
+			this.page = {
+				pageTotal: Math.ceil(
+					dataModal.dataPrepaidCard?.pagingInfo?.totalItems /
+						dataModal.dataPrepaidCard?.pagingInfo?.pageSize
+				),
+				pageNumber: dataModal.dataPrepaidCard?.pagingInfo?.pageNumber,
+			};
+
+			this.infoPrepaidGood.map(item => {
+				const actionHistory = constant.sales.prepaidCardHistoryType.find(
+					type => type.value === item.prepaidCardHistoryType
+				);
+				!!actionHistory && (item.actionHistoryText = actionHistory?.text);
+			});
+
 			this.$refs.prepaidGoodHistoryModal &&
 				this.$refs.prepaidGoodHistoryModal.show();
 		},
@@ -173,6 +216,29 @@ export default {
 		handleFormatChangeBalance(balance) {
 			if (balance[0] !== "-" && balance !== 0) return `+${balance}`;
 			return balance;
+		},
+
+		handleShowButtonView(typeHistory) {
+			return [
+				constant.sales.prepaidCardHistoryTypeEnum.sales,
+				constant.sales.prepaidCardHistoryTypeEnum.refund,
+				constant.sales.prepaidCardHistoryTypeEnum.deduction,
+				constant.sales.prepaidCardHistoryTypeEnum.salesEdited,
+				constant.sales.prepaidCardHistoryTypeEnum.salesDeleted,
+				constant.sales.prepaidCardHistoryTypeEnum.refundDeleted,
+				constant.sales.prepaidCardHistoryTypeEnum.deductionEdited,
+				constant.sales.prepaidCardHistoryTypeEnum.deductionDeleted,
+			].includes(typeHistory);
+		},
+
+		handleGetHistoryPrepaidGood({ pageNumber = 1 }) {
+			this.$emit("showHistoryPrepaidGoodPaging", {
+				pageNumber,
+				id: this.infoPrepaidGood[this.infoPrepaidGood.length - 1]
+					.clientPrepaidCardId,
+				clientId:
+					this.infoPrepaidGood[this.infoPrepaidGood.length - 1].clientId,
+			});
 		},
 	},
 };

@@ -116,7 +116,7 @@
 				</tbody>
 			</table>
 
-			<div class="page content__page">
+			<div class="page content__page" v-if="page.pageTotal > 1">
 				<label class="page-total page__page-total"
 					>Page {{ page.pageNumber }} of {{ page.pageTotal }}</label
 				>

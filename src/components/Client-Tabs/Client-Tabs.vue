@@ -25,7 +25,7 @@
 								<th colspan="2">Actions</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody v-if="isShow.card">
 							<tr v-for="card in dataPrepaidGoods.cards" :key="card.id">
 								<td class="table__table-data table__table-data--prepaid-name">
 									{{ card.prepaidCardName }}
@@ -66,8 +66,17 @@
 								</td>
 							</tr>
 						</tbody>
+						<tbody v-else>
+							<tr>
+								<td class="table__no-data" colspan="9">No data</td>
+							</tr>
+						</tbody>
 					</table>
-					<paging :page="page" @handlePaging="handleGetPrepaidCard" />
+					<paging
+						v-if="page.pageTotal > 1"
+						:page="page"
+						@handlePaging="handleGetPrepaidCard"
+					/>
 				</div>
 			</b-tab>
 			<b-tab title="Prepaid Service" @click="handleGetPrepaidService">
@@ -92,7 +101,7 @@
 								<th colspan="2">Actions</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody v-if="isShow.service">
 							<tr
 								v-for="service in dataPrepaidGoods.services"
 								:key="service.id"
@@ -136,8 +145,17 @@
 								</td>
 							</tr>
 						</tbody>
+						<tbody v-else>
+							<tr>
+								<td class="table__no-data" colspan="6">No data</td>
+							</tr>
+						</tbody>
 					</table>
-					<paging :page="page" @handlePaging="handleGetPrepaidService" />
+					<paging
+						v-if="page.pageTotal > 1"
+						:page="page"
+						@handlePaging="handleGetPrepaidService"
+					/>
 				</div>
 			</b-tab>
 			<b-tab title="Messages" disabled></b-tab>
@@ -145,8 +163,9 @@
 		</b-tabs>
 
 		<prepaid-good-history
-			ref="refPrepaidGoodHistory"
 			@loading="handleLoading"
+			ref="refPrepaidGoodHistory"
+			@showHistoryPrepaidGoodPaging="onClickShowHistoryPrepaidGoodPaging"
 		/>
 
 		<notification modalTitle="Notification" ref="refNotification" />
@@ -158,9 +177,9 @@ import apis from "../../lib/apis";
 import common from "../../lib/utils/common";
 import session from "../../lib/utils/session";
 
+import Paging from "@components/Paging/Paging.vue";
 import Notification from "../Notification/Notification.vue";
 import PrepaidGoodHistory from "../Prepaid-Good-History/Prepaid-Good-History.vue";
-import Paging from "@components/Paging/Paging.vue";
 
 const DEFAULT_FIELDS_TABLE = {
 	prepaidCard: {
@@ -213,14 +232,21 @@ export default {
 
 	mounted() {},
 
-	computed: {},
+	computed: {
+		isShow() {
+			return {
+				card: this.dataPrepaidGoods?.cards?.length,
+				service: this.dataPrepaidGoods?.services?.length,
+			};
+		},
+	},
 
 	watch: {
 		"expired.card": function (before, after) {
-			if (before !== after) this.handleGetPrepaidCard();
+			if (before !== after) this.handleGetPrepaidCard({ pageNumber: 1 });
 		},
 		"expired.service": function (before, after) {
-			if (before !== after) this.handleGetPrepaidService();
+			if (before !== after) this.handleGetPrepaidService({ pageNumber: 1 });
 		},
 	},
 
@@ -268,6 +294,43 @@ export default {
 				clientId: prepaidGood.clientId,
 				clientPrepaidCardId: prepaidGood.id,
 				pageNumber: 1,
+				pageSize: 10,
+				shopId: session.shopSession.getShopId(),
+			};
+
+			try {
+				this.$emit("loading", true);
+
+				const res = await apis.salesApis.getPrepaidCardHistory(data);
+
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					throw res;
+				}
+
+				if (res.data.isOK) {
+					const dataPrepaidCard = res.data.result;
+					this.$emit("loading", false);
+					this.$refs.refPrepaidGoodHistory.showModal({
+						title: "Prepaid Card Balance History",
+						dataPrepaidCard,
+					});
+				} else {
+					console.log(res);
+					this.$emit("loading", false);
+				}
+			} catch (errors) {
+				console.log(errors);
+			}
+		},
+
+		async onClickShowHistoryPrepaidGoodPaging(
+			prepaidGood = { clientId: 0, id: 0, pageNumber: 1 }
+		) {
+			const data = {
+				clientId: prepaidGood.clientId,
+				clientPrepaidCardId: prepaidGood.id,
+				pageNumber: prepaidGood.pageNumber,
 				pageSize: 10,
 				shopId: session.shopSession.getShopId(),
 			};
