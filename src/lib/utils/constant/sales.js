@@ -37,6 +37,11 @@ const sales = {
         expiryDateEdited: 13,
         refundByBalanceDeleted: 9,
     },
+
+    typePrepaidGood: {
+        card: 0,
+        service: 1
+    },
 }
 
 export default sales

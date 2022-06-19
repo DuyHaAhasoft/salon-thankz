@@ -4,6 +4,7 @@ import { saveAs } from "file-saver";
 const commonFunctions = {
     concatURL,
     exportExcel,
+    showLongText,
     formatPhoneNumber,
     formatMoneyNumber,
     trimAllDataObject,
@@ -124,6 +125,13 @@ workbook.xlsx
         )
     )
     .catch(err => console.log("Error writing excel export", err));
+}
+
+function showLongText(text, length = 100) {
+    if (text && text.trim().length > length) {
+        return text.substring(0, length) + "...";
+    }
+    return text;
 }
 
 export default commonFunctions

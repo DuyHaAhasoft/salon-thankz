@@ -1,7 +1,7 @@
 .login-page {
     height: 100%;
     display: flex;
-    margin-top: -5%;
+    margin-top: 10%;
     position: relative;
     text-align: center;
     align-items: center;
@@ -97,6 +97,7 @@
 
 @media (max-width: 998.8px) {
     .login-page {
+        margin-top: 20%;
 
         .login-page__image {
             width: 25%;
@@ -111,7 +112,8 @@
 
 @media (max-width: 767.8px) {
     .login-page {
-        
+        margin-top: 25%;
+
         .login-page__form {
             width: 80%;
         }

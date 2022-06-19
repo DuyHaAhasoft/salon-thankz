@@ -32,7 +32,10 @@
 				>Total {{ clientTotal }} client(s) searched</label
 			>
 
-			<table class="table content__table">
+			<table
+				class="table content__table"
+				v-if="statusScreenLaptop || !clients.length"
+			>
 				<thead>
 					<tr>
 						<th v-for="field in fields" :key="field.text">
@@ -42,7 +45,13 @@
 					</tr>
 				</thead>
 
-				<tbody>
+				<tbody v-if="!clients.length">
+					<tr>
+						<td class="table__table-no-data" colspan="8">No data</td>
+					</tr>
+				</tbody>
+
+				<tbody v-else>
 					<tr v-for="client in clients" :key="client.clientId">
 						<td
 							class="table-data table-data--registration-date table__table-data table__table-data--registration-date"
@@ -77,7 +86,7 @@
 							"
 							class="table-data table-data--notes table__table-data table__table-data--notes"
 						>
-							{{ showLongText(client.notes, 50) }}
+							{{ showLongText(client.notes, 20) }}
 						</td>
 
 						<td
@@ -115,6 +124,21 @@
 					</tr>
 				</tbody>
 			</table>
+
+			<div v-else class="client-info content__client-info">
+				<div
+					:key="client.clientId"
+					v-for="client in clients"
+					class="client-info__info"
+				>
+					<client-info
+						:client="client"
+						@onClickSales="onClickSales"
+						@onClickCalendar="onClickCalendar"
+						@handleClickEditClient="handleClickEditClient"
+					/>
+				</div>
+			</div>
 
 			<div class="page content__page" v-if="page.pageTotal > 1">
 				<label class="page-total page__page-total"
@@ -154,14 +178,14 @@
 				</button>
 
 				<select
-					v-model="page.pageSelected"
 					@click="clickSelectedPage"
 					:hidden="isShowSelectPage"
+					v-model="page.pageSelected"
 				>
 					<option
-						v-for="option in optionsPage"
-						:value="option.value"
 						:key="option.value"
+						:value="option.value"
+						v-for="option in optionsPage"
 					>
 						{{ option.text }}
 					</option>
@@ -169,13 +193,13 @@
 			</div>
 		</div>
 
-		<loading v-if="isLoading" />
 		<client-actions
 			ref="clientActionsRef"
 			@loadClient="loadDataClient"
 			@loading="handleSetLoading"
 		/>
 		<notification ref="refNotification" modalTitle="Notification" />
+		<loading v-if="isLoading" class="loading" />
 	</div>
 </template>
 
@@ -183,14 +207,15 @@
 import moment from "moment";
 
 import apis from "../../lib/apis";
+import common from "@/lib/utils/common";
 import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
-import common from "@/lib/utils/common";
 
 // Components
-import Loading from "../../components/Loading/Loading.vue";
+import Loading from "@/components/Loading/Loading.vue";
+import ClientInfo from "@components/Client-Info/Client-Info.vue";
 import Notification from "@/components/Notification/Notification.vue";
-import ClientActions from "../../components/Client-Actions/Client-Actions.vue";
+import ClientActions from "@/components/Client-Actions/Client-Actions.vue";
 
 export default {
 	name: "ClientPage",
@@ -201,6 +226,8 @@ export default {
 			clientTotal: 0,
 			isLoading: false,
 			isShowSelectPage: true,
+			isShowClientInfo: false,
+			windowWidth: window.innerWidth,
 			page: {
 				pageTotal: 1,
 				pageNumber: 1,
@@ -220,6 +247,7 @@ export default {
 
 	components: {
 		Loading,
+		ClientInfo,
 		Notification,
 		ClientActions,
 	},
@@ -229,7 +257,14 @@ export default {
 	},
 
 	mounted() {
+		this.$nextTick(() => {
+			window.addEventListener("resize", this.onResize);
+		});
 		this.loadDataClient();
+	},
+
+	beforeDestroy() {
+		window.removeEventListener("resize", this.onResize);
 	},
 
 	computed: {
@@ -240,6 +275,14 @@ export default {
 				optionsPage.push({ text: page, value: page });
 			}
 			return optionsPage;
+		},
+
+		statusScreenLaptop() {
+			return this.windowWidth > constant.common.screenSize.maxScreenTablet;
+		},
+
+		statusScreenTablet() {
+			return this.windowWidth > constant.common.screenSize.maxScreenPhone;
 		},
 	},
 
@@ -382,7 +425,7 @@ export default {
 		},
 
 		showLongText(text, length) {
-			if (text && text.trim().length > 100) {
+			if (text && text.trim().length > length) {
 				return text.substring(0, length) + "...";
 			}
 			return text;
@@ -505,6 +548,14 @@ export default {
 					},
 				],
 			});
+		},
+
+		onResize() {
+			this.windowWidth = window.innerWidth;
+		},
+
+		onClickShowInfoClient() {
+			this.isShowClientInfo = !this.isShowClientInfo;
 		},
 	},
 };

@@ -60,6 +60,10 @@
                     }
                 }
 
+                .is-expired {
+                    background-color:red;
+                }
+
                 .table__table-data {
                     &.table__table-data--quantity {
                         :nth-child(1) {

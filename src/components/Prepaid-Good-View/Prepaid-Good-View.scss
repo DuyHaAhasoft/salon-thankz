@@ -1,0 +1,50 @@
+.prepaid-good-info {
+    max-width: 100%;
+    .prepaid-good-info__title {
+        .title__name {
+            display: flex;
+            justify-content: space-between;
+
+            .name__text {
+                font-weight: bold;
+            }
+        }
+
+        .title__more {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+
+    .prepaid-good-info__more {
+        .more__detail {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .more__group-button {
+            button {
+                min-width: 50px;
+            }
+        }
+    }
+
+    button {
+        margin: 5px;
+        border: 0px;
+        padding: 4px;
+        min-width: 30px;
+        font-weight: 550;
+        border-radius: 8px;
+        background-color: #85ceff;
+    }
+
+    button:hover {
+        cursor: pointer;
+        box-shadow: 3px 5px 2px 0px rgba(0,0,0,0.1);
+    }
+}
+
+.is-expired {
+    background-color: #ccc;
+}

@@ -3,6 +3,7 @@
 		<b-tabs content-class="mt-3" class="client-tabs__tabs">
 			<b-tab title="Sales History" disabled></b-tab>
 			<b-tab title="Bookings" disabled></b-tab>
+
 			<b-tab title="Prepaid Cards" active @click="handleGetPrepaidCard">
 				<div class="tabs__tab tabs__tab--prepaid-card">
 					<div class="tab__checkbox">
@@ -13,10 +14,13 @@
 							v-model="expired.card"
 							name="checkbox-expired"
 						>
-							Show Expired {{ expired.card }}
+							Show Expired
 						</b-form-checkbox>
 					</div>
-					<table class="table tab__table">
+					<table
+						class="table tab__table"
+						v-if="statusScreenLaptop || !isShow.card"
+					>
 						<thead>
 							<tr>
 								<th v-for="field in fields.prepaidCard" :key="field.text">
@@ -26,28 +30,44 @@
 							</tr>
 						</thead>
 						<tbody v-if="isShow.card">
-							<tr v-for="card in dataPrepaidGoods.cards" :key="card.id">
+							<tr
+								:key="card.id"
+								v-for="card in dataPrepaidGoods.cards"
+								:class="{
+									'is-expired': HandleGoodExpired(
+										(good = card),
+										(type = typePrepaidGood.card)
+									),
+								}"
+							>
 								<td class="table__table-data table__table-data--prepaid-name">
 									{{ card.prepaidCardName }}
 								</td>
+
 								<td class="table__table-data table__table-data--balance">
 									{{ handleFormatNumber(card.balance) }}
 								</td>
+
 								<td class="table__table-data table__table-data--date">
 									{{ handleFormatDate(card.expiryDateTS) }}
 								</td>
+
 								<td class="table__table-data table__table-data--balance">
 									{{ handleFormatNumber(card.initialBalance) }}
 								</td>
+
 								<td class="table__table-data table__table-data--discount">
 									{{ handleFormatDiscount(card.discountForService) }}
 								</td>
+
 								<td class="table__table-data table__table-data--discount">
 									{{ handleFormatDiscount(card.discountForProduct) }}
 								</td>
+
 								<td class="table__table-data table__table-data--date">
 									{{ handleFormatDate(card.invoiceDateTimeTS) }}
 								</td>
+
 								<td class="table__table-data table__table-data--btn">
 									<button
 										class="data--btn__btn data--btn__btn--edit"
@@ -72,6 +92,60 @@
 							</tr>
 						</tbody>
 					</table>
+
+					<div v-else v-for="card in dataPrepaidGoods.cards" :key="card.id">
+						<prepaid-good-view
+							:prepaid-good-info="card"
+							:prepaid-good-field="fields.prepaidCard"
+							:type-prepaid-good="typePrepaidGood.card"
+							@handleEdit="handleClickEdit"
+							@handleView="() => onClickShowHistoryPrepaidGood(card)"
+						>
+							<!-- <template #prepaidCardNameField="row">
+								{{ row.prepaidCardName.text && "" }}
+							</template>
+
+							<template #prepaidCardName="row">
+								<div class="detail__name">
+									{{ row.prepaidCardName }}
+									<button
+										@click="
+											() => {
+												console.log('a');
+											}
+										"
+									>
+										&#x21E7;
+									</button>
+								</div>
+							</template> -->
+
+							<template #balance="row">
+								<div>{{ handleFormatNumber(row.balance) }}</div>
+							</template>
+
+							<template #expiryDateTS="row">
+								<div>{{ handleFormatDate(row.expiryDateTS) }}</div>
+							</template>
+
+							<template #initialBalance="row">
+								<div>{{ handleFormatNumber(row.initialBalance) }}</div>
+							</template>
+
+							<template #discountForService="row">
+								<div>{{ handleFormatDiscount(row.discountForService) }}</div>
+							</template>
+
+							<template #discountForProduct="row">
+								<div>{{ handleFormatDiscount(row.discountForProduct) }}</div>
+							</template>
+
+							<template #invoiceDateTimeTS="row">
+								<div>{{ handleFormatDate(row.invoiceDateTimeTS) }}</div>
+							</template>
+						</prepaid-good-view>
+					</div>
+
 					<paging
 						v-if="page.pageTotal > 1"
 						:page="page"
@@ -79,6 +153,7 @@
 					/>
 				</div>
 			</b-tab>
+
 			<b-tab title="Prepaid Service" @click="handleGetPrepaidService">
 				<div class="tabs__tab tabs__tab--prepaid-service">
 					<div class="tab__checkbox">
@@ -92,7 +167,10 @@
 							Show Expired
 						</b-form-checkbox>
 					</div>
-					<table class="table tab__table">
+					<table
+						class="table tab__table"
+						v-if="statusScreenLaptop || !isShow.service"
+					>
 						<thead>
 							<tr>
 								<th v-for="field in fields.prepaidService" :key="field.text">
@@ -105,10 +183,17 @@
 							<tr
 								v-for="service in dataPrepaidGoods.services"
 								:key="service.id"
+								:class="{
+									'is-expired': HandleGoodExpired(
+										(good = service),
+										(type = typePrepaidGood.service)
+									),
+								}"
 							>
 								<td class="table__table-data table__table-data--prepaid-name">
 									{{ service.prepaidServiceName }}
 								</td>
+
 								<td class="table__table-data table__table-data--quantity">
 									{{ handleFormatNumber(service.quantity) }}
 									<button
@@ -151,6 +236,44 @@
 							</tr>
 						</tbody>
 					</table>
+
+					<div
+						v-else
+						:key="service.id"
+						v-for="service in dataPrepaidGoods.services"
+					>
+						<prepaid-good-view
+							:prepaid-good-info="service"
+							:prepaid-good-field="fields.prepaidService"
+							:type-prepaid-good="typePrepaidGood.service"
+							@handleEdit="handleClickEdit"
+							@handleDeduct="onClickDeduct"
+							@handleView="onClickViewPrepaidService"
+						>
+							<!-- <template #prepaidServiceName="row">
+								<div class="detail__name">
+									{{ row.prepaidServiceName }}
+								</div>
+							</template> -->
+
+							<template #quantity="row">
+								<div>{{ handleFormatNumber(row.quantity) }}</div>
+							</template>
+
+							<template #expiryDateTS="row">
+								<div>{{ handleFormatDate(row.expiryDateTS) }}</div>
+							</template>
+
+							<template #initialQuantity="row">
+								<div>{{ handleFormatNumber(row.initialQuantity) }}</div>
+							</template>
+
+							<template #invoiceDateTimeTS="row">
+								<div>{{ handleFormatDate(row.invoiceDateTimeTS) }}</div>
+							</template>
+						</prepaid-good-view>
+					</div>
+
 					<paging
 						v-if="page.pageTotal > 1"
 						:page="page"
@@ -176,27 +299,29 @@
 import apis from "../../lib/apis";
 import common from "../../lib/utils/common";
 import session from "../../lib/utils/session";
+import constant from "../../lib/utils/constant";
 
 import Paging from "@components/Paging/Paging.vue";
-import Notification from "../Notification/Notification.vue";
-import PrepaidGoodHistory from "../Prepaid-Good-History/Prepaid-Good-History.vue";
+import Notification from "@components/Notification/Notification.vue";
+import PrepaidGoodView from "@components/Prepaid-Good-View/Prepaid-Good-View.vue";
+import PrepaidGoodHistory from "@components/Prepaid-Good-History/Prepaid-Good-History.vue";
 
 const DEFAULT_FIELDS_TABLE = {
 	prepaidCard: {
-		cardName: { text: "Card Name" },
+		prepaidCardName: { text: "Card Name" },
 		balance: { text: "Balance" },
-		expiryDate: { text: "Expiry Date" },
-		earnedAmount: { text: "Earned Amount" },
-		serviceDC: { text: "Service DC" },
-		productDC: { text: "Product DC" },
-		issueDate: { text: "Issue Date" },
+		expiryDateTS: { text: "Expiry Date" },
+		initialBalance: { text: "Earned Amount" },
+		discountForService: { text: "Service DC" },
+		discountForProduct: { text: "Product DC" },
+		invoiceDateTimeTS: { text: "Issue Date" },
 	},
 	prepaidService: {
 		prepaidServiceName: { text: "Prepaid Service Name" },
-		remainingQuantity: { text: "Remaining Quantity" },
-		expiryDate: { text: "Expiry Date" },
+		quantity: { text: "Remaining Quantity" },
+		expiryDateTS: { text: "Expiry Date" },
 		initialQuantity: { text: "Initial Quantity" },
-		issueDate: { text: "Issue Date" },
+		invoiceDateTimeTS: { text: "Issue Date" },
 	},
 };
 
@@ -210,15 +335,22 @@ const DEFAULT_EXPIRED = {
 	service: false,
 };
 
+const DEFAULT_TYPE_PREPAID_GOOD = {
+	card: constant.sales.typePrepaidGood.card,
+	service: constant.sales.typePrepaidGood.service,
+};
+
 export default {
 	name: "SalonThankzClientTabs",
 
 	data() {
 		return {
 			dataPrepaidGoods: {},
+			windowWidth: window.innerWidth,
 			page: Object.assign({}, DEFAULT_PAGING),
 			expired: Object.assign({}, DEFAULT_EXPIRED),
 			fields: Object.assign({}, DEFAULT_FIELDS_TABLE),
+			typePrepaidGood: Object.assign({}, DEFAULT_TYPE_PREPAID_GOOD),
 		};
 	},
 
@@ -227,10 +359,19 @@ export default {
 	components: {
 		Paging,
 		Notification,
+		PrepaidGoodView,
 		"prepaid-good-history": PrepaidGoodHistory,
 	},
 
-	mounted() {},
+	mounted() {
+		this.$nextTick(() => {
+			window.addEventListener("resize", this.onResize);
+		});
+	},
+
+	beforeDestroy() {
+		window.removeEventListener("resize", this.onResize);
+	},
 
 	computed: {
 		isShow() {
@@ -238,6 +379,10 @@ export default {
 				card: this.dataPrepaidGoods?.cards?.length,
 				service: this.dataPrepaidGoods?.services?.length,
 			};
+		},
+
+		statusScreenLaptop() {
+			return this.windowWidth > constant.common.screenSize.maxScreenLaptop;
 		},
 	},
 
@@ -281,6 +426,7 @@ export default {
 		},
 
 		handleFormatNumber(balance) {
+			if (balance === -1) return "No Limit";
 			return common.commonFunctions.formatMoneyNumber(balance);
 		},
 
@@ -311,6 +457,7 @@ export default {
 				if (res.data.isOK) {
 					const dataPrepaidCard = res.data.result;
 					this.$emit("loading", false);
+					console.log(dataPrepaidCard);
 					this.$refs.refPrepaidGoodHistory.showModal({
 						title: "Prepaid Card Balance History",
 						dataPrepaidCard,
@@ -386,6 +533,21 @@ export default {
 
 		handleLoading(value) {
 			this.$emit("loading", value);
+		},
+
+		onResize() {
+			this.windowWidth = window.innerWidth;
+		},
+
+		HandleGoodExpired(good = {}, type = null) {
+			if (type) {
+				return (
+					good?.expiryDateTS !== -1 &&
+					good?.expiryDateTS < common.momentFunction.DateNowIntoUnix()
+				);
+			}
+
+			return good?.isExpired;
 		},
 	},
 };

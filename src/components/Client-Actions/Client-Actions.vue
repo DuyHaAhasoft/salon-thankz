@@ -139,9 +139,9 @@
 					</div>
 
 					<div
-						v-if="typeModal"
-						class="avatar-image content__avatar-image"
+						v-if="typeModal && statusScreenLaptop"
 						@click="showUploadImageModal"
+						class="avatar-image content__avatar-image"
 					>
 						<div
 							v-if="urlImageAvatar === '' ? true : false"
@@ -158,7 +158,15 @@
 				</div>
 
 				<footer class="footer modal__footer">
+					<button
+						v-if="!statusScreenLaptop"
+						@click="showUploadImageModal"
+						class="footer__btn-upload-image"
+					>
+						{{ urlImageAvatar === "" ? "Add Avatar" : "View Avatar" }}
+					</button>
 					<group-button
+						class="footer__group-button"
 						@cancel="onClickCancel"
 						@confirm="onClickConfirm"
 						@delete="onClickDelete"
@@ -186,7 +194,6 @@
 			@deleteImage="handleDeleteAvatar"
 			@updateUrlImage="updateUrlImageAvatar"
 		/>
-
 		<notification modalTitle="Notification" ref="refNotification" />
 	</div>
 </template>
@@ -262,9 +269,11 @@ export default {
 			dataPrepaidCards: {},
 			dataPrepaidServices: {},
 			registeredDate: Date.now(),
+			windowWidth: window.innerWidth,
 			groupClient: Object.assign({}, DEFAULT_GROUP_CLIENT),
 			dataClient: Object.assign({}, DEFAULT_DATA_CREATE_CLIENT),
 			errorActionClient: Object.assign({}, DEFAULT_ERROR_MESSAGES),
+
 			inputProps: {
 				class: "input",
 			},
@@ -283,14 +292,19 @@ export default {
 		UploadImageModal,
 		ValidationProvider,
 		ValidationObserver,
-
-		// "group-button": () => import("../Group-Button/Group-Button.vue"),
-		// "upload-image-modal": () => import("../Upload-Image/Upload-Image.vue"),
 	},
 
 	created() {},
 
-	mounted() {},
+	mounted() {
+		this.$nextTick(() => {
+			window.addEventListener("resize", this.onResize);
+		});
+	},
+
+	beforeDestroy() {
+		window.removeEventListener("resize", this.onResize);
+	},
 
 	computed: {
 		title() {
@@ -316,6 +330,14 @@ export default {
 				},
 				...clientGroup,
 			];
+		},
+
+		statusScreenLaptop() {
+			return this.windowWidth > constant.common.screenSize.maxScreenLaptop;
+		},
+
+		statusScreenPhone() {
+			return this.windowWidth < constant.common.screenSize.maxScreenPhone;
 		},
 	},
 
@@ -621,6 +643,10 @@ export default {
 					},
 				],
 			});
+		},
+
+		onResize() {
+			this.windowWidth = window.innerWidth;
 		},
 	},
 };

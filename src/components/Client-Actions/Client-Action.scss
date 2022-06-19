@@ -94,4 +94,64 @@
             justify-content: center;
         }
     }
+
+    .modal__footer {
+        gap: 8px;
+        display: flex;
+        justify-content: center;
+
+        .footer__btn-upload-image {
+            border: 0px;
+            margin-top: 10px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background-color: #70bff3;
+        }
+
+        .footer__btn-upload-image:hover {
+            box-shadow: 5px 5px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .footer__group-button {
+            gap: 8px;
+        }
+    }
+}
+
+@media (max-width: 575.98px) {
+    .client-actions-modal {
+        .client-actions-modal__modal {
+            width: 100%;
+
+            .modal__content {
+
+                .content__data-input {
+
+                    .data-input__group-input {
+
+                        label {
+                            width: 110px;
+                        }
+
+                        input, select {
+                            min-width: 0px;
+                            padding: 0px 5px;
+                            max-width: 300px;
+                        }
+                    }
+                }
+            }
+
+            .modal__footer {
+                gap: 5px;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+
+                .footer__group-button {
+                    gap: 5px;
+                }
+            }
+        }
+    }
 }

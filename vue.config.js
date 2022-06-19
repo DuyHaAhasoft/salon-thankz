@@ -5,10 +5,14 @@ module.exports = defineConfig({
   configureWebpack: {
     resolve: {
       alias: {
+        '@lib': path.resolve(__dirname, './src/lib'),
         '@pages': path.resolve(__dirname, './src/pages'),
         '@apis': path.resolve(__dirname, './src/lib/apis'),
         '@utils': path.resolve(__dirname, './src/lib/utils'),
         '@components': path.resolve(__dirname, './src/components'),
+        '@common': path.resolve(__dirname, './src/lib/utils/common'),
+        '@session': path.resolve(__dirname, './src/lib/utils/session'),
+        '@constant': path.resolve(__dirname, './src/lib/utils/constant'),
       },
       extensions: ['.js', '.vue', '.json']
     },

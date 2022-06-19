@@ -9,11 +9,17 @@
 			:no-close-on-backdrop="true"
 			ref="prepaidGoodHistoryModal"
 			:modal-class="'modal prepaid-good-history-modal__modal'"
+			hide="onReset"
 		>
 			<div class="good-name modal__good-name">
-				{{ !!infoPrepaidGood && infoPrepaidGood.cardName }}
+				{{
+					!!infoPrepaidGood && infoPrepaidGood[0] && infoPrepaidGood[0].cardName
+				}}
 			</div>
-			<table class="table tab__table" v-if="!!infoPrepaidGood">
+			<table
+				class="table tab__table"
+				v-if="!!infoPrepaidGood && (statusScreenLaptop || !isShowHistory)"
+			>
 				<thead>
 					<tr>
 						<th v-for="field in fields" :key="field.text">
@@ -60,6 +66,42 @@
 					</tr>
 				</tbody>
 			</table>
+
+			<div
+				class="small-screen"
+				v-if="!!infoPrepaidGood && !statusScreenLaptop && isShowHistory"
+			>
+				<div
+					:key="good.id"
+					v-for="good in infoPrepaidGood"
+					class="small-screen__prepaid-good"
+				>
+					<div class="prepaid-good__header">
+						<div>
+							{{ handleFormatDateTime(good.createdDateTimeTS) }}
+						</div>
+						<div>
+							{{ good.actionHistoryText }}
+						</div>
+					</div>
+					<div class="prepaid-good__balance">
+						Balance: {{ handleFormatNumber(good.balanceBeforeChange) }} &rarr;
+						{{ handleFormatNumber(good.balance) }}
+					</div>
+					<div class="prepaid-good__notes">
+						{{ !!good.notes && good.notes.systemNotes }}
+					</div>
+					<button
+						v-if="handleShowButtonView(good.prepaidCardHistoryType)"
+						class="prepaid-good__btn"
+						@click="() => onClickShowSalesDetail(good)"
+					>
+						View
+					</button>
+					<hr />
+				</div>
+			</div>
+
 			<paging
 				v-if="page.pageTotal > 1"
 				:page="page"
@@ -113,6 +155,7 @@ export default {
 		return {
 			title: "",
 			infoPrepaidGood: null,
+			windowWidth: window.innerWidth,
 			page: Object.assign({}, DEFAULT_PAGING),
 			fields: Object.assign({}, DEFAULT_FIELDS_TABLE),
 			isShowGroupButton: Object.assign({}, DEFAULT_GROUP_BUTTON),
@@ -125,11 +168,24 @@ export default {
 		SalesDetail,
 	},
 
-	mounted() {},
+	mounted() {
+		console.log(this.infoPrepaidGood);
+		this.$nextTick(() => {
+			window.addEventListener("resize", this.onResize);
+		});
+	},
+
+	beforeDestroy() {
+		window.removeEventListener("resize", this.onResize);
+	},
 
 	computed: {
 		isShowHistory() {
 			return this.infoPrepaidGood.length;
+		},
+
+		statusScreenLaptop() {
+			return this.windowWidth > constant.common.screenSize.maxScreenLaptop;
 		},
 	},
 
@@ -239,6 +295,14 @@ export default {
 				clientId:
 					this.infoPrepaidGood[this.infoPrepaidGood.length - 1].clientId,
 			});
+		},
+
+		onResize() {
+			this.windowWidth = window.innerWidth;
+		},
+
+		onReset() {
+			this.infoPrepaidGood = null;
 		},
 	},
 };
