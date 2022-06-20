@@ -15,6 +15,11 @@ const salesApis = {
     getSalesDetail(payload) {
         const url = '/api/read/v1/sales/Sales/Sales/Live'
         return http.post(url, payload)
+    },
+
+    addSales(payload) {
+        const url = '/api/cmd/v1/sales/Sales'
+        return http.post(url, payload)
     }
 }
 

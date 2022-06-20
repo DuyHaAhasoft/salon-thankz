@@ -6,7 +6,7 @@ import http from './http'
 
 // const DEFAULT_API_GATEWAY = constant.api.DEFAULT_API_GATEWAY
 
-const shopApi = {
+const shopApis = {
     getStaffActive(payload) {
         const url = '/api/read/v1/staffs/Staff/Active'
         return http.post(url, payload)
@@ -28,4 +28,4 @@ const shopApi = {
     }
 }
 
-export default shopApi
+export default shopApis

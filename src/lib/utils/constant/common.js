@@ -4,6 +4,11 @@ const common = {
         maxScreenLaptop: 991.98,
         maxScreenTablet: 767.98,
         maxScreenPhone: 575.98,
+    },
+
+    status: {
+        active: 1,
+        inactive: 0,
     }
 }
 

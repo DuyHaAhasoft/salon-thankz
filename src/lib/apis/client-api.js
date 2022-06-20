@@ -6,7 +6,7 @@ import http from './http'
 
 // const DEFAULT_API_GATEWAY = constant.api.DEFAULT_API_GATEWAY
 
-const clientApi = {
+const clientApis = {
     getAllClientByShop(payload) {
         // const url = DEFAULT_API_GATEWAY[env] + '/api/read/v1/clients/Client/Active'
         // return axios.post(url, payload, { headers: http.getHeader() })
@@ -31,6 +31,11 @@ const clientApi = {
 
     getClientByClientId(payload) {
         const url = '/api/aggr/v1/Client/GetClient'
+        return http.post(url, payload)
+    },
+
+    getClientAccount(payload) {
+        const url = 'api/read/v1/sales/ClientAccount/ClientAccounts/Live'
         return http.post(url, payload)
     },
 
@@ -62,7 +67,12 @@ const clientApi = {
     getClientWithSales(payload) {
         const url = '/api/read/v1/sales/ClientAccount/ClientAccounts/Live'
         return http.post(url, payload)
-    }
+    },
+
+    getSalesHistoryByClient(payload) {
+        const url = 'api/read/v1/sales/Sales/SalesHistoriesByClient/Live'
+        return http.post(url, payload)
+    },
 }
 
-export default clientApi
+export default clientApis

@@ -13,14 +13,14 @@
 				<div class="text__date">{{ client.registrationDate }}</div>
 			</div>
 			<div class="title__group-button">
-				<div
+				<!-- <div
 					class="group-button-action group-button__group-button-action"
 					v-if="statusScreenTablet"
 				>
 					<button @click="handleClickEditClient">Edit</button>
 					<button @click="onClickCalendar">Calendar</button>
 					<button @click="onClickSales">Sales</button>
-				</div>
+				</div> -->
 				<button @click="onClickShowInfoClient">
 					{{ isShowClientInfo ? `&#x21E7;` : `&#x21E8;` }}
 				</button>
