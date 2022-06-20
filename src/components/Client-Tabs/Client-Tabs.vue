@@ -457,7 +457,6 @@ export default {
 				if (res.data.isOK) {
 					const dataPrepaidCard = res.data.result;
 					this.$emit("loading", false);
-					console.log(dataPrepaidCard);
 					this.$refs.refPrepaidGoodHistory.showModal({
 						title: "Prepaid Card Balance History",
 						dataPrepaidCard,
@@ -493,7 +492,6 @@ export default {
 
 				if (res.data.isOK) {
 					const dataPrepaidCard = res.data.result;
-					console.log("result", dataPrepaidCard);
 					this.$emit("loading", false);
 					this.$refs.refPrepaidGoodHistory.showModal({
 						title: "Prepaid Card Balance History",

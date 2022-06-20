@@ -18,7 +18,7 @@
 				<div class="sales-date content__sales-date">
 					{{ !!salesDetail && handleFormatDate(salesDetail.invoiceDateTimeTS) }}
 				</div>
-				<table class="table tab__table" v-if="!!salesDetail">
+				<table class="table tab__table" v-if="!!salesDetail && statusScreenLaptop">
 					<thead>
 						<tr>
 							<th v-for="field in fields" :key="field.text">
@@ -29,7 +29,7 @@
 					<tbody>
 						<tr v-for="(item, index) in salesDetail.salesItems" :key="index">
 							<td class="table__table-data table__table-data--name">
-								{{ item.goodsName }}
+								{{ showLongText(item.goodsName, 20) }}
 							</td>
 							<td class="table__table-data table__table-data--price">
 								{{ handleNumber(item.unitPrice) }}
@@ -69,6 +69,31 @@
 						</tr>
 					</tbody>
 				</table>
+
+				<div class="modal__content-small" v-if="!!salesDetail && !statusScreenLaptop">
+					<div v-for="(item, index) in salesDetail.salesItems" :key="index" class="content-small__detail">
+						<div class="detail__title">
+							<div class="title__good-name">
+								{{ showLongText(item.goodsName, 20) }},
+							</div>
+							<div class="title__good-amount">
+								&nbsp;&nbsp;Amount {{ handleNumber(item.amount) }}
+							</div>
+						</div>
+
+						<div class="detail__more">
+							<div class="more__price">
+								Unit Price {{ handleNumber(item.unitPrice) }}
+							</div>
+							<div class="more__quatity">
+								&nbsp;&nbsp;Q'ty {{ handleNumber(item.quantity) }}
+							</div>
+							<div class="more__discount">
+								&nbsp;&nbsp;Discount {{ item.discountValue ? item.discountValue : 0 }}
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div class="footer modal__footer">
@@ -120,8 +145,8 @@
 					<div class="payment-notes__button--close">
 						<group-button
 							@cancel="onClickCancel"
-							:isShowButton="isShowGroupButton"
 							:nameButton="nameButton"
+							:isShowButton="isShowGroupButton"
 						/>
 					</div>
 				</div>
@@ -131,6 +156,7 @@
 </template>
 
 <script>
+import constant from "@constant";
 import common from "@/lib/utils/common";
 
 import GroupButton from "../Group-Button/Group-Button.vue";
@@ -154,6 +180,7 @@ export default {
 		return {
 			title: "",
 			salesDetail: null,
+			windowWidth: window.innerWidth,
 			fields: Object.assign({}, DEFAULT_FIELDS_TABLE),
 			isShowGroupButton: {
 				cancel: true,
@@ -167,7 +194,15 @@ export default {
 		GroupButton,
 	},
 
-	mounted() {},
+	mounted() {
+		this.$nextTick(() => {
+			window.addEventListener("resize", this.onResize);
+		});
+	},
+
+	beforeDestroy() {
+		window.removeEventListener("resize", this.onResize);
+	},
 
 	computed: {
 		nameButton() {
@@ -177,12 +212,17 @@ export default {
 				delete: "Delete",
 			};
 		},
+
+		statusScreenLaptop() {
+			return this.windowWidth > constant.common.screenSize.maxScreenLaptop;
+		},
 	},
 
 	methods: {
 		showModal(dataModal) {
 			this.title = dataModal.title;
 			this.salesDetail = dataModal.salesDetail;
+			console.log(this.salesDetail);
 			this.$refs.salesDetailModal && this.$refs.salesDetailModal.show();
 		},
 
@@ -212,6 +252,14 @@ export default {
 			if (number === false) return 0;
 			return number;
 		},
+
+		onResize() {
+			this.windowWidth = window.innerWidth;
+		},
+
+		showLongText(text, length = 20) {
+			return common.commonFunctions.showLongText(text, length)
+		}
 	},
 };
 </script>

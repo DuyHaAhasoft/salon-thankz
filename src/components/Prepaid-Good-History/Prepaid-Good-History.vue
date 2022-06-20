@@ -13,7 +13,7 @@
 		>
 			<div class="good-name modal__good-name">
 				{{
-					!!infoPrepaidGood && infoPrepaidGood[0] && infoPrepaidGood[0].cardName
+					!!infoPrepaidGood && infoPrepaidGood[0] && showLongText(infoPrepaidGood[0].cardName, 40)
 				}}
 			</div>
 			<table
@@ -89,7 +89,7 @@
 						{{ handleFormatNumber(good.balance) }}
 					</div>
 					<div class="prepaid-good__notes">
-						{{ !!good.notes && good.notes.systemNotes }}
+						{{ !!good.notes && showLongText(good.notes.systemNotes, 30) }}
 					</div>
 					<button
 						v-if="handleShowButtonView(good.prepaidCardHistoryType)"
@@ -304,6 +304,10 @@ export default {
 		onReset() {
 			this.infoPrepaidGood = null;
 		},
+
+		showLongText(text, length = 20) {
+			return common.commonFunctions.showLongText(text, length)
+		}
 	},
 };
 </script>

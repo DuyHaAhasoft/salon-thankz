@@ -59,6 +59,13 @@
                 }
 
                 .table__table-data {
+                    .table__table-data--name {
+                        width: 100px;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                    }
+
                     .table-data--price--initial {
                         font-size: 11px;
                         color: rgb(101, 202, 249);
@@ -67,6 +74,29 @@
                     &.table__table-data--price, &.table__table-data--quantity, &.table__table-data--point-deduct {
                         text-align: center;
                     }
+                }
+            }
+        }
+
+        .modal__content-small {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid black;
+            
+            .content-small__detail {
+                margin-bottom: 15px;
+
+                .detail__title {
+                    display: flex;
+
+                    .title__good-name {
+                        font-weight: bold;
+                    }
+                }
+
+                .detail__more {
+                    color: #ccc;
+                    display: flex;
                 }
             }
         }
@@ -147,6 +177,32 @@
                     align-items: center;
                     flex-direction: column;
                     justify-content: center;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 991.98px) {
+    .sales-detail {
+        .sales-detail-modal__modal {
+            .modal__footer {
+                .footer__payment-notes {
+                    flex-direction: column;
+                    
+                    .payment-notes__total-sales {
+                        margin: 10px 15px;
+                        width: calc(100% - 30px);
+                    }
+
+                    .payment-notes__text-notes {
+                        margin: 10px 15px;
+                        width: calc(100% - 30px);
+                    }
+
+                    .payment-notes__button--close {
+                        width: 100%;
+                    }
                 }
             }
         }

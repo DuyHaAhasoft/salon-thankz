@@ -1,7 +1,10 @@
 .prepaid-good-history-modal {
     .prepaid-good-history-modal__modal {
         .modal__good-name {
-
+            width: 200px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
         .tab__table {
@@ -75,6 +78,13 @@
                 .prepaid-good__header {
                     gap: 10px;
                     display: flex;
+                }
+
+                .prepaid-good__notes {
+                    width: 200px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
                 }
 
                 .prepaid-good__btn {
