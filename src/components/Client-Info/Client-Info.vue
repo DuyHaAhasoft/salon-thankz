@@ -48,7 +48,6 @@
 			</div>
 
 			<div
-				v-if="!statusScreenTablet"
 				class="group-button-action content__group-button"
 			>
 				<button @click="handleClickEditClient">Edit</button>
