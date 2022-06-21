@@ -4,22 +4,20 @@
 			static
 			size="xl"
 			hide-footer
-			:title="typeAction.text"
 			ref="salesActionModal"
 			header-bg-variant="info"
+			:title="typeAction.text"
 			:no-close-on-backdrop="true"
 			:modal-class="'modal sales-action-modal__modal'"
 		>
-		
-		<div v-if="!typeAction.type">
+			<div v-if="!typeAction.type"></div>
 
-		</div>
-
-		<div v-else>
-			<div>Edit Sales</div>
-		</div>
+			<div v-else>
+				<div>Edit Sales</div>
+			</div>
 		</b-modal>
 
+		<select-sales-item ref="refSelectSalesItem" />
 		<loading />
 	</div>
 </template>
@@ -29,17 +27,18 @@ import constant from "@constant";
 
 //Components
 import Loading from "@components/Loading/Loading.vue";
+import SelectSalesItem from "@components/Select-Sales-Item/Select-Sales-Item.vue";
 
 const DEFAULT_SALES_ACTION_TYPE = [
 	{
 		type: 0,
-		text: 'Add Sales',
+		text: "Add Sales",
 	},
 	{
 		type: 1,
-		text: 'Edit Sales',
-	}
-]
+		text: "Edit Sales",
+	},
+];
 
 export default {
 	name: "SalonThankzSalesAction",
@@ -47,13 +46,14 @@ export default {
 	data() {
 		return {
 			title: "",
-			typeAction: [],
+			typeAction: {},
 			windowWidth: window.innerWidth,
 		};
 	},
 
 	components: {
 		Loading,
+		SelectSalesItem,
 	},
 
 	mounted() {
@@ -74,9 +74,18 @@ export default {
 
 	methods: {
 		showModal(dataModal) {
-			this.typeAction = DEFAULT_SALES_ACTION_TYPE[DEFAULT_SALES_ACTION_TYPE.findIndex(type => type.type === dataModal.type)];
+			this.typeAction =
+				DEFAULT_SALES_ACTION_TYPE[
+					DEFAULT_SALES_ACTION_TYPE.findIndex(
+						type => type.type === dataModal.type
+					)
+				];
 
 			this.$refs.salesActionModal && this.$refs.salesActionModal.show();
+
+			if (!this.typeAction.type)
+				this.$refs.refSelectSalesItem &&
+					this.$refs.refSelectSalesItem.showModal();
 		},
 
 		hideModal() {

@@ -1,4 +1,4 @@
-import { assign } from "lodash";
+
 
 const INITIAL_SERVICES = {
     categoryService: {},
@@ -34,7 +34,7 @@ const mutations = {
     },
 
     handleSetListCategoryService(state, listCategory) {
-        state.listService = assign(state.listCategoryService, listCategory)
+        state.listService = Object.assign(state.listCategoryService, listCategory)
     },
 
     handleSetService(state, Service) {
@@ -42,7 +42,7 @@ const mutations = {
     },
 
     handleSetListService(state, listService) {
-        state.listService = assign(state.listService, listService)
+        state.listService = Object.assign(state.listService, listService)
     },
 }
 

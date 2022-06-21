@@ -5,11 +5,12 @@
 			size="xl"
 			hide-footer
 			:title="title"
-			ref="selectSalesItemModal"
 			header-bg-variant="info"
+			ref="selectSalesItemModal"
 			:no-close-on-backdrop="true"
 			:modal-class="'modal select-sales-item-modal__modal'"
 		>
+			<div>Sale Item</div>
 		</b-modal>
 	</div>
 </template>
@@ -22,6 +23,7 @@ export default {
 
 	data() {
 		return {
+			title: "Select Sales Item",
 			windowWidth: window.innerWidth,
 		};
 	},
@@ -44,7 +46,15 @@ export default {
 		},
 	},
 
-	methods: {},
+	methods: {
+		showModal() {
+			this.$refs.selectSalesItemModal && this.$refs.selectSalesItemModal.show();
+		},
+
+		hideModal() {
+			this.$refs.selectSalesItemModal && this.$refs.selectSalesItemModal.hide();
+		},
+	},
 };
 </script>
 

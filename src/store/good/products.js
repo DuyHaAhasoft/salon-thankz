@@ -1,5 +1,3 @@
-import { assign } from "lodash";
-
 const INITIAL_PRODUCTS = {
     //category product
     categoryProduct: {},
@@ -36,7 +34,7 @@ const mutations = {
     },
 
     handleSetListCategoryProduct(state, listCategory) {
-        state.listProduct = assign(state.listCategoryProduct, listCategory)
+        state.listProduct = Object.assign(state.listCategoryProduct, listCategory)
     },
 
     handleSetProduct(state, product) {
@@ -44,7 +42,7 @@ const mutations = {
     },
 
     handleSetListProduct(state, listProduct) {
-        state.listProduct = assign(state.listProduct, listProduct)
+        state.listProduct = Object.assign(state.listProduct, listProduct)
     },
 }
 
