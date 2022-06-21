@@ -198,8 +198,10 @@
 			@loadClient="loadDataClient"
 			@loading="handleSetLoading"
 		/>
-		<notification ref="refNotification" modalTitle="Notification" />
+		<sales-action ref="refSalesAction" />
 		<loading v-if="isLoading" class="loading" />
+		<notification ref="refNotification" modalTitle="Notification" />
+
 	</div>
 </template>
 
@@ -214,6 +216,7 @@ import constant from "../../lib/utils/constant";
 // Components
 import Loading from "@/components/Loading/Loading.vue";
 import ClientInfo from "@components/Client-Info/Client-Info.vue";
+import SalesAction from "@components/Sales-Action/Sales-Action.vue";
 import Notification from "@/components/Notification/Notification.vue";
 import ClientActions from "@/components/Client-Actions/Client-Actions.vue";
 
@@ -248,6 +251,7 @@ export default {
 	components: {
 		Loading,
 		ClientInfo,
+		SalesAction,
 		Notification,
 		ClientActions,
 	},
@@ -529,14 +533,9 @@ export default {
 		},
 
 		onClickSales() {
-			this.$refs.refNotification.showModal({
-				listMessage: [
-					{
-						errorCode: "Error",
-						errorMessage: "Not Support Yet!",
-					},
-				],
-			});
+			this.$refs.refSalesAction.showModal({
+				type: 0,
+			})
 		},
 
 		onClickCalendar() {

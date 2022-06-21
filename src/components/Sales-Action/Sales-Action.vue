@@ -4,29 +4,57 @@
 			static
 			size="xl"
 			hide-footer
-			:title="title"
+			:title="typeAction.text"
 			ref="salesActionModal"
 			header-bg-variant="info"
 			:no-close-on-backdrop="true"
 			:modal-class="'modal sales-action-modal__modal'"
 		>
+		
+		<div v-if="!typeAction.type">
+
+		</div>
+
+		<div v-else>
+			<div>Edit Sales</div>
+		</div>
 		</b-modal>
+
+		<loading />
 	</div>
 </template>
 
 <script>
 import constant from "@constant";
 
+//Components
+import Loading from "@components/Loading/Loading.vue";
+
+const DEFAULT_SALES_ACTION_TYPE = [
+	{
+		type: 0,
+		text: 'Add Sales',
+	},
+	{
+		type: 1,
+		text: 'Edit Sales',
+	}
+]
+
 export default {
 	name: "SalonThankzSalesAction",
 
 	data() {
 		return {
+			title: "",
+			typeAction: [],
 			windowWidth: window.innerWidth,
 		};
 	},
 
-	components: {},
+	components: {
+		Loading,
+	},
 
 	mounted() {
 		this.$nextTick(() => {
@@ -44,7 +72,17 @@ export default {
 		},
 	},
 
-	methods: {},
+	methods: {
+		showModal(dataModal) {
+			this.typeAction = DEFAULT_SALES_ACTION_TYPE[DEFAULT_SALES_ACTION_TYPE.findIndex(type => type.type === dataModal.type)];
+
+			this.$refs.salesActionModal && this.$refs.salesActionModal.show();
+		},
+
+		hideModal() {
+			this.$refs.salesActionModal && this.$refs.salesActionModal.hide();
+		},
+	},
 };
 </script>
 
