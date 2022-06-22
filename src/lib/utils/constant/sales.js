@@ -51,7 +51,7 @@ const sales = {
         'packages': { id: 5, text: 'Packages'}
     },
 
-    packges: 5,
+    packages: 5,
 
     services: 1,
 
