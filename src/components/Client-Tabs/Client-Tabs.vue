@@ -23,7 +23,7 @@
 					>
 						<thead>
 							<tr>
-								<th v-for="field in fields.prepaidCard" :key="field.text">
+								<th v-for="field in fields.prepaidCard" :key="field.text" :class="{'th-no-data': statusScreenPhone}">
 									{{ field.text }}
 								</th>
 								<th colspan="2">Actions</th>
@@ -383,6 +383,10 @@ export default {
 
 		statusScreenLaptop() {
 			return this.windowWidth > constant.common.screenSize.maxScreenLaptop;
+		},
+
+		statusScreenPhone() {
+			return this.windowWidth <= constant.common.screenSize.maxScreenPhone;
 		},
 	},
 

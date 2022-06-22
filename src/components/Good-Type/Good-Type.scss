@@ -1,0 +1,18 @@
+.list-good-type {
+    gap: 10px;
+    display: flex;
+    justify-content: flex-start;
+
+    .good-type {
+        padding: 5px;
+        border: 1px solid black;
+
+        &.good-type--selected {
+            background-color: #1ea5ff;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}

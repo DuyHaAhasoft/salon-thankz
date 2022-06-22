@@ -42,6 +42,24 @@ const sales = {
         card: 0,
         service: 1
     },
+
+    itemSalesType: {
+        'services': { id: 1, text: 'Services' },
+        'products': { id: 2, text: 'Products' },
+        'prepaidCard': { id: 3, text: 'Prepaid Cards'},
+        'prepaidService': { id: 4, text: 'Prepaid Service'},
+        'packages': { id: 5, text: 'Packages'}
+    },
+
+    packges: 5,
+
+    services: 1,
+
+    products: 2,
+
+    prepaidCard: 3,
+    
+    prepaidService: 4,
 }
 
 export default sales

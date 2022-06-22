@@ -198,9 +198,9 @@
 			@loadClient="loadDataClient"
 			@loading="handleSetLoading"
 		/>
-		<sales-action ref="refSalesAction" />
 		<loading v-if="isLoading" class="loading" />
 		<notification ref="refNotification" modalTitle="Notification" />
+		<sales-action ref="refSalesAction" @loading="handleSetLoading" />
 
 	</div>
 </template>

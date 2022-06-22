@@ -1,3 +1,45 @@
 .select-sales-item {
     position: absolute;
+
+    .select-sales-item-modal__modal {
+        .modal__content {
+            .content__list-good {
+
+            }
+
+            .content__body {
+                display: flex;
+                justify-content: space-between;
+
+                .body__category-item {
+                    display: flex;
+                    justify-content: space-between;
+
+                    .category-item__category {
+                        
+                    }
+
+                    .category-item__item {
+
+                    }
+                }
+
+                .body__group-button-list-item-select {
+                    .group-button-list-item-select__group-button {
+
+                    }
+
+                    .group-button-list-item-select__list-item-select {
+                        .list-item-select__select-staff {
+
+                        }
+
+                        .list-item-select__list-item {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

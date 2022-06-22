@@ -17,8 +17,8 @@
 			</div>
 		</b-modal>
 
-		<select-sales-item ref="refSelectSalesItem" />
-		<loading />
+		<select-sales-item ref="refSelectSalesItem" @loading="handleSetLoading" />
+		<!-- <loading /> -->
 	</div>
 </template>
 
@@ -26,7 +26,7 @@
 import constant from "@constant";
 
 //Components
-import Loading from "@components/Loading/Loading.vue";
+// import Loading from "@components/Loading/Loading.vue";
 import SelectSalesItem from "@components/Select-Sales-Item/Select-Sales-Item.vue";
 
 const DEFAULT_SALES_ACTION_TYPE = [
@@ -52,7 +52,7 @@ export default {
 	},
 
 	components: {
-		Loading,
+		// Loading,
 		SelectSalesItem,
 	},
 
@@ -91,6 +91,10 @@ export default {
 		hideModal() {
 			this.$refs.salesActionModal && this.$refs.salesActionModal.hide();
 		},
+
+		handleSetLoading(value) {
+			this.$emit('loading', value);
+		}
 	},
 };
 </script>

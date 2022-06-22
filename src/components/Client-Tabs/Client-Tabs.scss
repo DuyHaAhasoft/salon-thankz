@@ -60,6 +60,14 @@
                     }
                 }
 
+                .th-no-data {
+                    width: 37px; 
+                    max-width: 37px;
+                    overflow: hidden;
+                    white-space: nowrap; 
+                    text-overflow: ellipsis;
+                }
+
                 .is-expired {
                     background-color:red;
                 }
