@@ -1,5 +1,6 @@
 <template>
 	<div class="category-good">
+		<div>{{isTypeGood}}</div>
 		<div class="category">
 			<div v-if="isTypeGood.products">
 				<div
@@ -85,7 +86,7 @@ export default {
 	},
 
 	mounted() {
-		console.log("log", this.categories);
+		console.log("log", this.categories, this.isTypeGood);
 	},
 
 	methods: {

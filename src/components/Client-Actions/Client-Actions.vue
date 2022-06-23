@@ -170,6 +170,7 @@
 						@cancel="onClickCancel"
 						@confirm="onClickConfirm"
 						@delete="onClickDelete"
+						:isShowButton="isShowButton"
 						:disableConfirm="invalid"
 					/>
 				</footer>
@@ -195,6 +196,7 @@
 			@updateUrlImage="updateUrlImageAvatar"
 		/>
 		<notification modalTitle="Notification" ref="refNotification" />
+		<confirm-modal ref="refConfirmModal" @confirm="handleDeleteClient" />
 	</div>
 </template>
 
@@ -210,6 +212,7 @@ import constant from "../../lib/utils/constant";
 import ClientTabs from "@components/Client-Tabs/Client-Tabs.vue";
 import GroupButton from "@components/Group-Button/Group-Button.vue";
 import Notification from "@components/Notification/Notification.vue";
+import ConfirmModal from "@components/Confirm-Modal/Confirm-Modal.vue";
 import UploadImageModal from "@components/Upload-Image/Upload-Image.vue";
 
 const DEFAULT_TITLE_MODAL = ["Add Client", "Edit Client"];
@@ -289,6 +292,7 @@ export default {
 		ClientTabs,
 		GroupButton,
 		Notification,
+		ConfirmModal,
 		UploadImageModal,
 		ValidationProvider,
 		ValidationObserver,
@@ -339,6 +343,14 @@ export default {
 		statusScreenPhone() {
 			return this.windowWidth < constant.common.screenSize.maxScreenPhone;
 		},
+
+		isShowButton() {
+			return {
+				delete: this.typeModal,
+				cancel: true,
+				confirm: true,
+			}
+		}
 	},
 
 	methods: {
@@ -635,14 +647,46 @@ export default {
 		},
 
 		onClickDelete() {
-			this.$refs.refNotification.showModal({
-				listMessage: [
-					{
-						errorCode: "Error",
-						errorMessage: "Not Support Yet!",
-					},
-				],
-			});
+			this.$refs.refConfirmModal.showModal({
+				title: 'Delete Client',
+				message: `Are you sure you want to delete client ${this.dataClient.clientName} ?`
+			})
+		},
+
+		async handleDeleteClient() {
+			const data = {
+				clientId: this.dataClient.clientId,
+				shopId: session.shopSession.getShopId(),
+				country: constant.payload.DEFAULT_COUNTRY,
+				sessionToken: session.shopSession.getSessionToken(),
+				shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
+			}
+
+			this.$emit('loading', true);
+
+			try {
+				const res = await apis.clientApis.deleteClient(data);
+
+				if(res.status !== 200) {
+					this.$emit('loading', false);
+					throw this.$refs.refNotification.showModal({ listMessage: res.errorMessages });
+				}
+
+				if(res.data.isOK) {
+					this.$emit("loadClient");
+
+					this.$emit("loading", false);
+
+					this.hideModal();
+				} else {
+					this.$emit("loading", false);
+
+					this.$refs.refNotification.showModal({ listMessage: res.errorMessages });
+				}
+			}
+			catch(errors) {
+				this.$refs.refNotification.showModal({ listMessage: errors });
+			}
 		},
 
 		onResize() {

@@ -24,6 +24,11 @@ const clientApis = {
         return http.put(url, payload)
     },
 
+    deleteClient(payload) {
+        const url = '/api/aggr/v1/Client/UpdateClientToDeleted'
+        return http.post(url, payload)
+    },
+
     getNextMemberNumber(payload) {
         const url = '/api/read/v1/clients/Client/NextMemberNumber'
         return http.post(url, payload)

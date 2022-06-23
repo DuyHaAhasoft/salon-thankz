@@ -17,9 +17,9 @@
 				<div class="content__body">
 					<div class="body__category-item">
 						<category-good
-							:goodList="goodList"
 							:typeGood="typeGood"
-							:categories="categories"
+							:goodList="dataGoodList"
+							:categories="dataCategories"
 							@handleGetServiceByCategory="handleGetServiceByCategory"
 							@handleGetProductByCategory="handleGetProductByCategory"
 						/>
@@ -41,8 +41,6 @@
 
 <script>
 import constant from "@constant";
-import apis from "../../lib/apis";
-import session from "@/lib/utils/session";
 
 //Components
 import GoodType from "@components/Good-Type/Good-Type.vue";
@@ -73,6 +71,22 @@ export default {
 		CategoryGood,
 	},
 
+	props: {
+		dataCategories: {
+			type: Array,
+			default: function() {
+				return []
+			}
+		},
+
+		dataGoodList: {
+			type: Array,
+			default: function() {
+				return []
+			}
+		}
+	},
+
 	mounted() {
 		this.handleGetServiceCategory();
 		this.$nextTick(() => {
@@ -88,12 +102,21 @@ export default {
 		statusScreenLaptop() {
 			return this.windowWidth > constant.common.screenSize.maxScreenLaptop;
 		},
+
+		isShowModal() {
+			return this.dataCategories;
+		}
 	},
 
 	methods: {
-		showModal() {
-			this.handleGetServiceCategory();
-			this.$refs.selectSalesItemModal && this.$refs.selectSalesItemModal.show();
+		showModal(dataModal) {
+			this.goodList = dataModal.goodList;
+			this.categories = dataModal.categories;
+			
+			if(this.isShowModal) {
+				this.$refs.selectSalesItemModal && this.$refs.selectSalesItemModal.show();
+			}
+
 		},
 
 		hideModal() {
@@ -114,136 +137,19 @@ export default {
 		},
 
 		async handleGetServiceCategory() {
-			const data = {
-				pageNumber: 1,
-				pageSize: 100,
-				shopId: session.shopSession.getShopId(),
-				status: 1,
-			};
-
-			this.$emit("loading", true);
-
-			try {
-				const res = await apis.goodApis.getServiceCategory(data);
-
-				if (res.status !== 200) {
-					this.$emit("loading", false);
-					throw res;
-				}
-
-				if (res.data.isOK) {
-					this.categories = res.data.result.items;
-				} else {
-					console.log("error", res);
-				}
-
-				console.log("res services", res);
-
-				this.$emit("loading", false);
-			} catch (errors) {
-				console.log("errors", errors);
-			}
+			this.$emit('getServiceCategory');
 		},
 
 		async handleGetProductCategory() {
-			const data = {
-				pageNumber: 1,
-				pageSize: 100,
-				shopId: session.shopSession.getShopId(),
-				status: 1,
-			};
-
-			this.$emit("loading", true);
-
-			try {
-				const res = await apis.goodApis.getProductCategory(data);
-
-				if (res.status !== 200) {
-					this.$emit("loading", false);
-					throw res;
-				}
-
-				if (res.data.isOK) {
-					this.categories = res.data.result.items;
-				} else {
-					console.log("error", res);
-				}
-
-				console.log("res products", res);
-
-				this.$emit("loading", false);
-			} catch (errors) {
-				console.log("errors", errors);
-			}
+			this.$emit('getProductCategory');
 		},
 
 		async handleGetProductByCategory(productCategoryId = 0) {
-			const data = {
-				status: 1,
-				keyWord: "",
-				pageSize: 100,
-				pageNumber: 1,
-				usageStatus: "1,3",
-				isCalculateValuation: false,
-				productCategoryId: productCategoryId,
-				shopId: session.shopSession.getShopId(),
-			};
-
-			this.$emit("loading", true);
-
-			try {
-				const res = await apis.goodApis.getProductByCategory(data);
-
-				if (res.status !== 200) {
-					this.$emit("loading", false);
-					throw res;
-				}
-
-				if (res.data.isOK) {
-					this.goodList = res.data.result.items;
-				} else {
-					console.log("error", res);
-				}
-
-				console.log("res list products", res);
-
-				this.$emit("loading", false);
-			} catch (errors) {
-				console.log("errors", errors);
-			}
+			this.$emit('getProductByCategory', productCategoryId);
 		},
 
 		async handleGetServiceByCategory(serviceCategoryId = 0) {
-			const data = {
-				status: 1,
-				pageSize: 100,
-				pageNumber: 1,
-				serviceCategoryId: serviceCategoryId,
-				shopId: session.shopSession.getShopId(),
-			};
-
-			this.$emit("loading", true);
-
-			try {
-				const res = await apis.goodApis.getServiceByCategory(data);
-
-				if (res.status !== 200) {
-					this.$emit("loading", false);
-					throw res;
-				}
-
-				if (res.data.isOK) {
-					this.goodList = res.data.result.items;
-				} else {
-					console.log("error", res);
-				}
-
-				console.log("res list products", res);
-
-				this.$emit("loading", false);
-			} catch (errors) {
-				console.log("errors", errors);
-			}
+			this.$emit('getServiceByCategory', serviceCategoryId)
 		},
 	},
 };
