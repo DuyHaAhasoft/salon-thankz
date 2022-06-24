@@ -26,6 +26,7 @@
 			@getProductCategory="handleGetProductCategory"
 			@getProductByCategory="handleGetProductByCategory"
 			@getServiceByCategory="handleGetServiceByCategory"
+			@resetDataCategoryGood="handleResetDataCategoryGood"
 		/>
 		<!-- <loading /> -->
 	</div>
@@ -98,7 +99,7 @@ export default {
 
 			if (!this.typeAction.type) {
 				this.handleGetServiceCategory();
-				console.log('abc', this.categories)
+
 				this.$refs.refSelectSalesItem &&
 					this.$refs.refSelectSalesItem.showModal({
 						goodList: this.goodList,
@@ -136,13 +137,12 @@ export default {
 
 				if (res.data.isOK) {
 					this.categories = res.data.result.items;
+					this.handleGetServiceByCategory(res.data.result.items[0]?.serviceCategoryId)
 				} else {
 					console.log("error", res);
 				}
-
-				console.log("res services", res);
-
 				this.$emit("loading", false);
+				return 
 			} catch (errors) {
 				console.log("errors", errors);
 			}
@@ -167,12 +167,11 @@ export default {
 				}
 
 				if (res.data.isOK) {
+					this.handleGetProductByCategory();
 					this.categories = res.data.result.items;
 				} else {
 					console.log("error", res);
 				}
-
-				console.log("res products", res);
 
 				this.$emit("loading", false);
 			} catch (errors) {
@@ -208,8 +207,6 @@ export default {
 					console.log("error", res);
 				}
 
-				console.log("res list products", res);
-
 				this.$emit("loading", false);
 			} catch (errors) {
 				console.log("errors", errors);
@@ -241,12 +238,15 @@ export default {
 					console.log("error", res);
 				}
 
-				console.log("res list products", res);
-
 				this.$emit("loading", false);
 			} catch (errors) {
 				console.log("errors", errors);
 			}
+		},
+
+		handleResetDataCategoryGood() {
+			this.goodList = [];
+			this.categories = [];
 		},
 	},
 };

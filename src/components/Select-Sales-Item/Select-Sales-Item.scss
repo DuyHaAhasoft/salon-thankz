@@ -12,21 +12,15 @@
                 justify-content: space-between;
 
                 .body__category-item {
-                    display: flex;
-                    justify-content: space-between;
-
-                    .category-item__category {
-                        
-                    }
-
-                    .category-item__item {
-
-                    }
+                    width: 55vw;
+                    margin-top: 10px;
                 }
 
                 .body__group-button-list-item-select {
-                    .group-button-list-item-select__group-button {
+                    width: 30vw;
 
+                    .group-button-list-item-select__group-button {
+                        
                     }
 
                     .group-button-list-item-select__list-item-select {

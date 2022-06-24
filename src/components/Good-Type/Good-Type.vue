@@ -5,7 +5,7 @@
             class="good-type"
             @click="() => handleClickGoodType(goodType)" 
             v-for="(goodType, index) in Object.values(goodTypes)" 
-            :class="{'good-type--selected': handleGoodTypeSelected(goodType.text)}" 
+            :class="{'good-type--selected': handleGoodTypeSelected(goodType.id)}" 
         >
             {{ goodType.text }}
         </div>
@@ -22,8 +22,14 @@ export default {
 		return {
 			windowWidth: window.innerWidth,
             goodTypes: Object.assign({}, constant.sales.itemSalesType),
-            goodTypeSelected: Object.values(constant.sales.itemSalesType)[0].text,
 		};
+	},
+
+	props: {
+		goodTypeSelected: {
+			type: Number,
+			default: Object.values(constant.sales.itemSalesType)[0].id,
+		}
 	},
 
 	components: {},
@@ -32,10 +38,6 @@ export default {
 		this.$nextTick(() => {
 			window.addEventListener("resize", this.onResize);
 		});
-	},
-
-	beforeDestroy() {
-		window.removeEventListener("resize", this.onResize);
 	},
 
 	computed: {
@@ -50,7 +52,6 @@ export default {
         },
 
         handleClickGoodType(goodType) {
-            this.goodTypeSelected = goodType.text;
             this.$emit('handleGoodTypeSelect', goodType.id);
         }
     },
