@@ -16,6 +16,12 @@
                 }
             }
 
+            .tab__sales-history {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+            }
+
             .tab__table {
                 width: 100%;
                 padding: 5px;

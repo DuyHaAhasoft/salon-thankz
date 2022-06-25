@@ -1,7 +1,135 @@
 <template>
 	<div class="client-tabs">
 		<b-tabs content-class="mt-3" class="client-tabs__tabs">
-			<b-tab title="Sales History" disabled></b-tab>
+			<b-tab title="Sales History" @click="handleGetSalesHistory">
+				<div class="tabs__tab">
+					<div class="tab__sales-history">
+						<div>
+							{{
+								dataSalesHistory.pagingInfo &&
+								`All ${dataSalesHistory.pagingInfo.totalItems} records`
+							}}
+						</div>
+						<div class="tab__checkbox">
+							<b-form-checkbox
+								value="true"
+								unchecked-value="false"
+								id="checkbox-sales-history"
+								name="checkbox-sales-history"
+								v-model="isShowHistoryDeleted"
+							>
+								Show Deleted
+							</b-form-checkbox>
+						</div>
+					</div>
+					<div class="tab__table">
+						<table
+							class="table tab__table"
+							v-if="statusScreenLaptop || !isShow.salesHistory"
+						>
+							<thead>
+								<tr>
+									<th
+										v-for="field in fields.salesHistory"
+										:key="field.text"
+										:class="{ 'th-no-data': statusScreenPhone }"
+									>
+										{{ field.text }}
+									</th>
+								</tr>
+							</thead>
+							<tbody v-if="isShow.salesHistory">
+								<tr
+									:key="sales.salesNumber"
+									v-for="sales in dataSalesHistory.items"
+									:class="{
+										'is-expired': sales.deletedById !== null,
+									}"
+								>
+									<td
+										class="table__table-data table__table-data--sales-history-date"
+									>
+										{{ handleFormatDate(sales.invoiceDateTimeTS) }}
+									</td>
+
+									<td
+										class="table__table-data table__table-data--sales-history-items"
+									>
+										<div v-for="(item, index) in sales.items" :key="index">
+											{{ showLongText(item.itemName, 15) }}
+										</div>
+									</td>
+
+									<td
+										class="table__table-data table__table-data--sales-history-staffs"
+									>
+										<div v-for="(item, index) in sales.items" :key="index">
+											<div v-for="(staff, index) in item.staffs" :key="index">
+												{{ staff && showLongText(staff.staffName, 10) }}
+											</div>
+										</div>
+									</td>
+
+									<td
+										class="table__table-data table__table-data--sales-history-amount"
+									>
+										{{ handleFormatNumber(sales.totalAmount) }}
+									</td>
+
+									<td
+										class="table__table-data table__table-data--sales-history-payment"
+									>
+										<div
+											v-for="payment in sales.payments"
+											:key="payment.paymentMethodId"
+										>
+											{{
+												payment && showLongText(payment.paymentMethodName, 10)
+											}}
+										</div>
+									</td>
+
+									<td
+										class="table__table-data table__table-data--sales-history-pay-amount"
+									>
+										<div>
+											{{
+												handleFormatNumber(
+													sales.totalAmount - sales.outstanding
+												)
+											}}
+										</div>
+										<div v-if="sales.outstanding">
+											{{ handleFormatNumber(sales.outstanding) }}
+										</div>
+									</td>
+
+									<td
+										class="table__table-data table__table-data--sales-history-notes"
+									>
+										{{ showLongText(sales.notes, 15) }}
+									</td>
+
+									<td class="table__table-data table__table-data--btn">
+										<button
+											class="data--btn__btn data--btn__btn--view"
+											@click="() => alert('sos')"
+										>
+											View
+										</button>
+									</td>
+								</tr>
+							</tbody>
+							<tbody v-else>
+								<tr>
+									<td class="table__no-data" colspan="9">No data</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</b-tab>
+
 			<b-tab title="Bookings" disabled></b-tab>
 
 			<b-tab title="Prepaid Cards" active @click="handleGetPrepaidCard">
@@ -23,7 +151,11 @@
 					>
 						<thead>
 							<tr>
-								<th v-for="field in fields.prepaidCard" :key="field.text" :class="{'th-no-data': statusScreenPhone}">
+								<th
+									v-for="field in fields.prepaidCard"
+									:key="field.text"
+									:class="{ 'th-no-data': statusScreenPhone }"
+								>
 									{{ field.text }}
 								</th>
 								<th colspan="2">Actions</th>
@@ -34,7 +166,7 @@
 								:key="card.id"
 								v-for="card in dataPrepaidGoods.cards"
 								:class="{
-									'is-expired': HandleGoodExpired(
+									'is-expired': handleGoodExpired(
 										(good = card),
 										(type = typePrepaidGood.card)
 									),
@@ -101,25 +233,6 @@
 							@handleEdit="handleClickEdit"
 							@handleView="() => onClickShowHistoryPrepaidGood(card)"
 						>
-							<!-- <template #prepaidCardNameField="row">
-								{{ row.prepaidCardName.text && "" }}
-							</template>
-
-							<template #prepaidCardName="row">
-								<div class="detail__name">
-									{{ row.prepaidCardName }}
-									<button
-										@click="
-											() => {
-												console.log('a');
-											}
-										"
-									>
-										&#x21E7;
-									</button>
-								</div>
-							</template> -->
-
 							<template #balance="row">
 								<div>{{ handleFormatNumber(row.balance) }}</div>
 							</template>
@@ -184,7 +297,7 @@
 								v-for="service in dataPrepaidGoods.services"
 								:key="service.id"
 								:class="{
-									'is-expired': HandleGoodExpired(
+									'is-expired': handleGoodExpired(
 										(good = service),
 										(type = typePrepaidGood.service)
 									),
@@ -250,12 +363,6 @@
 							@handleDeduct="onClickDeduct"
 							@handleView="onClickViewPrepaidService"
 						>
-							<!-- <template #prepaidServiceName="row">
-								<div class="detail__name">
-									{{ row.prepaidServiceName }}
-								</div>
-							</template> -->
-
 							<template #quantity="row">
 								<div>{{ handleFormatNumber(row.quantity) }}</div>
 							</template>
@@ -323,6 +430,16 @@ const DEFAULT_FIELDS_TABLE = {
 		initialQuantity: { text: "Initial Quantity" },
 		invoiceDateTimeTS: { text: "Issue Date" },
 	},
+	salesHistory: {
+		invoiceDateTimeTS: { text: "Date" },
+		itemName: { text: "Sales Items" },
+		staffs: { text: "Staff" },
+		totalAmount: { text: "Amount" },
+		payments: { text: "Payment Method" },
+		payAmount: { text: "Pay Amount" },
+		notes: { text: "Notes" },
+		detail: { text: "Detail" },
+	},
 };
 
 const DEFAULT_PAGING = {
@@ -346,6 +463,8 @@ export default {
 	data() {
 		return {
 			dataPrepaidGoods: {},
+			dataSalesHistory: {},
+			isShowHistoryDeleted: false,
 			windowWidth: window.innerWidth,
 			page: Object.assign({}, DEFAULT_PAGING),
 			expired: Object.assign({}, DEFAULT_EXPIRED),
@@ -378,6 +497,7 @@ export default {
 			return {
 				card: this.dataPrepaidGoods?.cards?.length,
 				service: this.dataPrepaidGoods?.services?.length,
+				salesHistory: this.dataSalesHistory?.items?.length,
 			};
 		},
 
@@ -394,8 +514,13 @@ export default {
 		"expired.card": function (before, after) {
 			if (before !== after) this.handleGetPrepaidCard({ pageNumber: 1 });
 		},
+
 		"expired.service": function (before, after) {
 			if (before !== after) this.handleGetPrepaidService({ pageNumber: 1 });
+		},
+
+		isShowHistoryDeleted: function (before, after) {
+			if (before !== after) this.handleGetSalesHistory({ pageNumber: 1 });
 		},
 	},
 
@@ -411,8 +536,27 @@ export default {
 			});
 		},
 
+		handleGetSalesHistory({ pageNumber = 1 }) {
+			this.$emit("getSalesHistory", {
+				fromDateTS: 1,
+				pageNumber: pageNumber,
+				includeDeleted: this.isShowHistoryDeleted,
+			});
+		},
+
 		handleSetPrepaidGoods(data) {
 			this.dataPrepaidGoods = data;
+			this.page = {
+				pageTotal: Math.ceil(
+					data?.pagingInfo?.totalItems / data?.pagingInfo?.pageSize
+				),
+				pageNumber: data?.pagingInfo?.pageNumber,
+			};
+		},
+
+		handleSetSalesHistory(data) {
+			this.dataSalesHistory = data;
+			console.log("dataHistory", this.dataSalesHistory?.items?.length);
 			this.page = {
 				pageTotal: Math.ceil(
 					data?.pagingInfo?.totalItems / data?.pagingInfo?.pageSize
@@ -541,7 +685,7 @@ export default {
 			this.windowWidth = window.innerWidth;
 		},
 
-		HandleGoodExpired(good = {}, type = null) {
+		handleGoodExpired(good = {}, type = null) {
 			if (type) {
 				return (
 					good?.expiryDateTS !== -1 &&
@@ -550,6 +694,10 @@ export default {
 			}
 
 			return good?.isExpired;
+		},
+
+		showLongText(text, length) {
+			return common.commonFunctions.showLongText(text, length);
 		},
 	},
 };

@@ -179,8 +179,10 @@
 						v-if="typeModal"
 						ref="refClientTabs"
 						@loading="handleLoading"
+						:dataSalesHistory="dataSalesHistory"
 						:dataPrepaidCards="dataPrepaidCards"
 						@getPrepaidCard="handleGetPrepaidCard"
+						@getSalesHistory="handleGetSalesHistory"
 						:dataPrepaidServices="dataPrepaidServices"
 						@getPrepaidService="handleGetPrepaidService"
 					/>
@@ -269,6 +271,7 @@ export default {
 		return {
 			typeModal: 0,
 			urlImageAvatar: "",
+			dataSalesHistory: {},
 			dataPrepaidCards: {},
 			dataPrepaidServices: {},
 			registeredDate: Date.now(),
@@ -349,8 +352,8 @@ export default {
 				delete: this.typeModal,
 				cancel: true,
 				confirm: true,
-			}
-		}
+			};
+		},
 	},
 
 	methods: {
@@ -474,6 +477,7 @@ export default {
 			this.urlImageAvatar = "";
 
 			//Reset Prepaid Goods
+			this.dataSalesHistory = {};
 			this.dataPrepaidCards = {};
 			this.dataPrepaidServices = {};
 		},
@@ -646,11 +650,54 @@ export default {
 			}
 		},
 
+		async handleGetSalesHistory({
+			pageNumber = 1,
+			fromDateTS = 1,
+			includeDeleted = false,
+		}) {
+			const data = {
+				pageSize: 10,
+				pageNumber: pageNumber,
+				fromDateTS: fromDateTS,
+				includeDeleted: includeDeleted,
+				clientId: this.dataClient.clientId,
+				clientShopId: this.dataClient.shopId,
+				shopId: session.shopSession.getShopId(),
+				toDateTS: common.momentFunction.DateNowIntoUnix(),
+			};
+
+			try {
+				this.$emit("loading", true);
+				const res = await apis.clientApis.getSalesHistoryByClient(data);
+
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					throw res;
+				}
+
+				if (res.data.isOK) {
+					this.dataSalesHistory = res.data.result;
+
+					this.$refs.refClientTabs &&
+						this.$refs.refClientTabs.handleSetSalesHistory(
+							this.dataSalesHistory
+						);
+
+					this.$emit("loading", false);
+				} else {
+					this.$emit("loading", false);
+				}
+			} catch (errors) {
+				console.log(errors);
+				this.$emit("loading", false);
+			}
+		},
+
 		onClickDelete() {
 			this.$refs.refConfirmModal.showModal({
-				title: 'Delete Client',
-				message: `Are you sure you want to delete client ${this.dataClient.clientName} ?`
-			})
+				title: "Delete Client",
+				message: `Are you sure you want to delete client ${this.dataClient.clientName} ?`,
+			});
 		},
 
 		async handleDeleteClient() {
@@ -660,19 +707,21 @@ export default {
 				country: constant.payload.DEFAULT_COUNTRY,
 				sessionToken: session.shopSession.getSessionToken(),
 				shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
-			}
+			};
 
-			this.$emit('loading', true);
+			this.$emit("loading", true);
 
 			try {
 				const res = await apis.clientApis.deleteClient(data);
 
-				if(res.status !== 200) {
-					this.$emit('loading', false);
-					throw this.$refs.refNotification.showModal({ listMessage: res.errorMessages });
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					throw this.$refs.refNotification.showModal({
+						listMessage: res.errorMessages,
+					});
 				}
 
-				if(res.data.isOK) {
+				if (res.data.isOK) {
 					this.$emit("loadClient");
 
 					this.$emit("loading", false);
@@ -681,10 +730,11 @@ export default {
 				} else {
 					this.$emit("loading", false);
 
-					this.$refs.refNotification.showModal({ listMessage: res.errorMessages });
+					this.$refs.refNotification.showModal({
+						listMessage: res.errorMessages,
+					});
 				}
-			}
-			catch(errors) {
+			} catch (errors) {
 				this.$refs.refNotification.showModal({ listMessage: errors });
 			}
 		},
