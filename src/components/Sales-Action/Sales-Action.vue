@@ -4,26 +4,31 @@
 			static
 			size="xl"
 			hide-footer
+			@hide="resetModal"
 			ref="salesActionModal"
 			header-bg-variant="info"
 			:title="typeAction.text"
 			:no-close-on-backdrop="true"
 			:modal-class="'modal sales-action-modal__modal'"
 		>
-			<div v-if="!typeAction.type"></div>
+			<div v-if="!typeAction.type">
+				<div>Add Sales</div>
+			</div>
 
 			<div v-else>
 				<div>Edit Sales</div>
 			</div>
+			<group-button @confirm="handleAddSales" />
 		</b-modal>
 
-		<select-sales-item 
+		<select-sales-item
 			ref="refSelectSalesItem"
 			:dataGoodList="goodList"
 			:dataCategories="categories"
-			@loading="handleSetLoading" 
+			@loading="handleSetLoading"
 			@getServiceCategory="handleGetServiceCategory"
 			@getProductCategory="handleGetProductCategory"
+			@confirmItemSelected="handleConfirmItemSelected"
 			@getProductByCategory="handleGetProductByCategory"
 			@getServiceByCategory="handleGetServiceByCategory"
 			@resetDataCategoryGood="handleResetDataCategoryGood"
@@ -33,12 +38,14 @@
 </template>
 
 <script>
+import common from "@common";
 import constant from "@constant";
 import apis from "../../lib/apis";
 import session from "@/lib/utils/session";
 
 //Components
 // import Loading from "@components/Loading/Loading.vue";
+import GroupButton from "@components/Group-Button/Group-Button.vue";
 import SelectSalesItem from "@components/Select-Sales-Item/Select-Sales-Item.vue";
 
 const DEFAULT_SALES_ACTION_TYPE = [
@@ -61,12 +68,17 @@ export default {
 			goodList: [],
 			categories: [],
 			typeAction: {},
+			dataClient: {},
+			goodListSelected: {},
+			invoiceDateTimeTS: 0,
+			goodListSelectedShow: [],
 			windowWidth: window.innerWidth,
 		};
 	},
 
 	components: {
 		// Loading,
+		GroupButton,
 		SelectSalesItem,
 	},
 
@@ -88,6 +100,9 @@ export default {
 
 	methods: {
 		showModal(dataModal) {
+			this.dataClient = dataModal.client;
+			this.invoiceDateTimeTS = dataModal.invoiceDateTimeTS;
+
 			this.typeAction =
 				DEFAULT_SALES_ACTION_TYPE[
 					DEFAULT_SALES_ACTION_TYPE.findIndex(
@@ -106,7 +121,6 @@ export default {
 						categories: this.categories,
 					});
 			}
-				
 		},
 
 		hideModal() {
@@ -114,7 +128,7 @@ export default {
 		},
 
 		handleSetLoading(value) {
-			this.$emit('loading', value);
+			this.$emit("loading", value);
 		},
 
 		async handleGetServiceCategory() {
@@ -137,12 +151,14 @@ export default {
 
 				if (res.data.isOK) {
 					this.categories = res.data.result.items;
-					this.handleGetServiceByCategory(res.data.result.items[0]?.serviceCategoryId)
+					this.handleGetServiceByCategory(
+						res.data.result.items[0]?.serviceCategoryId
+					);
 				} else {
 					console.log("error", res);
 				}
 				this.$emit("loading", false);
-				return 
+				return;
 			} catch (errors) {
 				console.log("errors", errors);
 			}
@@ -247,6 +263,54 @@ export default {
 		handleResetDataCategoryGood() {
 			this.goodList = [];
 			this.categories = [];
+		},
+
+		handleAddSales() {
+			const data = {
+				balanceDeduction: 0,
+				balanceMoves: [],
+				bookingId: 0,
+				branchNumber: session.shopSession.getBranchInfo.number,
+				chainId: session.shopSession.chainId,
+				clientId: this.dataClient.clientId,
+				createdById: session.shopSession.getUserAccount.id,
+				createdByName: session.shopSession.getUserAccount.name,
+				createdDateTimeTS: common.momentFunction.DateNowIntoUnix(),
+				deductionPoints: 0,
+				deletedById: 0,
+				deletedByName: "",
+				deletedDateTimeTS: 0,
+				earnedPoints: 0,
+				editedById: 0,
+				editedByName: "",
+				editedDateTimeTS: 0,
+				editedSalesId: 0,
+				hourOfDay: common.momentFunction.GetHours(),
+				invoiceDateTimeTS: this.invoiceDateTimeTS,
+				isSalesConnect: false,
+				notes: "",
+				outstanding: 0,
+				payments: [],
+				salesId: 0,
+				salesItems: [],
+				salesNumber: "",
+				sessionToken: session.shopSession.getSessionToken(),
+				shopId: session.shopSession.getShopId(),
+				shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
+				status: 0,
+				totalAmount: 0,
+			};
+
+			console.log("call data add sales", data, this.goodListSelected);
+		},
+
+		resetModal() {
+			this.dataClient = {};
+		},
+
+		handleConfirmItemSelected(listItemSelected = {}) {
+			this.goodListSelected = listItemSelected;
+			this.goodListSelectedShow = Object.values(this.goodListSelected);
 		},
 	},
 };

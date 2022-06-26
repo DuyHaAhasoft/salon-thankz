@@ -5,17 +5,17 @@
 			size="xl"
 			hide-footer
 			:title="title"
+			@hide="resetModal"
 			header-bg-variant="info"
 			ref="selectSalesItemModal"
 			:no-close-on-backdrop="true"
 			:modal-class="'modal select-sales-item-modal__modal'"
-			@hide="resetModal"
 		>
 			<div class="modal__content">
 				<div class="content__list-good">
 					<good-type
 						:goodTypeSelected="goodTypeSelected"
-						@handleGoodTypeSelect="handleGetGoodCategory" 
+						@handleGoodTypeSelect="handleGetGoodCategory"
 					/>
 				</div>
 				<div class="content__body">
@@ -32,15 +32,16 @@
 					</div>
 					<div class="body__group-button-list-item-select">
 						<div class="group-button-list-item-select__group-button">
-							<group-button 
-								:isShowButton="isShowButton"
+							<group-button
 								:nameButton="nameButton"
+								:isShowButton="isShowButton"
+								@confirm="handleConfirmItemSelected"
 							/>
 						</div>
 						<div class="group-button-list-item-select__list-item-select">
 							<div class="list-item-select__select-staff"></div>
 							<div class="list-item-select__list-item" v-if="iShowSelectedItem">
-								<good-selected 
+								<good-selected
 									:isTypeGood="isTypeGood"
 									:goodListSelected="goodListSelectedShow"
 									@handleDeleteItemSelected="handleDeleteItemSelected"
@@ -70,8 +71,8 @@ import CategoryGood from "@components/Category-Good/Category-Good.vue";
 
 const DEFAULT_CATEGORY_SELECTED = {
 	id: 0,
-	name: ''
-}
+	name: "",
+};
 
 export default {
 	name: "SalonThankzSalesAction",
@@ -87,7 +88,7 @@ export default {
 			title: "Select Sales Item",
 			windowWidth: window.innerWidth,
 			categorySelected: Object.assign({}, DEFAULT_CATEGORY_SELECTED),
-			goodTypeSelected:  Object.values(constant.sales.itemSalesType)[0].id,
+			goodTypeSelected: Object.values(constant.sales.itemSalesType)[0].id,
 		};
 	},
 
@@ -101,17 +102,17 @@ export default {
 	props: {
 		dataCategories: {
 			type: Array,
-			default: function() {
-				return []
-			}
+			default: function () {
+				return [];
+			},
 		},
 
 		dataGoodList: {
 			type: Array,
-			default: function() {
-				return []
-			}
-		}
+			default: function () {
+				return [];
+			},
+		},
 	},
 
 	mounted() {
@@ -139,14 +140,14 @@ export default {
 				confirm: true,
 				delete: false,
 				cancel: true,
-			}
+			};
 		},
 
 		nameButton() {
 			return {
 				confirm: "Confirm",
 				cancel: "Cancel",
-			}
+			};
 		},
 
 		isTypeGood() {
@@ -161,23 +162,23 @@ export default {
 	},
 
 	watch: {
-		'goodTypeSelected': function(before, after) {
-			if(before !== after) {
+		goodTypeSelected: function (before, after) {
+			if (before !== after) {
 				this.goodListSelected = {};
 				this.goodListSelectedShow = [];
 			}
-		}
+		},
 	},
 
 	methods: {
 		showModal(dataModal) {
 			this.goodList = dataModal.goodList;
 			this.categories = dataModal.categories;
-			
-			if(this.isShowModal) {
-				this.$refs.selectSalesItemModal && this.$refs.selectSalesItemModal.show();
-			}
 
+			if (this.isShowModal) {
+				this.$refs.selectSalesItemModal &&
+					this.$refs.selectSalesItemModal.show();
+			}
 		},
 
 		hideModal() {
@@ -200,28 +201,34 @@ export default {
 		},
 
 		async handleGetServiceCategory() {
-			this.$emit('getServiceCategory');
+			this.$emit("getServiceCategory");
 		},
 
 		async handleGetProductCategory() {
-			this.$emit('getProductCategory');
+			this.$emit("getProductCategory");
 		},
 
-		async handleGetProductByCategory({ productCategoryId = 0, productCategoryName = '' }) {
+		async handleGetProductByCategory({
+			productCategoryId = 0,
+			productCategoryName = "",
+		}) {
 			this.categorySelected = {
 				id: productCategoryId,
 				name: productCategoryName,
 			};
-			this.$emit('getProductByCategory', productCategoryId);
+			this.$emit("getProductByCategory", productCategoryId);
 		},
 
-		async handleGetServiceByCategory({ serviceCategoryId = 0, serviceCategoryName = ''}) {
+		async handleGetServiceByCategory({
+			serviceCategoryId = 0,
+			serviceCategoryName = "",
+		}) {
 			this.categorySelected = {
 				id: serviceCategoryId,
 				name: serviceCategoryName,
 			};
 
-			this.$emit('getServiceByCategory', serviceCategoryId);
+			this.$emit("getServiceByCategory", serviceCategoryId);
 		},
 
 		resetModal() {
@@ -231,24 +238,22 @@ export default {
 			this.goodTypeSelected = Object.values(constant.sales.itemSalesType)[0].id;
 			this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 
-			this.$emit('resetDataCategoryGood');
+			this.$emit("resetDataCategoryGood");
 		},
 
-		handleAddGoodSelected({good, type}) {
+		handleAddGoodSelected({ good, type }) {
 			let keyGoodSelectedObj;
 
-			if(type === 1)
-				keyGoodSelectedObj = good.serviceId.toString()
-			else if(type === 2)
-				keyGoodSelectedObj = good.productId.toString()
+			if (type === 1) keyGoodSelectedObj = good.serviceId.toString();
+			else if (type === 2) keyGoodSelectedObj = good.productId.toString();
 
-			if(this.goodListSelected[keyGoodSelectedObj]) {
-				this.goodListSelected[keyGoodSelectedObj].qty+=1;
+			if (this.goodListSelected[keyGoodSelectedObj]) {
+				this.goodListSelected[keyGoodSelectedObj].qty += 1;
 			} else {
 				this.goodListSelected[keyGoodSelectedObj] = {
 					goodInfo: good,
 					qty: 1,
-				}
+				};
 			}
 
 			this.goodListSelectedShow = Object.values(this.goodListSelected);
@@ -257,13 +262,18 @@ export default {
 		},
 
 		handleDeleteItemSelected(itemDelete) {
-			delete this.goodListSelected[itemDelete]
+			delete this.goodListSelected[itemDelete];
 
 			this.goodListSelectedShow = Object.values(this.goodListSelected);
-			console.log('this.goodListSelected', this.goodListSelected)
-			if(!this.goodListSelectedShow.length) {
+			console.log("this.goodListSelected", this.goodListSelected);
+			if (!this.goodListSelectedShow.length) {
 				this.iShowSelectedItem = false;
 			}
+		},
+
+		handleConfirmItemSelected() {
+			this.$emit("confirmItemSelected", this.goodListSelected);
+			this.$refs.selectSalesItemModal.hide();
 		},
 	},
 };

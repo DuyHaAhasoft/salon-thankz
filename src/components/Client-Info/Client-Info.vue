@@ -47,9 +47,7 @@
 				{{ showLongText(client.notes, 30) }}
 			</div>
 
-			<div
-				class="group-button-action content__group-button"
-			>
+			<div class="group-button-action content__group-button">
 				<button @click="handleClickEditClient">Edit</button>
 				<button @click="onClickCalendar">Calendar</button>
 				<button @click="onClickSales">Sales</button>
@@ -83,7 +81,7 @@ export default {
 
 	mounted() {
 		this.$nextTick(() => {
-			window.addEventListener("resize",this.onResize);
+			window.addEventListener("resize", this.onResize);
 		});
 	},
 
@@ -93,7 +91,7 @@ export default {
 
 	computed: {
 		statusScreenTablet() {
-			return this.windowWidth > constant.common.screenSize.maxScreenPhone*1.2;
+			return this.windowWidth > constant.common.screenSize.maxScreenPhone * 1.2;
 		},
 	},
 
@@ -111,7 +109,7 @@ export default {
 		},
 
 		onClickSales() {
-			this.$emit("onClickSales");
+			this.$emit("onClickSales", this.client);
 		},
 
 		onClickShowInfoClient() {

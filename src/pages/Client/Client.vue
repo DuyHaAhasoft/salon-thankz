@@ -116,7 +116,7 @@
 						>
 							<button
 								class="data--btn__btn data--btn__btn--sales"
-								@click="onClickSales"
+								@click="onClickSales(client)"
 							>
 								Sales
 							</button>
@@ -201,7 +201,6 @@
 		<loading v-if="isLoading" class="loading" />
 		<notification ref="refNotification" modalTitle="Notification" />
 		<sales-action ref="refSalesAction" @loading="handleSetLoading" />
-		
 	</div>
 </template>
 
@@ -532,10 +531,13 @@ export default {
 			this.isLoading = valueLoading;
 		},
 
-		onClickSales() {
+		onClickSales(client) {
+			const invoiceDateTimeTS = common.momentFunction.DateNowIntoUnix();
 			this.$refs.refSalesAction.showModal({
 				type: 0,
-			})
+				client: client,
+				invoiceDateTimeTS,
+			});
 		},
 
 		onClickCalendar() {

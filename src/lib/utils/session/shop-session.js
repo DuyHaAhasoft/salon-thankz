@@ -4,9 +4,30 @@ const shopSession = {
         return shopInfo?.shopBasicInfo?.shopId
     },
 
+    getChainId() {
+        const shopInfo = JSON.parse(sessionStorage.getItem("shopInfo"))
+        return shopInfo?.shopBasicInfo?.chainInfo?.chainId
+    },
+
+    getBranchInfo() {
+        const shopInfo = JSON.parse(sessionStorage.getItem("shopInfo"))
+        return {
+            type: shopInfo?.shopBasicInfo?.chainInfo?.branchType,
+            number: shopInfo?.shopBasicInfo?.chainInfo?.branchNumber,
+        }
+    },
+
     getSessionToken() {
         const shopInfo = JSON.parse(sessionStorage.getItem("shopInfo"))
         return shopInfo?.userAuthInfo?.session_token
+    },
+
+    getUserAccount() {
+        const userInfo = JSON.parse(sessionStorage.getItem("shopInfo"))
+        return {
+            name: userInfo?.userAuthInfo?.name ?? '',
+            id: userInfo?.userAuthInfo?.userAccountId ?? 0,
+        }
     },
 
     // ShopInfo

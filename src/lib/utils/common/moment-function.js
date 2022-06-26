@@ -1,6 +1,7 @@
 import moment from 'moment'
 
 const momentFunction = {
+    GetHours,
     FormatDate,
     DateIntoUnix,
     FormatDateTime,
@@ -37,6 +38,10 @@ function FormatDateTime(date) {
 
 function FormatFullDateTime(date) {
     return moment(date).format('dddd, YYYY-MM-DD')
+}
+
+function GetHours() {
+    return moment().hours()
 }
 
 export default momentFunction
