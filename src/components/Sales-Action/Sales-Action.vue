@@ -13,7 +13,7 @@
 		>
 			<div v-if="!typeAction.type" class="modal__add-sales">
 				<div class="add-sales__client-name">
-					{{dataClient.clientName}}
+					{{ dataClient.clientName }}
 				</div>
 				<div class="add-sales__select-item">
 					<div class="select-item__list-category">
@@ -27,35 +27,45 @@
 						<table>
 							<thead>
 								<tr>
-									<th
-										v-for="field in fields"
-										:key="field.text"
-									>
+									<th v-for="field in fields" :key="field.text">
 										{{ field.text }}
 									</th>
 								</tr>
 							</thead>
 							<tbody v-if="isShow">
-								<tr
-									:key="index"
-									v-for="(good, index) in goodListSelectedShow"
-								>
-									<td
-										class="table__table-data table__table-data--sales-item"
-									>
+								<tr :key="index" v-for="(good, index) in goodListSelectedShow">
+									<td class="table__table-data table__table-data--sales-item">
 										{{ good.showDataTable.salesItem }}
 									</td>
 
-									<td
-										class="table__table-data table__table-data--unit-price"
-									>
+									<td class="table__table-data table__table-data--unit-price">
 										{{ good.showDataTable.unitPrice }}
+										<input
+											v-model="good.showDataTable.unitPrice"
+											min="1"
+											type="number"
+											@change="
+												handleUnitPrice(
+													good.showDataTable.goodId,
+													good.showDataTable.unitPrice
+												)
+											"
+										/>
 									</td>
 
-									<td
-										class="table__table-data table__table-data--qty"
-									>
+									<td class="table__table-data table__table-data--qty">
 										{{ good.showDataTable.qTy }}
+										<input
+											v-model="good.showDataTable.qTy"
+											min="1"
+											type="number"
+											@change="
+												handleQty(
+													good.showDataTable.goodId,
+													good.showDataTable.qTy
+												)
+											"
+										/>
 									</td>
 
 									<td
@@ -64,21 +74,15 @@
 										{{ good.showDataTable.discount }}
 									</td>
 
-									<td
-										class="table__table-data table__table-data--amount"
-									>
+									<td class="table__table-data table__table-data--amount">
 										{{ good.showDataTable.amount }}
 									</td>
 
-									<td
-										class="table__table-data table__table-data--staff"
-									>
+									<td class="table__table-data table__table-data--staff">
 										{{ good.showDataTable.staff }}
 									</td>
 
-									<td
-										class="table__table-data table__table-data--sales-type"
-									>
+									<td class="table__table-data table__table-data--sales-type">
 										{{ good.showDataTable.salesType }}
 									</td>
 
@@ -94,7 +98,7 @@
 										{{ good.showDataTable.balanceDeduct }}
 									</td>
 
-									<td 
+									<td
 										class="table__table-data table__table-data--delete"
 										@click="handleDeleteItemSelected(good.showDataTable.goodId)"
 									>
@@ -144,13 +148,15 @@
 							</div>
 						</div>
 						<div>
-							<div v-for="paymentMethod in paymentMethods" :key="paymentMethod.id" @click="handlePaymentSelected(paymentMethod)">
+							<div
+								v-for="paymentMethod in paymentMethods"
+								:key="paymentMethod.id"
+								@click="handlePaymentSelected(paymentMethod)"
+							>
 								{{ paymentMethod.name }}
 							</div>
 						</div>
-						<div>
-
-						</div>
+						<div></div>
 						<div>
 							<v-date-picker
 								v-model="registeredDate"
@@ -169,7 +175,11 @@
 						</div>
 					</div>
 					<div>
-						<group-button @confirm="handleAddSales" @cancel="hideModal" :isShowButton="isShowButton" />
+						<group-button
+							@confirm="handleAddSales"
+							@cancel="hideModal"
+							:isShowButton="isShowButton"
+						/>
 					</div>
 				</div>
 			</div>
@@ -235,8 +245,7 @@ const DEFAULT_FIELD_ITEM = {
 	pointDeduct: { text: "Points Deduct" },
 	balanceDeduct: { text: "Balance Deduct" },
 	delete: { text: "Delete" },
-
-}
+};
 
 export default {
 	name: "SalonThankzSalesAction",
@@ -476,15 +485,21 @@ export default {
 
 		async handleAddSales() {
 			const salesItems = Object.values(this.goodListSelected).map(good => {
-				const goodFormatted =  common.commonFunctions.formatSaleItem(good)
+				const goodFormatted = common.commonFunctions.formatSaleItem(good);
 				this.totalAmount += goodFormatted.amount;
-				return goodFormatted
-			})
-			if(this.paymentSelected[0]) {
+				return goodFormatted;
+			});
+			if (this.paymentSelected[0]) {
 				this.paymentSelected[0].paymentAmount = this.totalAmount;
 			} else {
-				this.outstanding = this.totalAmount
+				this.outstanding = this.totalAmount;
 			}
+
+			console.log(
+				"add",
+				this.paymentSelected[0]?.paymentAmount,
+				this.outstanding
+			);
 
 			const data = {
 				balanceDeduction: 0,
@@ -520,83 +535,87 @@ export default {
 				status: 0,
 				totalAmount: this.totalAmount,
 			};
-			
-			this.$emit('loading', true);
 
-			try {
-				const res = await apis.salesApis.addSales(data);
+			this.$emit("loading", true);
 
-				if(res.status !== 200) {
-					this.$emit('loading', false);
-					throw res;
-				}
+			if (this.outstanding > 0) {
+				if (
+					confirm(
+						`The outstanding is ${this.handleFormatNumber(
+							this.outstanding
+						)}. Do you want to save?`
+					) === true
+				) {
+					try {
+						const res = await apis.salesApis.addSales(data);
 
-				if(res.data.isOK) {
-					this.hideModal();
-					this.resetModal();
+						if (res.status !== 200) {
+							this.$emit("loading", false);
+							throw res;
+						}
+
+						if (res.data.isOK) {
+							this.hideModal();
+							this.resetModal();
+						} else {
+							alert(res.data.errorMessages);
+						}
+
+						this.$emit("loading", false);
+					} catch (errors) {
+						console.log("errors", errors);
+					}
+
+					this.$emit("loading", false);
 				} else {
-						
-					alert(res.data.errorMessages)
+					this.totalAmount = 0;
+					this.outstanding = 0;
+					this.$emit("loading", false);
+				}
+			} else {
+				try {
+					const res = await apis.salesApis.addSales(data);
+
+					if (res.status !== 200) {
+						this.$emit("loading", false);
+						throw res;
+					}
+
+					if (res.data.isOK) {
+						this.hideModal();
+						this.resetModal();
+					} else {
+						alert(res.data.errorMessages);
+					}
+
+					this.$emit("loading", false);
+				} catch (errors) {
+					console.log("errors", errors);
 				}
 
-				this.$emit('loading', false);
+				this.$emit("loading", false);
 			}
-			catch(errors) {
-				console.log('errors', errors)
-			}
-
-			this.$emit('loading', false);
 		},
 
 		resetModal() {
 			this.dataClient = {};
 			this.outstanding = 0;
 			this.totalAmount = 0;
+			this.paymentSelected = [];
 			this.goodListSelected = {};
 			this.goodListSelectedShow = [];
 		},
 
 		handleConfirmItemSelected(listItemSelected = {}) {
-			Object.keys(listItemSelected).forEach( goodKey => {
-				if(this.goodListSelected[goodKey]) {
-					this.goodListSelected[goodKey].qty += listItemSelected[goodKey].qty
+			Object.keys(listItemSelected).forEach(goodKey => {
+				if (this.goodListSelected[goodKey]) {
+					this.goodListSelected[goodKey].qty += listItemSelected[goodKey].qty;
 				} else {
-					this.goodListSelected[goodKey] = listItemSelected[goodKey]
+					this.goodListSelected[goodKey] = listItemSelected[goodKey];
 				}
-			})
-			// this.goodListSelected = listItemSelected;
-			this.goodListSelectedShow = Object.values(this.goodListSelected).map(good =>  {
-				good.showDataTable = {
-					goodId: 0,
-					salesItem: '',
-					unitPrice: 0,
-					qTy: 0,
-					discount: 0,
-					amount: 0,
-					staff: '',
-					salesType: '',
-					pointDeduct: 0,
-					balanceDeduct: 0,
-				}
-
-				if(good.type === constant.sales.services) {
-					good.showDataTable.qTy = good.qty;
-					good.showDataTable.goodId = good.goodInfo.serviceId;
-					good.showDataTable.unitPrice = good.goodInfo.price;
-					good.showDataTable.salesItem = good.goodInfo.serviceName;
-					good.showDataTable.amount = good.goodInfo.price * good.qty;
-				}
-
-				if(good.type === constant.sales.products) {
-					good.showDataTable.qTy = good.qty;
-					good.showDataTable.goodId = good.goodInfo.productId;
-					good.showDataTable.unitPrice = good.goodInfo.retailPrice;
-					good.showDataTable.salesItem = good.goodInfo.productName;
-					good.showDataTable.amount = good.goodInfo.retailPrice * good.qty;
-				}
-
-				return good
 			});
+			// this.goodListSelected = listItemSelected;
+			this.goodListSelectedShow = this.handleFormatDataSalesItem();
 		},
 
 		handleDeleteItemSelected(itemDelete) {
@@ -606,9 +625,14 @@ export default {
 		},
 
 		handlePaymentSelected(paymentMethod) {
+			console.log(paymentMethod);
+
 			const paidDateTimeTS = common.momentFunction.DateIntoUnix();
 
-			const paymentMethodFormatted = common.commonFunctions.formatPaymentMethod(paymentMethod, paidDateTimeTS);
+			const paymentMethodFormatted = common.commonFunctions.formatPaymentMethod(
+				paymentMethod,
+				paidDateTimeTS
+			);
 
 			this.paymentSelected = [paymentMethodFormatted];
 		},
@@ -630,17 +654,80 @@ export default {
 
 		handleShowSelectSalesItem() {
 			this.$refs.refSelectSalesItem &&
-			this.$refs.refSelectSalesItem.showModal({
-				typeGood: this.typeGood,
-				goodList: this.goodList,
-				categories: this.categories,
-			});
+				this.$refs.refSelectSalesItem.showModal({
+					typeGood: this.typeGood,
+					goodList: this.goodList,
+					categories: this.categories,
+				});
 		},
 
 		handleResetGoodType() {
 			this.typeGood = 1;
 			this.goodTypeSelected = Object.values(constant.sales.itemSalesType)[0].id;
-		}
+		},
+
+		handleQty(id, qty) {
+			this.goodListSelected[id.toString()].qty = qty;
+			this.goodListSelectedShow = this.handleFormatDataSalesItem();
+		},
+
+		handleUnitPrice(id, unitPrice) {
+			const typeGood = this.goodListSelected[id.toString()].type;
+			if (typeGood === 1) {
+				this.goodListSelected[id.toString()].goodInfo.price = unitPrice;
+			}
+
+			if (typeGood === 2) {
+				this.goodListSelected[id.toString()].goodInfo.retailPrice = unitPrice;
+			}
+
+			this.goodListSelectedShow = this.handleFormatDataSalesItem();
+		},
+
+		handleFormatDataSalesItem() {
+			const dataFormatted = Object.values(this.goodListSelected).map(good => {
+				good.showDataTable = {
+					goodId: 0,
+					salesItem: "",
+					unitPrice: 0,
+					qTy: 0,
+					discount: 0,
+					amount: 0,
+					staff: "",
+					salesType: "",
+					pointDeduct: 0,
+					balanceDeduct: 0,
+				};
+
+				if (good.type === constant.sales.services) {
+					good.showDataTable.qTy = good.qty;
+					good.showDataTable.goodId = good.goodInfo.serviceId;
+					good.showDataTable.unitPrice = good.goodInfo.price;
+					good.showDataTable.salesItem = good.goodInfo.serviceName;
+					good.showDataTable.amount = good.goodInfo.price * good.qty;
+				}
+
+				if (good.type === constant.sales.products) {
+					good.showDataTable.qTy = good.qty;
+					good.showDataTable.goodId = good.goodInfo.productId;
+					good.showDataTable.unitPrice = good.goodInfo.retailPrice;
+					good.showDataTable.salesItem = good.goodInfo.productName;
+					good.showDataTable.amount = good.goodInfo.retailPrice * good.qty;
+				}
+
+				return good;
+			});
+
+			return dataFormatted;
+		},
+
+		handleFormatNumber(data) {
+			let number = 0;
+			if (data > 0) {
+				number = common.commonFunctions.formatMoneyNumber(data);
+			}
+			return number;
+		},
 	},
 };
 </script>

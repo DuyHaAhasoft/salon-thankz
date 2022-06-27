@@ -1,8 +1,25 @@
 .good-selected {
+    padding: 10px 0px 0px 4px;
+
     .good-selected__good-type {
         .good-type__item {
             gap: 5px;
             display: flex;
+            margin-bottom: 4px;
+
+            .item__name {
+                max-width: 60%;
+                width: max-content;
+            }
+
+            .item__qty {
+                max-width: 20%;
+            }
+
+            .item__delete {
+                max-width: 20%;
+                text-align: right;
+            }
         }
     }
 }

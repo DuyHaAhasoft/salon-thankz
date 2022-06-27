@@ -189,17 +189,19 @@ export default {
 		},
 
 		handleGetGoodCategory(typeGood) {
-			this.typeGood = typeGood;
-			this.goodTypeSelected = typeGood;
+			if (confirm("Change Data") === true) {
+				this.typeGood = typeGood;
+				this.goodTypeSelected = typeGood;
 
-			if (typeGood === constant.sales.services) {
-				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
-				this.handleGetServiceCategory();
-			}
+				if (typeGood === constant.sales.services) {
+					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+					this.handleGetServiceCategory();
+				}
 
-			if (typeGood === constant.sales.products) {
-				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
-				this.handleGetProductCategory();
+				if (typeGood === constant.sales.products) {
+					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+					this.handleGetProductCategory();
+				}
 			}
 		},
 
@@ -240,8 +242,8 @@ export default {
 			this.iShowSelectedItem = false;
 			this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 			this.goodTypeSelected = Object.values(constant.sales.itemSalesType)[0].id;
-			
-			this.$emit('resetGoodType');
+
+			this.$emit("resetGoodType");
 			this.$emit("resetDataCategoryGood");
 		},
 
@@ -258,7 +260,7 @@ export default {
 					qty: 1,
 					type: type,
 					goodInfo: good,
-					categoryInfo : category,
+					categoryInfo: category,
 				};
 			}
 
@@ -271,7 +273,7 @@ export default {
 			delete this.goodListSelected[itemDelete];
 
 			this.goodListSelectedShow = Object.values(this.goodListSelected);
-			
+
 			if (!this.goodListSelectedShow.length) {
 				this.iShowSelectedItem = false;
 			}

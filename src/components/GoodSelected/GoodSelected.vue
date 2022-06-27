@@ -1,60 +1,85 @@
 <template>
-  <div class="good-selected">
-    <div v-if="isTypeGood.services" class="good-selected__good-type">
-        <div class="good-type__item" v-for="(goodSelected, index) in goodListSelected" :key="index">
-            <div>{{goodSelected.goodInfo.serviceName}}</div>
-            <div>{{goodSelected.qty}}</div>
-            <div @click="handleDeleteItem(goodSelected, 1)">X</div>
-        </div>
-    </div>
-    <div v-if="isTypeGood.products" class="good-selected__good-type">
-        <div class="good-type__item" v-for="(goodSelected, index) in goodListSelected" :key="index">
-            <div>{{goodSelected.goodInfo.productName}}</div>
-            <div>{{goodSelected.qty}}</div>
-            <div @click="handleDeleteItem(goodSelected, 2)">X</div>
-        </div>
-    </div>
-    <div v-if="isTypeGood.prepaidCard" class="good-selected__good-type"></div>
-    <div v-if="isTypeGood.prepaidService" class="good-selected__good-type"></div>
-    <div v-if="isTypeGood.packages" class="good-selected__good-type"></div>
-  </div>
+	<div class="good-selected">
+		<div v-if="isTypeGood.services" class="good-selected__good-type">
+			<div
+				class="good-type__item"
+				v-for="(goodSelected, index) in goodListSelected"
+				:key="index"
+			>
+				<div class="item__name">{{ goodSelected.goodInfo.serviceName }}</div>
+				<input
+					min="1"
+					type="number"
+					class="item__qty"
+					v-model="goodSelected.qty"
+				/>
+				<div class="item__delete" @click="handleDeleteItem(goodSelected, 1)">
+					X
+				</div>
+			</div>
+		</div>
+		<div v-if="isTypeGood.products" class="good-selected__good-type">
+			<div
+				class="good-type__item"
+				v-for="(goodSelected, index) in goodListSelected"
+				:key="index"
+			>
+				<div>{{ goodSelected.goodInfo.productName }}</div>
+				<input v-model="goodSelected.qty" type="number" min="1" />
+				<div>{{ goodSelected.qty }}</div>
+				<div @click="handleDeleteItem(goodSelected, 2)">X</div>
+			</div>
+		</div>
+		<div v-if="isTypeGood.prepaidCard" class="good-selected__good-type"></div>
+		<div
+			v-if="isTypeGood.prepaidService"
+			class="good-selected__good-type"
+		></div>
+		<div v-if="isTypeGood.packages" class="good-selected__good-type"></div>
+	</div>
 </template>
 
 <script>
 export default {
-    mounted() {},
-    
-    props: {
-        isTypeGood: {
-            type: Object,
-            default: function() {
-                return {};
-            }
-        },
+	mounted() {},
 
-        goodListSelected: {
-            type: Array,
-            default: function() {
-                return [];
-            }
-        }
-    },
+	props: {
+		isTypeGood: {
+			type: Object,
+			default: function () {
+				return {};
+			},
+		},
 
-    computed: {},
+		goodListSelected: {
+			type: Array,
+			default: function () {
+				return [];
+			},
+		},
+	},
 
-    methods: {
-        handleDeleteItem(item, type) {
-            if(type === 1){
-                this.$emit('handleDeleteItemSelected', item.goodInfo.serviceId.toString())
-            }
-            if(type === 2){
-                this.$emit('handleDeleteItemSelected', item.goodInfo.productId.toString())
-            }
-        },
-    },
-}
+	computed: {},
+
+	methods: {
+		handleDeleteItem(item, type) {
+			if (type === 1) {
+				this.$emit(
+					"handleDeleteItemSelected",
+					item.goodInfo.serviceId.toString()
+				);
+			}
+			if (type === 2) {
+				this.$emit(
+					"handleDeleteItemSelected",
+					item.goodInfo.productId.toString()
+				);
+			}
+		},
+	},
+};
 </script>
 
 <style lang="scss" scoped>
-    @import "./GoodSelected.scss";
+@import "./GoodSelected.scss";
 </style>
