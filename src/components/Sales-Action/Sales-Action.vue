@@ -120,7 +120,7 @@
 						<div>
 							<div>
 								<span>Total Amount</span>
-								<span></span>
+								<span>{{ totalAmount }}</span>
 							</div>
 							<div>
 								<span>Point Deduction</span>
@@ -132,7 +132,7 @@
 							</div>
 							<div>
 								<span>Outstanding</span>
-								<span></span>
+								<span>{{ outstanding }}</span>
 							</div>
 							<div>
 								<span>Earn Loyalty Points</span>
@@ -255,6 +255,7 @@ export default {
 			title: "",
 			typeGood: 1,
 			goodList: [],
+			salesPaid: 0,
 			categories: [],
 			typeAction: {},
 			dataClient: {},
@@ -486,18 +487,19 @@ export default {
 		async handleAddSales() {
 			const salesItems = Object.values(this.goodListSelected).map(good => {
 				const goodFormatted = common.commonFunctions.formatSaleItem(good);
-				this.totalAmount += goodFormatted.amount;
+				// this.totalAmount += goodFormatted.amount;
 				return goodFormatted;
 			});
 			if (this.paymentSelected[0]) {
-				this.paymentSelected[0].paymentAmount = this.totalAmount;
+				this.paymentSelected[0].paymentAmount = this.salesPaid;
 			} else {
-				this.outstanding = this.totalAmount;
+				// this.outstanding = this.totalAmount;
 			}
 
 			console.log(
 				"add",
 				this.paymentSelected[0]?.paymentAmount,
+				this.salesPaid,
 				this.outstanding
 			);
 
@@ -568,8 +570,8 @@ export default {
 
 					this.$emit("loading", false);
 				} else {
-					this.totalAmount = 0;
-					this.outstanding = 0;
+					// this.totalAmount = 0;
+					// this.outstanding = 0;
 					this.$emit("loading", false);
 				}
 			} else {
@@ -598,6 +600,7 @@ export default {
 		},
 
 		resetModal() {
+			this.salesPaid = 0;
 			this.dataClient = {};
 			this.outstanding = 0;
 			this.totalAmount = 0;
@@ -625,7 +628,8 @@ export default {
 		},
 
 		handlePaymentSelected(paymentMethod) {
-			console.log(paymentMethod);
+			this.outstanding = 0;
+			this.salesPaid = this.totalAmount;
 
 			const paidDateTimeTS = common.momentFunction.DateIntoUnix();
 
@@ -685,6 +689,9 @@ export default {
 		},
 
 		handleFormatDataSalesItem() {
+			this.totalAmount = 0;
+			this.outstanding = 0;
+
 			const dataFormatted = Object.values(this.goodListSelected).map(good => {
 				good.showDataTable = {
 					goodId: 0,
@@ -715,8 +722,13 @@ export default {
 					good.showDataTable.amount = good.goodInfo.retailPrice * good.qty;
 				}
 
+				this.totalAmount +=
+					good.showDataTable.unitPrice * good.showDataTable.qTy;
+
 				return good;
 			});
+
+			this.outstanding = this.totalAmount - this.salesPaid;
 
 			return dataFormatted;
 		},
