@@ -31,13 +31,13 @@
 		<div class="good">
 			<div v-if="isTypeGood.products">
 				<div class="good__title">{{ categorySelected.id ? categorySelected.name : (categories.length && categories[0].productCategoryName) }}</div>
-				<div class="good__item" v-for="good in goodList" :key="good.productId" @click="handleAddGood(good, 2)">
+				<div class="good__item" v-for="good in goodList" :key="good.productId" @click="handleAddGood(good, 2, categorySelected)">
 					<span>{{ good.productName }}</span><span class="item__price">({{ handleFormatNumber(good.retailPrice) }})</span>
 				</div>
 			</div>
 			<div v-if="isTypeGood.services">
 				<div class="good__title">{{ categorySelected.id ? categorySelected.name : (categories.length && categories[0].serviceCategoryName) }}</div>
-				<div class="good__item" v-for="good in goodList" :key="good.serviceId" @click="handleAddGood(good, 1)">
+				<div class="good__item" v-for="good in goodList" :key="good.serviceId" @click="handleAddGood(good, 1, categorySelected)">
 					<span>{{ good.serviceName }}</span><span class="item__price">({{ handleFormatNumber(good.price) }})</span>
 				</div>
 			</div>
@@ -128,8 +128,28 @@ export default {
 			return number
 		},
 
-		handleAddGood(good = null, type = 0) {
-			this.$emit('handleAddGoodSelected', { good, type })
+		handleAddGood(good = null, type = 0, categorySelected = null) {
+			let category = {
+				id: 0,
+				name: null
+			};
+
+			if(categorySelected.id === 0) {
+				if(type === 1) {
+					category.id = this.categories[0].serviceCategoryId;
+					category.name = this.categories[0].serviceCategoryName;
+				}
+
+				if(type === 2) {
+					category.id = this.categories[0].productCategoryId;
+					category.name = this.categories[0].productCategoryName;
+				}
+				
+			} else {
+				category = categorySelected
+			}
+
+			this.$emit('handleAddGoodSelected', { good, type, category })
 		},
 	},
 };

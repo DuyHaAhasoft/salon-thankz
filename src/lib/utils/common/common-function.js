@@ -5,9 +5,11 @@ const commonFunctions = {
     concatURL,
     exportExcel,
     showLongText,
+    formatSaleItem,
     formatPhoneNumber,
     formatMoneyNumber,
     trimAllDataObject,
+    formatPaymentMethod,
     covertSizeFileIntoMB,
 }
 
@@ -132,6 +134,74 @@ function showLongText(text, length = 100) {
         return text.substring(0, length) + "...";
     }
     return text;
+}
+
+function formatSaleItem(item) {
+    let goodId = 0;
+    let goodName = '';
+
+    if(item.type === 1) {
+        goodId = item.goodInfo.serviceId;
+        goodName = item.goodInfo.serviceName;
+    }
+
+    if(item.type === 2) {
+        goodId = item.goodInfo.productId;
+        goodName = item.goodInfo.productName;
+    }
+
+    return {
+            amount: item.goodInfo.price * item.qty,
+			clientPrepaidGoodsId: 0,
+			deductedByPrepaidGoodsGuid: "",
+			deductedPrepaidGoodsRef: 0,
+			deductedPrepaidGoodsRefName: "",
+			deductionAmount: 0,
+			deductionPoints: 0,
+			deductionType: 0,
+			discountCategoryId: 0,
+			discountCategoryName: "",
+			discountForClient: false,
+			discountForProduct: 0,
+			discountForService: 0,
+			discountType: 2,
+			discountValue: 0,
+			giftCardType: 0,
+			goodsCategoryId: item.categoryInfo.id,
+			goodsCategoryName: item.categoryInfo.name,
+			goodsId: goodId,
+			goodsName: goodName,
+			goodsType: item.type,
+			isCustomizePrepaidGoods: false,
+			prepaidCardInitialBalance: 0,
+			prepaidCardType: 0,
+			prepaidGoodsExpiryDateTS: 0,
+			prepaidGoodsGuid: "",
+			prepaidServiceInitialQuantity: 0,
+			productCode: "",
+			quantity: item.qty,
+			relatedServiceId: 0,
+			relatedServiceName: "",
+			relatedServiceUnitPrice: 0,
+			salesItemId: 0,
+			salesTypeId: null,
+			salesTypeName: "",
+			smallCutDiscountEnumDefault: 0,
+			staffs: [],
+			supplierPrice: 0,
+			unitPrice: item.goodInfo.price,
+    }
+}
+
+function formatPaymentMethod(paymentMethod, paidDateTimeTS) {
+    return {
+        paidDateTimeTS: paidDateTimeTS,
+        paymentAmount: 0,
+        paymentMethodId: paymentMethod.id,
+        paymentMethodName: paymentMethod.name,
+        paymentType: 1,
+        salesPaymentId: 0,
+    }
 }
 
 export default commonFunctions

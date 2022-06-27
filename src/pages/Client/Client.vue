@@ -264,6 +264,7 @@ export default {
 			window.addEventListener("resize", this.onResize);
 		});
 		this.loadDataClient();
+		this.handleSetAllSetupSales();
 	},
 
 	beforeDestroy() {
@@ -423,6 +424,7 @@ export default {
 		clickSignout() {
 			session.shopSession.removeShopInfo();
 			session.shopSession.removeStaffActive();
+			session.saleSession.removeSaleAllSetup();
 			session.clientSession.removeClientSetup();
 			this.$router.push("/login");
 		},
@@ -558,6 +560,38 @@ export default {
 		onClickShowInfoClient() {
 			this.isShowClientInfo = !this.isShowClientInfo;
 		},
+
+		async handleSetAllSetupSales() {
+			const data = {
+				status: 1,
+				shopId: session.shopSession.getShopId(),
+			}
+
+			this.isLoading = true;
+
+			try {
+				const res = await apis.salesApis.getAllSalesSetup(data);
+
+				if(res.status !== 200) {
+					this.isLoading = false;
+					throw res;
+				}
+
+				if(res.data.isOK) {
+					await session.saleSession.setSaleAllSetup(res.data.result);
+				}
+				else {
+					alert(res.errorMessages)
+				}
+
+				this.isLoading = false;
+
+			}
+			catch (errors) {
+				this.isLoading = false;
+				console.log('errors', errors)
+			}
+		}
 	},
 };
 </script>

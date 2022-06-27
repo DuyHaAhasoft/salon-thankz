@@ -53,6 +53,7 @@ export default {
 
         handleClickGoodType(goodType) {
             this.$emit('handleGoodTypeSelect', goodType.id);
+			this.$emit('handleShowSelectSalesItem');
         }
     },
 };

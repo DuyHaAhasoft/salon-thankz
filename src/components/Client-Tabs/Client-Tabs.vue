@@ -61,16 +61,6 @@
 									</td>
 
 									<td
-										class="table__table-data table__table-data--sales-history-staffs"
-									>
-										<div v-for="(item, index) in sales.items" :key="index">
-											<div v-for="(staff, index) in item.staffs" :key="index">
-												{{ staff && showLongText(staff.staffName, 10) }}
-											</div>
-										</div>
-									</td>
-
-									<td
 										class="table__table-data table__table-data--sales-history-amount"
 									>
 										{{ handleFormatNumber(sales.totalAmount) }}
@@ -92,15 +82,15 @@
 									<td
 										class="table__table-data table__table-data--sales-history-pay-amount"
 									>
-										<div>
+										<div v-if="sales.outstanding">
+											-{{ handleFormatNumber(sales.outstanding) }}
+										</div>
+										<div v-else>
 											{{
 												handleFormatNumber(
-													sales.totalAmount - sales.outstanding
+													sales.totalAmount
 												)
 											}}
-										</div>
-										<div v-if="sales.outstanding">
-											{{ handleFormatNumber(sales.outstanding) }}
 										</div>
 									</td>
 
@@ -281,6 +271,7 @@
 						</b-form-checkbox>
 					</div>
 					<table
+						responsive
 						class="table tab__table"
 						v-if="statusScreenLaptop || !isShow.service"
 					>
@@ -433,7 +424,6 @@ const DEFAULT_FIELDS_TABLE = {
 	salesHistory: {
 		invoiceDateTimeTS: { text: "Date" },
 		itemName: { text: "Sales Items" },
-		staffs: { text: "Staff" },
 		totalAmount: { text: "Amount" },
 		payments: { text: "Payment Method" },
 		payAmount: { text: "Pay Amount" },

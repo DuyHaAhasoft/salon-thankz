@@ -34,6 +34,7 @@
 						<div class="group-button-list-item-select__group-button">
 							<group-button
 								:nameButton="nameButton"
+								@cancel="handleCloseModal"
 								:isShowButton="isShowButton"
 								@confirm="handleConfirmItemSelected"
 							/>
@@ -172,8 +173,10 @@ export default {
 
 	methods: {
 		showModal(dataModal) {
+			this.typeGood = dataModal.typeGood;
 			this.goodList = dataModal.goodList;
 			this.categories = dataModal.categories;
+			this.goodTypeSelected = dataModal.typeGood;
 
 			if (this.isShowModal) {
 				this.$refs.selectSalesItemModal &&
@@ -235,13 +238,14 @@ export default {
 			this.typeGood = 1;
 			this.goodListSelected = {};
 			this.iShowSelectedItem = false;
-			this.goodTypeSelected = Object.values(constant.sales.itemSalesType)[0].id;
 			this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
-
+			this.goodTypeSelected = Object.values(constant.sales.itemSalesType)[0].id;
+			
+			this.$emit('resetGoodType');
 			this.$emit("resetDataCategoryGood");
 		},
 
-		handleAddGoodSelected({ good, type }) {
+		handleAddGoodSelected({ good, type, category }) {
 			let keyGoodSelectedObj;
 
 			if (type === 1) keyGoodSelectedObj = good.serviceId.toString();
@@ -251,8 +255,10 @@ export default {
 				this.goodListSelected[keyGoodSelectedObj].qty += 1;
 			} else {
 				this.goodListSelected[keyGoodSelectedObj] = {
-					goodInfo: good,
 					qty: 1,
+					type: type,
+					goodInfo: good,
+					categoryInfo : category,
 				};
 			}
 
@@ -265,15 +271,20 @@ export default {
 			delete this.goodListSelected[itemDelete];
 
 			this.goodListSelectedShow = Object.values(this.goodListSelected);
-			console.log("this.goodListSelected", this.goodListSelected);
+			
 			if (!this.goodListSelectedShow.length) {
 				this.iShowSelectedItem = false;
 			}
 		},
 
 		handleConfirmItemSelected() {
+			// const listItemSelected = this.goodListSelectedShow;
 			this.$emit("confirmItemSelected", this.goodListSelected);
 			this.$refs.selectSalesItemModal.hide();
+		},
+
+		handleCloseModal() {
+			this.hideModal();
 		},
 	},
 };

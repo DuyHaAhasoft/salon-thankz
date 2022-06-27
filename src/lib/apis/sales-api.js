@@ -20,6 +20,11 @@ const salesApis = {
     addSales(payload) {
         const url = '/api/cmd/v1/sales/Sales'
         return http.post(url, payload)
+    },
+
+    getAllSalesSetup(payload) {
+        const url = '/api/read/v1/sales/SalesSetup/AllSalesSetups/Live'
+        return http.post(url, payload)
     }
 }
 
