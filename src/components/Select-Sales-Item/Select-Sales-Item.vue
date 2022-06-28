@@ -42,11 +42,12 @@
 						<div class="group-button-list-item-select__list-item-select">
 							<div class="list-item-select__select-staff"></div>
 							<div class="list-item-select__list-item" v-if="iShowSelectedItem">
+								<div class="list-item__title">{{ goodTypeSelectedName }} Selected</div>
 								<good-selected
 									:isTypeGood="isTypeGood"
 									:goodListSelected="goodListSelectedShow"
 									@handleDeleteItemSelected="handleDeleteItemSelected"
-								/>
+									/>
 							</div>
 						</div>
 					</div>
@@ -90,6 +91,7 @@ export default {
 			windowWidth: window.innerWidth,
 			categorySelected: Object.assign({}, DEFAULT_CATEGORY_SELECTED),
 			goodTypeSelected: Object.values(constant.sales.itemSalesType)[0].id,
+			goodTypeSelectedName: Object.values(constant.sales.itemSalesType)[0].text,
 		};
 	},
 
@@ -166,6 +168,7 @@ export default {
 		goodTypeSelected: function (before, after) {
 			if (before !== after) {
 				this.goodListSelected = {};
+				this.iShowSelectedItem = false;
 				this.goodListSelectedShow = [];
 			}
 		},
@@ -177,6 +180,9 @@ export default {
 			this.goodList = dataModal.goodList;
 			this.categories = dataModal.categories;
 			this.goodTypeSelected = dataModal.typeGood;
+
+			const itemSalesTypeArray = Object.values(constant.sales.itemSalesType)
+			this.goodTypeSelectedName = itemSalesTypeArray[itemSalesTypeArray.findIndex(item =>  item.id === this.goodTypeSelected)].text
 
 			if (this.isShowModal) {
 				this.$refs.selectSalesItemModal &&
@@ -192,6 +198,10 @@ export default {
 			if (confirm("Change Data") === true) {
 				this.typeGood = typeGood;
 				this.goodTypeSelected = typeGood;
+
+				const itemSalesTypeArray = Object.values(constant.sales.itemSalesType)
+				this.goodTypeSelectedName = itemSalesTypeArray[itemSalesTypeArray.findIndex(item =>  item.id === this.goodTypeSelected)].text
+				
 
 				if (typeGood === constant.sales.services) {
 					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
@@ -242,6 +252,7 @@ export default {
 			this.iShowSelectedItem = false;
 			this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 			this.goodTypeSelected = Object.values(constant.sales.itemSalesType)[0].id;
+			this.goodTypeSelectedName = Object.values(constant.sales.itemSalesType)[0].text,
 
 			this.$emit("resetGoodType");
 			this.$emit("resetDataCategoryGood");

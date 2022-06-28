@@ -1,7 +1,36 @@
 <template>
 	<div class="good-selected">
 		<div v-if="isTypeGood.services" class="good-selected__good-type">
-			<div
+			<table>
+				<thead>
+					<tr>
+						<th v-for="field in fields" :key="field.text">
+							{{ field.text }}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr 
+						:key="index"
+						class="good-type__table-data"
+						v-for="(goodSelected, index) in goodListSelected"
+					>
+						<td class="table-data__name">{{ goodSelected.goodInfo.serviceName }}</td>
+						<td class="table-data__qty">
+							<input
+								min="1"
+								type="number"
+								class="item__qty"
+								v-model="goodSelected.qty"
+							/>
+						</td>
+						<td class="table-data__btn">
+							<button class="btn--del" @click="handleDeleteItem(goodSelected, 1)">X</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<!-- <div
 				class="good-type__item"
 				v-for="(goodSelected, index) in goodListSelected"
 				:key="index"
@@ -16,10 +45,39 @@
 				<div class="item__delete" @click="handleDeleteItem(goodSelected, 1)">
 					X
 				</div>
-			</div>
+			</div> -->
 		</div>
 		<div v-if="isTypeGood.products" class="good-selected__good-type">
-			<div
+			<table>
+				<thead>
+					<tr>
+						<th v-for="field in fields" :key="field.text">
+							{{ field.text }}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr 
+						:key="index"
+						class="good-type__table-data"
+						v-for="(goodSelected, index) in goodListSelected"
+					>
+						<td class="table-data__name">{{ showLongText(goodSelected.goodInfo.productName, 15) }}</td>
+						<td class="table-data__qty">
+							<input
+								min="1"
+								type="number"
+								class="item__qty"
+								v-model="goodSelected.qty"
+							/>
+						</td>
+						<td class="table-data__btn">
+							<button class="btn--del" @click="handleDeleteItem(goodSelected, 2)">X</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<!-- <div
 				class="good-type__item"
 				v-for="(goodSelected, index) in goodListSelected"
 				:key="index"
@@ -28,7 +86,7 @@
 				<input v-model="goodSelected.qty" type="number" min="1" />
 				<div>{{ goodSelected.qty }}</div>
 				<div @click="handleDeleteItem(goodSelected, 2)">X</div>
-			</div>
+			</div> -->
 		</div>
 		<div v-if="isTypeGood.prepaidCard" class="good-selected__good-type"></div>
 		<div
@@ -40,7 +98,22 @@
 </template>
 
 <script>
+
+import common from "@common";
+
+const DEFAULT_FIELDS_SELECTED_ITEM = {
+	item: { text: "Selected Items" },
+	qty: { text: "Qty" },
+	del: { text: "Del" },
+}
+
 export default {
+	data() {
+		return {
+			fields: Object.assign({}, DEFAULT_FIELDS_SELECTED_ITEM)
+		}
+	},
+
 	mounted() {},
 
 	props: {
@@ -75,6 +148,10 @@ export default {
 					item.goodInfo.productId.toString()
 				);
 			}
+		},
+
+		showLongText(text, length) {
+			return common.commonFunctions.showLongText(text, length);
 		},
 	},
 };

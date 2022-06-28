@@ -2,23 +2,63 @@
     padding: 10px 0px 0px 4px;
 
     .good-selected__good-type {
-        .good-type__item {
-            gap: 5px;
-            display: flex;
-            margin-bottom: 4px;
+        padding: 10px 5px;
+        border-spacing: 0px;
+        border-collapse: unset;
+        width: calc(100% - 20px);
 
-            .item__name {
-                max-width: 60%;
-                width: max-content;
+        th, td {
+            font-size: 14px;
+            padding: 5px 10px;
+            vertical-align: middle;
+        }
+
+        thead {
+
+            tr {
+
+                th {
+                    border: 0px;
+                    font-size: 15px;
+                    padding: 10px 0px;
+                    font-weight: 400;
+                    text-align: center;
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    background-color: rgba(240, 240, 240, 1);
+                }
+            }
+        }
+
+        tbody {
+            tr {
+
+                td {
+                    border-bottom: 1px solid rgba(240, 240, 240, 1);
+                }
+            }
+            
+            tr:hover {
+                background-color: rgb(248, 248, 248);
+            }
+        }
+
+        .good-type__table-data {
+            width: 100%;
+            .table-data__name {
+                width: 40%;
             }
 
-            .item__qty {
-                max-width: 20%;
+            .table-data__qty {
+                max-width: 25%;
             }
 
-            .item__delete {
-                max-width: 20%;
-                text-align: right;
+            .table-data__btn {
+                width: 20%;
+
+                .btn--del {
+                    background-color: #ffff;
+                    border: 0;
+                }
             }
         }
     }

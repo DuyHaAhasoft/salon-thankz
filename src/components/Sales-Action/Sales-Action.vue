@@ -39,11 +39,10 @@
 									</td>
 
 									<td class="table__table-data table__table-data--unit-price">
-										{{ good.showDataTable.unitPrice }}
 										<input
-											v-model="good.showDataTable.unitPrice"
 											min="1"
 											type="number"
+											v-model="good.showDataTable.unitPrice"
 											@change="
 												handleUnitPrice(
 													good.showDataTable.goodId,
@@ -54,11 +53,10 @@
 									</td>
 
 									<td class="table__table-data table__table-data--qty">
-										{{ good.showDataTable.qTy }}
 										<input
-											v-model="good.showDataTable.qTy"
 											min="1"
 											type="number"
+											v-model="good.showDataTable.qTy"
 											@change="
 												handleQty(
 													good.showDataTable.goodId,
@@ -114,67 +112,75 @@
 						</table>
 					</div>
 				</div>
-				<div>
-					<div>
-						<div>Payment</div>
-						<div>
-							<div>
-								<span>Total Amount</span>
+				<div class="add-sales__content-footer">
+					<div class="content-footer__title">Payment</div>
+					<div class="content-footer__detail">
+						<div class="detail__payment-detail">
+							<div class="payment-detail__total-amount">
+								<span class="payment-detail__title">Total Amount</span>
 								<span>{{ totalAmount }}</span>
 							</div>
-							<div>
-								<span>Point Deduction</span>
-								<span></span>
+							<div class="payment-detail__point-deduction">
+								<span class="payment-detail__title">Point Deduction</span>
+								<span>0</span>
 							</div>
-							<div>
-								<span>Balance Deduction</span>
-								<span></span>
+							<div class="payment-detail__balance-deduction">
+								<span class="payment-detail__title">Balance Deduction</span>
+								<span>0</span>
 							</div>
-							<div>
-								<span>Outstanding</span>
+							<div class="payment-detail__outstanding">
+								<span class="payment-detail__title">Outstanding</span>
 								<span>{{ outstanding }}</span>
 							</div>
-							<div>
-								<span>Earn Loyalty Points</span>
+							<div class="payment-detail__earn-loyalty-points">
+								<span class="payment-detail__title">Earn Loyalty Points</span>
+								<input type="number" min="0" />
+							</div>
+						</div>
+						<div class="detail__deduction-notes-payment-date">
+							<div class="deduction-notes-payment__deduction">
+								<div class="deduction__text">DEDUCTION</div>
+								<div class="deduction__group-button">
+									<button class="group-button__btn group-button__btn--point">Point</button>
+									<button class="group-button__btn group-button__btn--balance">Balance</button>
+								</div>
+							</div>
+							<div class="deduction-notes-payment-date__payment">
+								<div class="payment__title">PAYMENT</div>
+								<div class="payment__payment-method">
+									<button
+										:key="paymentMethod.id"
+										class="payment-method__button"
+										v-for="paymentMethod in paymentMethods"
+										@click="handlePaymentSelected(paymentMethod)"
+									>
+										{{ paymentMethod.name }}
+									</button>
+								</div>
+							</div>
+							<div class="deduction-notes-payment-date__notes">
+								<textarea rows="2" />
+							</div>
+							<div class="deduction-notes-payment-date__date">
+								<span class="date__tittle">Sales Date</span>
+								<v-date-picker
+									v-model="registeredDate"
+									:masks="masks"
+									class="date-picker date__date-picker"
+								>
+									<template v-slot="{ inputValue, inputEvents }">
+										<input
+											class="input-date-picker date-picker__input-date-picker"
+											:value="inputValue"
+											v-on="inputEvents"
+										/>
+									</template>
+								</v-date-picker>
+								<!-- <v-date-picker mode="time" v-model="registeredTime" /> -->
 							</div>
 						</div>
 					</div>
-					<div>
-						<div>
-							<div>DEDUCTION</div>
-							<div>
-								<button>Point</button>
-								<button>Balance</button>
-							</div>
-						</div>
-						<div>
-							<div
-								v-for="paymentMethod in paymentMethods"
-								:key="paymentMethod.id"
-								@click="handlePaymentSelected(paymentMethod)"
-							>
-								{{ paymentMethod.name }}
-							</div>
-						</div>
-						<div></div>
-						<div>
-							<v-date-picker
-								v-model="registeredDate"
-								:masks="masks"
-								class="date-picker group-input--register-date__date-picker"
-							>
-								<template v-slot="{ inputValue, inputEvents }">
-									<input
-										class="input-date-picker date-picker__input-date-picker"
-										:value="inputValue"
-										v-on="inputEvents"
-									/>
-								</template>
-							</v-date-picker>
-							<v-date-picker mode="time" v-model="registeredTime" />
-						</div>
-					</div>
-					<div>
+					<div class="content-footer__group-button">
 						<group-button
 							@confirm="handleAddSales"
 							@cancel="hideModal"
@@ -316,7 +322,14 @@ export default {
 
 	methods: {
 		showModal(dataModal) {
-			this.paymentMethods = session.saleSession.getAllPaymentMethods();
+			// this.paymentMethods = session.saleSession.getAllPaymentMethods();
+			const paymentMethodsName = ['Cash', 'Credit Card'];
+			const setPaymentMethods = session.saleSession.getAllPaymentMethods();
+			setPaymentMethods.forEach(paymentMethod => {
+				if(paymentMethodsName.includes(paymentMethod.name)) {
+					this.paymentMethods.push(paymentMethod)
+				}
+			})
 
 			this.dataClient = dataModal.client;
 			this.invoiceDateTimeTS = dataModal.invoiceDateTimeTS;

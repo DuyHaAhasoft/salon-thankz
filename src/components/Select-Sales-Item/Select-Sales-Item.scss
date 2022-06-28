@@ -4,7 +4,7 @@
     .select-sales-item-modal__modal {
         .modal__content {
             .content__list-good {
-
+                max-width: 100%;
             }
 
             .content__body {
@@ -12,12 +12,12 @@
                 justify-content: space-between;
 
                 .body__category-item {
-                    width: 50vw;
+                    width: 55%;
                     margin-top: 10px;
                 }
 
                 .body__group-button-list-item-select {
-                    width: 50vw;
+                    width: 40%;
 
                     .group-button-list-item-select__group-button {
                         
@@ -29,7 +29,58 @@
                         }
 
                         .list-item-select__list-item {
+                            margin-top: 10px;
+                            border: 1px solid #ccc;
 
+                            .list-item__title {
+                                width: 100%;
+                                margin-top: 10px;
+                                text-align: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 991.98px) {
+    .select-sales-item {
+    
+        .select-sales-item-modal__modal {
+            .modal__content {
+                .content__list-good {
+    
+                }
+    
+                .content__body {
+                    flex-direction: column;
+    
+                    .body__category-item {
+                        width: 100%;
+                        margin-top: 10px;
+                    }
+    
+                    .body__group-button-list-item-select {
+                        width: 100%;
+                        display: flex;
+                        flex-direction: column-reverse;
+    
+                        .group-button-list-item-select__group-button {
+                            
+                        }
+    
+                        .group-button-list-item-select__list-item-select {
+                            .list-item-select__select-staff {
+    
+                            }
+    
+                            .list-item-select__list-item {
+                                .list-item__title {
+
+                                }
+                            }
                         }
                     }
                 }

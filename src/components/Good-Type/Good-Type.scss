@@ -16,3 +16,39 @@
         }
     }
 }
+
+@media (max-width: 991.98px) {
+    .list-good-type {
+        gap: 2px;
+    
+        .good-type {
+
+    
+            &.good-type--selected {
+
+            }
+    
+            &:hover {
+
+            }
+        }
+    }
+}
+
+@media (max-width: 410.98px) {
+    .list-good-type {
+        overflow-x: scroll;
+    
+        .good-type {
+
+    
+            &.good-type--selected {
+
+            }
+    
+            &:hover {
+
+            }
+        }
+    }
+}
