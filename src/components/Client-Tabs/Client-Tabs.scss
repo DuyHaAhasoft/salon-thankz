@@ -114,3 +114,96 @@
         }
     }
 }
+
+@media (max-width: 991.98px) {
+    .client-tabs {
+        .client-tabs__tabs {
+            
+
+            .tabs__tab {
+
+                
+
+                .tab__checkbox {
+                    
+
+                    :nth-child(2) {
+                        
+                    }
+                }
+
+                .tab__sales-history {
+                    
+                }
+
+                .tab__table {
+                    overflow-x: scroll;
+
+                    th, td {
+                        
+                    }
+
+                    thead {
+
+                        tr {
+
+                            th {
+                                
+                            }
+                        }
+                    }
+
+                    tbody {
+
+                        tr {
+
+                            td {
+                                
+                            }
+                        }
+                        
+                        tr:hover {
+                        
+                        }
+                    }
+
+                    .th-no-data {
+                        
+                    }
+
+                    .is-expired {
+                        
+                    }
+
+                    .table__table-data {
+                        &.table__table-data--quantity {
+                            :nth-child(1) {
+                            
+                            }
+                        }
+
+                        .data--btn__btn {
+                            
+
+                            &.data--btn__btn--deduct {
+                                
+                            }
+                        }
+                    }
+
+                    .table__no-data {
+                        text-align: center;
+                    }
+                }
+
+                &.tabs__tab--prepaid-card {
+
+                }
+
+                &.tabs__tab--prepaid-service {
+
+                }
+            }
+        }
+    }
+}

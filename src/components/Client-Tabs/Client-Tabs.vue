@@ -23,10 +23,7 @@
 						</div>
 					</div>
 					<div class="tab__table">
-						<table
-							class="table tab__table"
-							v-if="statusScreenLaptop || !isShow.salesHistory"
-						>
+						<table class="table tab__table">
 							<thead>
 								<tr>
 									<th
@@ -86,11 +83,7 @@
 											-{{ handleFormatNumber(sales.outstanding) }}
 										</div>
 										<div v-else>
-											{{
-												handleFormatNumber(
-													sales.totalAmount
-												)
-											}}
+											{{ handleFormatNumber(sales.totalAmount) }}
 										</div>
 									</td>
 

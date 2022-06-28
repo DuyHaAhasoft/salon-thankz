@@ -134,15 +134,19 @@
 							</div>
 							<div class="payment-detail__earn-loyalty-points">
 								<span class="payment-detail__title">Earn Loyalty Points</span>
-								<input type="number" min="0" />
+								<input type="number" min="0" v-model="salesLoyaltyPoint" />
 							</div>
 						</div>
 						<div class="detail__deduction-notes-payment-date">
 							<div class="deduction-notes-payment__deduction">
 								<div class="deduction__text">DEDUCTION</div>
 								<div class="deduction__group-button">
-									<button class="group-button__btn group-button__btn--point">Point</button>
-									<button class="group-button__btn group-button__btn--balance">Balance</button>
+									<button class="group-button__btn group-button__btn--point">
+										Point
+									</button>
+									<button class="group-button__btn group-button__btn--balance">
+										Balance
+									</button>
 								</div>
 							</div>
 							<div class="deduction-notes-payment-date__payment">
@@ -159,7 +163,7 @@
 								</div>
 							</div>
 							<div class="deduction-notes-payment-date__notes">
-								<textarea rows="2" />
+								<textarea rows="2" v-model="salesNotes" />
 							</div>
 							<div class="deduction-notes-payment-date__date">
 								<span class="date__tittle">Sales Date</span>
@@ -262,6 +266,7 @@ export default {
 			typeGood: 1,
 			goodList: [],
 			salesPaid: 0,
+			salesNotes: "",
 			categories: [],
 			typeAction: {},
 			dataClient: {},
@@ -271,6 +276,7 @@ export default {
 			paymentSelected: [],
 			goodListSelected: {},
 			invoiceDateTimeTS: 0,
+			salesLoyaltyPoint: 0,
 			goodListSelectedShow: [],
 			registeredDate: Date.now(),
 			registeredTime: Date.now(),
@@ -323,13 +329,13 @@ export default {
 	methods: {
 		showModal(dataModal) {
 			// this.paymentMethods = session.saleSession.getAllPaymentMethods();
-			const paymentMethodsName = ['Cash', 'Credit Card'];
+			const paymentMethodsName = ["Cash", "Credit Card"];
 			const setPaymentMethods = session.saleSession.getAllPaymentMethods();
 			setPaymentMethods.forEach(paymentMethod => {
-				if(paymentMethodsName.includes(paymentMethod.name)) {
-					this.paymentMethods.push(paymentMethod)
+				if (paymentMethodsName.includes(paymentMethod.name)) {
+					this.paymentMethods.push(paymentMethod);
 				}
-			})
+			});
 
 			this.dataClient = dataModal.client;
 			this.invoiceDateTimeTS = dataModal.invoiceDateTimeTS;
@@ -356,6 +362,7 @@ export default {
 		},
 
 		hideModal() {
+			this.resetModal();
 			this.$refs.salesActionModal && this.$refs.salesActionModal.hide();
 		},
 
@@ -530,7 +537,7 @@ export default {
 				deletedById: 0,
 				deletedByName: "",
 				deletedDateTimeTS: 0,
-				earnedPoints: 0,
+				earnedPoints: this.salesLoyaltyPoint,
 				editedById: 0,
 				editedByName: "",
 				editedDateTimeTS: 0,
@@ -538,7 +545,7 @@ export default {
 				hourOfDay: common.momentFunction.GetHours(),
 				invoiceDateTimeTS: this.invoiceDateTimeTS,
 				isSalesConnect: false,
-				notes: "",
+				notes: this.salesNotes.trim(),
 				outstanding: this.outstanding,
 				payments: this.paymentSelected,
 				salesId: 0,
@@ -617,8 +624,10 @@ export default {
 			this.dataClient = {};
 			this.outstanding = 0;
 			this.totalAmount = 0;
+			this.salesNotes = "";
 			this.paymentSelected = [];
 			this.goodListSelected = {};
+			this.salesLoyaltyPoint = 0;
 			this.goodListSelectedShow = [];
 		},
 
