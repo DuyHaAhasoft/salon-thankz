@@ -54,6 +54,8 @@
 				</div>
 			</div>
 		</b-modal>
+
+		<notification modalTitle="Notification" ref="refNotification" />
 	</div>
 </template>
 
@@ -64,7 +66,9 @@ import constant from "@constant";
 import GoodType from "@components/Good-Type/Good-Type.vue";
 import GroupButton from "@components/Group-Button/Group-Button.vue";
 import GoodSelected from "@components/GoodSelected/GoodSelected.vue";
+import Notification from "@components/Notification/Notification.vue";
 import CategoryGood from "@components/Category-Good/Category-Good.vue";
+
 
 // const DEFAULT_DATA_CATEGORY = {
 // 	categoryService: {},
@@ -100,6 +104,7 @@ export default {
 		GroupButton,
 		CategoryGood,
 		GoodSelected,
+		Notification,
 	},
 
 	props: {
@@ -195,6 +200,11 @@ export default {
 		},
 
 		handleGetGoodCategory(typeGood) {
+			if(typeGood !== constant.sales.services && typeGood !== constant.sales.products) {
+				this.handleNotification();
+				return
+			}
+
 			if (confirm("Change Data") === true) {
 				this.typeGood = typeGood;
 				this.goodTypeSelected = typeGood;
@@ -298,6 +308,17 @@ export default {
 
 		handleCloseModal() {
 			this.hideModal();
+		},
+
+		handleNotification() {
+			this.$refs.refNotification.showModal({
+				listMessage: [
+					{
+						errorCode: "Error",
+						errorMessage: "Not Support Yet!",
+					},
+				],
+			});
 		},
 	},
 };

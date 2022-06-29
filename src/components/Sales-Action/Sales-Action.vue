@@ -709,11 +709,16 @@ export default {
 			this.typeGood = typeGood;
 			this.goodTypeSelected = typeGood;
 
+			// if(typeGood !== constant.sales.services && typeGood !== constant.sales.products) {
+			// 	this.handleNotification();
+			// 	return
+			// }
+
 			if (typeGood === constant.sales.services) {
 				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 				this.handleGetServiceCategory();
-			}
-
+			} 
+			
 			if (typeGood === constant.sales.products) {
 				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 				this.handleGetProductCategory();
@@ -721,6 +726,11 @@ export default {
 		},
 
 		handleShowSelectSalesItem() {
+			if(this.typeGood !== constant.sales.services && this.typeGood !== constant.sales.products) {
+				this.handleNotification();
+				return
+			}
+
 			this.$refs.refSelectSalesItem &&
 				this.$refs.refSelectSalesItem.showModal({
 					typeGood: this.typeGood,
