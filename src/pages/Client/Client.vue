@@ -200,7 +200,11 @@
 		/>
 		<loading v-if="isLoading" class="loading" />
 		<notification ref="refNotification" modalTitle="Notification" />
-		<sales-action ref="refSalesAction" @loading="handleSetLoading" />
+		<sales-action
+			ref="refSalesAction"
+			@loading="handleSetLoading"
+			@loadingDataClient="loadDataClient"
+		/>
 	</div>
 </template>
 
@@ -565,33 +569,30 @@ export default {
 			const data = {
 				status: 1,
 				shopId: session.shopSession.getShopId(),
-			}
+			};
 
 			this.isLoading = true;
 
 			try {
 				const res = await apis.salesApis.getAllSalesSetup(data);
 
-				if(res.status !== 200) {
+				if (res.status !== 200) {
 					this.isLoading = false;
 					throw res;
 				}
 
-				if(res.data.isOK) {
+				if (res.data.isOK) {
 					await session.saleSession.setSaleAllSetup(res.data.result);
-				}
-				else {
-					alert(res.errorMessages)
+				} else {
+					alert(res.errorMessages);
 				}
 
 				this.isLoading = false;
-
-			}
-			catch (errors) {
+			} catch (errors) {
 				this.isLoading = false;
-				console.log('errors', errors)
+				console.log("errors", errors);
 			}
-		}
+		},
 	},
 };
 </script>

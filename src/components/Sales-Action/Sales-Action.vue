@@ -27,13 +27,19 @@
 						<table>
 							<thead>
 								<tr>
-									<th v-for="field in fields" :key="field.text + handleRandomIndex()">
+									<th
+										v-for="field in fields"
+										:key="field.text + handleRandomIndex()"
+									>
 										{{ field.text }}
 									</th>
 								</tr>
 							</thead>
 							<tbody v-if="isShow">
-								<tr :key="index + handleRandomIndex()" v-for="(good, index) in goodListSelectedShow">
+								<tr
+									:key="index + handleRandomIndex()"
+									v-for="(good, index) in goodListSelectedShow"
+								>
 									<td class="table__table-data table__table-data--sales-item">
 										{{ good.showDataTable.salesItem }}
 									</td>
@@ -78,14 +84,14 @@
 									</td>
 
 									<td
-										@click="handleNotification" 
+										@click="handleNotification"
 										class="table__table-data table__table-data--staff"
 									>
 										{{ good.showDataTable.staff }}
 									</td>
 
-									<td 
-										@click="handleNotification" 
+									<td
+										@click="handleNotification"
 										class="table__table-data table__table-data--sales-type"
 									>
 										{{ good.showDataTable.salesType }}
@@ -150,10 +156,16 @@
 							<div class="deduction-notes-payment__deduction">
 								<div class="deduction__text">DEDUCTION</div>
 								<div class="deduction__group-button">
-									<button class="group-button__btn group-button__btn--point" @click="handleNotification">
+									<button
+										class="group-button__btn group-button__btn--point"
+										@click="handleNotification"
+									>
 										Point
 									</button>
-									<button class="group-button__btn group-button__btn--balance" @click="handleNotification">
+									<button
+										class="group-button__btn group-button__btn--balance"
+										@click="handleNotification"
+									>
 										Balance
 									</button>
 								</div>
@@ -190,9 +202,15 @@
 									</template>
 								</v-date-picker>
 								<div class="date__time">
-									<b-form-select v-model="hoursSales" :options="hourOptions"></b-form-select>
+									<b-form-select
+										v-model="hoursSales"
+										:options="hourOptions"
+									></b-form-select>
 									:
-									<b-form-select v-model="minutesSales" :options="minuteOptions"></b-form-select>
+									<b-form-select
+										v-model="minutesSales"
+										:options="minuteOptions"
+									></b-form-select>
 								</div>
 							</div>
 						</div>
@@ -534,12 +552,15 @@ export default {
 		},
 
 		async handleAddSales() {
-			if(Object.values(this.goodListSelected).length) {
-				const dateRegistered = common.momentFunctions.FormatDate(this.registeredDate)
+			if (Object.values(this.goodListSelected).length) {
+				const dateRegistered = common.momentFunctions.FormatDate(
+					this.registeredDate
+				);
 				const datetimeAddSales = `${dateRegistered}  ${this.hoursSales}:${this.minutesSales}`;
-				const timestampDatetimeAddSales = common.momentFunctions.DateIntoUnix(datetimeAddSales);
+				const timestampDatetimeAddSales =
+					common.momentFunctions.DateIntoUnix(datetimeAddSales);
 
-				if(timestampDatetimeAddSales > common.momentFunctions.DateIntoUnix()) {
+				if (timestampDatetimeAddSales > common.momentFunctions.DateIntoUnix()) {
 					this.$refs.refNotification.showModal({
 						listMessage: [
 							{
@@ -549,7 +570,7 @@ export default {
 						],
 					});
 
-					return
+					return;
 				}
 
 				const salesItems = Object.values(this.goodListSelected).map(good => {
@@ -617,6 +638,7 @@ export default {
 							}
 
 							if (res.data.isOK) {
+								this.$emit("loadingDataClient");
 								this.hideModal();
 								this.resetModal();
 							} else {
@@ -667,7 +689,6 @@ export default {
 					],
 				});
 			}
-			
 		},
 
 		resetModal() {
@@ -728,8 +749,8 @@ export default {
 			if (typeGood === constant.sales.services) {
 				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 				this.handleGetServiceCategory();
-			} 
-			
+			}
+
 			if (typeGood === constant.sales.products) {
 				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 				this.handleGetProductCategory();
@@ -737,9 +758,12 @@ export default {
 		},
 
 		handleShowSelectSalesItem() {
-			if(this.typeGood !== constant.sales.services && this.typeGood !== constant.sales.products) {
+			if (
+				this.typeGood !== constant.sales.services &&
+				this.typeGood !== constant.sales.products
+			) {
 				this.handleNotification();
-				return
+				return;
 			}
 
 			this.$refs.refSelectSalesItem &&
@@ -839,8 +863,8 @@ export default {
 
 		handleRandomIndex() {
 			const randomIndex = common.randomFunctions.randomIndex();
-			return randomIndex
-		}
+			return randomIndex;
+		},
 	},
 };
 </script>
