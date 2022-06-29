@@ -370,7 +370,7 @@ export default {
 					clientGroupId: dataModal?.dataClient?.clientGroupId,
 					clientGroupName: dataModal?.dataClient?.clientGroupName,
 				};
-				this.registeredDate = common.momentFunction.UnixMiliSecondsIntoDate(
+				this.registeredDate = common.momentFunctions.UnixMiliSecondsIntoDate(
 					dataModal?.dataClient?.clientInputDateTimeTS
 				);
 			}
@@ -396,11 +396,11 @@ export default {
 			this.dataClient.clientGroupId = this.groupClient.clientGroupId;
 			this.dataClient.clientGroupName = this.groupClient.clientGroupName;
 			this.dataClient.clientInputDateTimeTS =
-				common.momentFunction.DateIntoUnix(
-					common.momentFunction.FormatDate(this.registeredDate)
+				common.momentFunctions.DateIntoUnix(
+					common.momentFunctions.FormatDate(this.registeredDate)
 				);
 
-			const currentDateTime = common.momentFunction.DateNowIntoUnix();
+			const currentDateTime = common.momentFunctions.DateNowIntoUnix();
 
 			if (currentDateTime < this.dataClient.clientInputDateTimeTS) {
 				alert("Registered Date Client cannot be greater than current time");
@@ -413,7 +413,7 @@ export default {
 				let res;
 				if (!this.typeModal) {
 					this.dataClient.createdDateTimeTS =
-						common.momentFunction.DateNowIntoUnix();
+						common.momentFunctions.DateNowIntoUnix();
 
 					this.dataClient = common.commonFunctions.trimAllDataObject(
 						this.dataClient
@@ -422,7 +422,7 @@ export default {
 					res = await apis.clientApis.createNewClient(this.dataClient);
 				} else {
 					this.dataClient.editedDateTimeTS =
-						common.momentFunction.DateNowIntoUnix();
+						common.momentFunctions.DateNowIntoUnix();
 
 					this.dataClient = common.commonFunctions.trimAllDataObject(
 						this.dataClient
@@ -663,7 +663,7 @@ export default {
 				clientId: this.dataClient.clientId,
 				clientShopId: this.dataClient.shopId,
 				shopId: session.shopSession.getShopId(),
-				toDateTS: common.momentFunction.DateNowIntoUnix(),
+				toDateTS: common.momentFunctions.DateNowIntoUnix(),
 			};
 
 			try {

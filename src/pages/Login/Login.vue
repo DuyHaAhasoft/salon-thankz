@@ -139,7 +139,7 @@ export default {
 					}
 
 					if (res.data.isOK) {
-						res.data.result.userAuthInfo.session_token = common.random.guid();
+						res.data.result.userAuthInfo.session_token = common.randomFunctions.guid();
 
 						await session.shopSession.setShopInfo(res.data.result);
 						await this.loadClientSetUp(res.data.result.shopBasicInfo.shopId);

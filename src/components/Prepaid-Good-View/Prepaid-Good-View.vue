@@ -103,7 +103,7 @@ export default {
 					(this.prepaidGoodInfo?.quantity === 0 ||
 						(this.prepaidGoodInfo?.expiryDateTS !== -1 &&
 							this.prepaidGoodInfo?.expiryDateTS <
-								common.momentFunction.DateNowIntoUnix())))
+								common.momentFunctions.DateNowIntoUnix())))
 			);
 		},
 	},

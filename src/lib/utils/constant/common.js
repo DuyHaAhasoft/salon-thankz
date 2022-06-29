@@ -9,7 +9,7 @@ const common = {
     status: {
         active: 1,
         inactive: 0,
-    }
+    },
 }
 
 export default common

@@ -20,6 +20,11 @@
                 width: 100%;
                 display: flex;
                 justify-content: space-between;
+
+                span {
+                    width: 200px;
+                    display: inline-block;
+                }
             }
 
             .tab__table {

@@ -325,6 +325,10 @@
                                 input {
                                     max-width: 80px;
                                 }
+
+                                &:hover {
+                                    cursor: pointer;
+                                }
                             }
     
                             &.table__table-data--qty {
@@ -333,10 +337,18 @@
                                 input {
                                     max-width: 80px;
                                 }
+
+                                &:hover {
+                                    cursor: pointer;
+                                }
                             }
     
                             &.table__table-data--unit-discount {
                                 max-width: 5%;
+
+                                &:hover {
+                                    cursor: pointer;
+                                }
                             }
     
                             &.table__table-data--amount {
@@ -345,18 +357,34 @@
     
                             &.table__table-data--staff {
                                 max-width: 5%;
+
+                                &:hover {
+                                    cursor: pointer;
+                                }
                             }
     
                             &.table__table-data--sales-type {
                                 max-width: 5%;
+
+                                &:hover {
+                                    cursor: pointer;
+                                }
                             }
     
                             &.table__table-data--points-deduct {
                                 max-width: 5%;
+
+                                &:hover {
+                                    cursor: pointer;
+                                }
                             }
     
                             &.table__table-data--balance-deduct {
                                 max-width: 5%;
+
+                                &:hover {
+                                    cursor: pointer;
+                                }
                             }
     
                             &.table__table-data--delete {

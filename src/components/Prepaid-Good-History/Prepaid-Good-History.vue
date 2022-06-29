@@ -169,7 +169,6 @@ export default {
 	},
 
 	mounted() {
-		console.log(this.infoPrepaidGood);
 		this.$nextTick(() => {
 			window.addEventListener("resize", this.onResize);
 		});
@@ -257,8 +256,8 @@ export default {
 		},
 
 		handleFormatDateTime(date) {
-			return common.momentFunction.FormatDateTime(
-				common.momentFunction.UnixMiliSecondsIntoDate(date)
+			return common.momentFunctions.FormatDateTime(
+				common.momentFunctions.UnixMiliSecondsIntoDate(date)
 			);
 		},
 

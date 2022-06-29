@@ -1,8 +1,9 @@
 import moment from 'moment'
 
-const momentFunction = {
+const momentFunctions = {
     GetHours,
     FormatDate,
+    GetMinutes,
     DateIntoUnix,
     FormatDateTime,
     DateNowIntoUnix,
@@ -44,4 +45,8 @@ function GetHours() {
     return moment().hours()
 }
 
-export default momentFunction
+function GetMinutes() {
+    return moment().minutes()
+}
+
+export default momentFunctions

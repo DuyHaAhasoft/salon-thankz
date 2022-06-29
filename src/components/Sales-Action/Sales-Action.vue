@@ -27,13 +27,13 @@
 						<table>
 							<thead>
 								<tr>
-									<th v-for="field in fields" :key="field.text">
+									<th v-for="field in fields" :key="field.text + handleRandomIndex()">
 										{{ field.text }}
 									</th>
 								</tr>
 							</thead>
 							<tbody v-if="isShow">
-								<tr :key="index" v-for="(good, index) in goodListSelectedShow">
+								<tr :key="index + handleRandomIndex()" v-for="(good, index) in goodListSelectedShow">
 									<td class="table__table-data table__table-data--sales-item">
 										{{ good.showDataTable.salesItem }}
 									</td>
@@ -67,6 +67,7 @@
 									</td>
 
 									<td
+										@click="handleNotification"
 										class="table__table-data table__table-data--unit-discount"
 									>
 										{{ good.showDataTable.discount }}
@@ -76,21 +77,29 @@
 										{{ good.showDataTable.amount }}
 									</td>
 
-									<td class="table__table-data table__table-data--staff">
+									<td
+										@click="handleNotification" 
+										class="table__table-data table__table-data--staff"
+									>
 										{{ good.showDataTable.staff }}
 									</td>
 
-									<td class="table__table-data table__table-data--sales-type">
+									<td 
+										@click="handleNotification" 
+										class="table__table-data table__table-data--sales-type"
+									>
 										{{ good.showDataTable.salesType }}
 									</td>
 
 									<td
+										@click="handleNotification"
 										class="table__table-data table__table-data--points-deduct"
 									>
 										{{ good.showDataTable.pointDeduct }}
 									</td>
 
 									<td
+										@click="handleNotification"
 										class="table__table-data table__table-data--balance-deduct"
 									>
 										{{ good.showDataTable.balanceDeduct }}
@@ -141,10 +150,10 @@
 							<div class="deduction-notes-payment__deduction">
 								<div class="deduction__text">DEDUCTION</div>
 								<div class="deduction__group-button">
-									<button class="group-button__btn group-button__btn--point">
+									<button class="group-button__btn group-button__btn--point" @click="handleNotification">
 										Point
 									</button>
-									<button class="group-button__btn group-button__btn--balance">
+									<button class="group-button__btn group-button__btn--balance" @click="handleNotification">
 										Balance
 									</button>
 								</div>
@@ -153,7 +162,7 @@
 								<div class="payment__title">PAYMENT</div>
 								<div class="payment__payment-method">
 									<button
-										:key="paymentMethod.id"
+										:key="paymentMethod.id + handleRandomIndex()"
 										class="payment-method__button"
 										v-for="paymentMethod in paymentMethods"
 										@click="handlePaymentSelected(paymentMethod)"
@@ -180,7 +189,11 @@
 										/>
 									</template>
 								</v-date-picker>
-								<!-- <v-date-picker mode="time" v-model="registeredTime" /> -->
+								<div class="date__time">
+									<b-form-select v-model="hoursSales" :options="hourOptions"></b-form-select>
+									:
+									<b-form-select v-model="minutesSales" :options="minuteOptions"></b-form-select>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -213,6 +226,7 @@
 			@resetDataCategoryGood="handleResetDataCategoryGood"
 		/>
 		<!-- <loading /> -->
+		<notification modalTitle="Notification" ref="refNotification" />
 	</div>
 </template>
 
@@ -226,6 +240,7 @@ import session from "@/lib/utils/session";
 // import Loading from "@components/Loading/Loading.vue";
 import GoodType from "@components/Good-Type/Good-Type.vue";
 import GroupButton from "@components/Group-Button/Group-Button.vue";
+import Notification from "@components/Notification/Notification.vue";
 import SelectSalesItem from "@components/Select-Sales-Item/Select-Sales-Item.vue";
 
 const DEFAULT_SALES_ACTION_TYPE = [
@@ -267,11 +282,13 @@ export default {
 			goodList: [],
 			salesPaid: 0,
 			salesNotes: "",
+			hoursSales: 0,
 			categories: [],
 			typeAction: {},
 			dataClient: {},
 			totalAmount: 0,
 			outstanding: 0,
+			minutesSales: 0,
 			paymentMethods: [],
 			paymentSelected: [],
 			goodListSelected: {},
@@ -295,6 +312,7 @@ export default {
 		// Loading,
 		GoodType,
 		GroupButton,
+		Notification,
 		SelectSalesItem,
 	},
 
@@ -324,10 +342,21 @@ export default {
 				cancel: true,
 			};
 		},
+
+		minuteOptions() {
+			return common.commonFunctions.minuteSelect();
+		},
+
+		hourOptions() {
+			return common.commonFunctions.hourSelect();
+		},
 	},
 
 	methods: {
 		showModal(dataModal) {
+			this.hoursSales = common.momentFunctions.GetHours();
+			this.minutesSales = common.momentFunctions.GetMinutes();
+
 			// this.paymentMethods = session.saleSession.getAllPaymentMethods();
 			const paymentMethodsName = ["Cash", "Credit Card"];
 			const setPaymentMethods = session.saleSession.getAllPaymentMethods();
@@ -505,69 +534,96 @@ export default {
 		},
 
 		async handleAddSales() {
-			const salesItems = Object.values(this.goodListSelected).map(good => {
-				const goodFormatted = common.commonFunctions.formatSaleItem(good);
-				// this.totalAmount += goodFormatted.amount;
-				return goodFormatted;
-			});
-			if (this.paymentSelected[0]) {
-				this.paymentSelected[0].paymentAmount = this.salesPaid;
-			} else {
-				// this.outstanding = this.totalAmount;
-			}
+			if(Object.values(this.goodListSelected).length) {
+				const dateRegistered = common.momentFunctions.FormatDate(this.registeredDate)
+				const datetimeAddSales = `${dateRegistered}  ${this.hoursSales}:${this.minutesSales}`;
+				const timestampDatetimeAddSales = common.momentFunctions.DateIntoUnix(datetimeAddSales);
 
-			console.log(
-				"add",
-				this.paymentSelected[0]?.paymentAmount,
-				this.salesPaid,
-				this.outstanding
-			);
+				console.log('timestampDatetimeAddSales', timestampDatetimeAddSales)
 
-			const data = {
-				balanceDeduction: 0,
-				balanceMoves: [],
-				bookingId: 0,
-				branchNumber: session.shopSession.getBranchInfo().number,
-				chainId: session.shopSession.chainId,
-				clientId: this.dataClient.clientId,
-				createdById: session.shopSession.getUserAccount().id,
-				createdByName: session.shopSession.getUserAccount().name,
-				createdDateTimeTS: common.momentFunction.DateNowIntoUnix(),
-				deductionPoints: 0,
-				deletedById: 0,
-				deletedByName: "",
-				deletedDateTimeTS: 0,
-				earnedPoints: this.salesLoyaltyPoint,
-				editedById: 0,
-				editedByName: "",
-				editedDateTimeTS: 0,
-				editedSalesId: 0,
-				hourOfDay: common.momentFunction.GetHours(),
-				invoiceDateTimeTS: this.invoiceDateTimeTS,
-				isSalesConnect: false,
-				notes: this.salesNotes.trim(),
-				outstanding: this.outstanding,
-				payments: this.paymentSelected,
-				salesId: 0,
-				salesItems: salesItems,
-				salesNumber: "",
-				sessionToken: session.shopSession.getSessionToken(),
-				shopId: session.shopSession.getShopId(),
-				shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
-				status: 0,
-				totalAmount: this.totalAmount,
-			};
+				const salesItems = Object.values(this.goodListSelected).map(good => {
+					const goodFormatted = common.commonFunctions.formatSaleItem(good);
+					// this.totalAmount += goodFormatted.amount;
+					return goodFormatted;
+				});
+				if (this.paymentSelected[0]) {
+					this.paymentSelected[0].paymentAmount = this.salesPaid;
+				} else {
+					// this.outstanding = this.totalAmount;
+				}
 
-			this.$emit("loading", true);
+				const data = {
+					balanceDeduction: 0,
+					balanceMoves: [],
+					bookingId: 0,
+					branchNumber: session.shopSession.getBranchInfo().number,
+					chainId: session.shopSession.chainId,
+					clientId: this.dataClient.clientId,
+					createdById: session.shopSession.getUserAccount().id,
+					createdByName: session.shopSession.getUserAccount().name,
+					createdDateTimeTS: timestampDatetimeAddSales,
+					deductionPoints: 0,
+					deletedById: 0,
+					deletedByName: "",
+					deletedDateTimeTS: 0,
+					earnedPoints: this.salesLoyaltyPoint,
+					editedById: 0,
+					editedByName: "",
+					editedDateTimeTS: 0,
+					editedSalesId: 0,
+					hourOfDay: common.momentFunctions.GetHours(),
+					invoiceDateTimeTS: this.invoiceDateTimeTS,
+					isSalesConnect: false,
+					notes: this.salesNotes.trim(),
+					outstanding: this.outstanding,
+					payments: this.paymentSelected,
+					salesId: 0,
+					salesItems: salesItems,
+					salesNumber: "",
+					sessionToken: session.shopSession.getSessionToken(),
+					shopId: session.shopSession.getShopId(),
+					shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
+					status: 0,
+					totalAmount: this.totalAmount,
+				};
 
-			if (this.outstanding > 0) {
-				if (
-					confirm(
-						`The outstanding is ${this.handleFormatNumber(
-							this.outstanding
-						)}. Do you want to save?`
-					) === true
-				) {
+				this.$emit("loading", true);
+
+				if (this.outstanding > 0) {
+					if (
+						confirm(
+							`The outstanding is ${this.handleFormatNumber(
+								this.outstanding
+							)}. Do you want to save?`
+						) === true
+					) {
+						try {
+							const res = await apis.salesApis.addSales(data);
+
+							if (res.status !== 200) {
+								this.$emit("loading", false);
+								throw res;
+							}
+
+							if (res.data.isOK) {
+								this.hideModal();
+								this.resetModal();
+							} else {
+								alert(res.data.errorMessages);
+							}
+
+							this.$emit("loading", false);
+						} catch (errors) {
+							console.log("errors", errors);
+						}
+
+						this.$emit("loading", false);
+					} else {
+						// this.totalAmount = 0;
+						// this.outstanding = 0;
+						this.$emit("loading", false);
+					}
+				} else {
 					try {
 						const res = await apis.salesApis.addSales(data);
 
@@ -589,42 +645,28 @@ export default {
 					}
 
 					this.$emit("loading", false);
-				} else {
-					// this.totalAmount = 0;
-					// this.outstanding = 0;
-					this.$emit("loading", false);
 				}
 			} else {
-				try {
-					const res = await apis.salesApis.addSales(data);
-
-					if (res.status !== 200) {
-						this.$emit("loading", false);
-						throw res;
-					}
-
-					if (res.data.isOK) {
-						this.hideModal();
-						this.resetModal();
-					} else {
-						alert(res.data.errorMessages);
-					}
-
-					this.$emit("loading", false);
-				} catch (errors) {
-					console.log("errors", errors);
-				}
-
-				this.$emit("loading", false);
+				this.$refs.refNotification.showModal({
+					listMessage: [
+						{
+							errorCode: "Error",
+							errorMessage: "Sales items list can not be empty.",
+						},
+					],
+				});
 			}
+			
 		},
 
 		resetModal() {
 			this.salesPaid = 0;
+			this.hoursSales = 0;
 			this.dataClient = {};
 			this.outstanding = 0;
 			this.totalAmount = 0;
 			this.salesNotes = "";
+			this.minutesSales = 0;
 			this.paymentSelected = [];
 			this.goodListSelected = {};
 			this.salesLoyaltyPoint = 0;
@@ -653,7 +695,7 @@ export default {
 			this.outstanding = 0;
 			this.salesPaid = this.totalAmount;
 
-			const paidDateTimeTS = common.momentFunction.DateIntoUnix();
+			const paidDateTimeTS = common.momentFunctions.DateIntoUnix();
 
 			const paymentMethodFormatted = common.commonFunctions.formatPaymentMethod(
 				paymentMethod,
@@ -762,6 +804,22 @@ export default {
 			}
 			return number;
 		},
+
+		handleNotification() {
+			this.$refs.refNotification.showModal({
+				listMessage: [
+					{
+						errorCode: "Error",
+						errorMessage: "Not Support Yet!",
+					},
+				],
+			});
+		},
+
+		handleRandomIndex() {
+			const randomIndex = common.randomFunctions.randomIndex();
+			return randomIndex
+		}
 	},
 };
 </script>

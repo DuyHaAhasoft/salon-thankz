@@ -1,5 +1,7 @@
-const random = {
-    guid
+const randomFunctions = {
+    S4,
+    guid,
+    randomIndex,
 }
 
 function guid() {
@@ -10,4 +12,8 @@ function S4() {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
 }
 
-export default random
+function randomIndex() {
+    return Math.random() * 10000000
+}
+
+export default randomFunctions

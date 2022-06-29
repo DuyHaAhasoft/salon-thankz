@@ -4,12 +4,12 @@
 			<b-tab title="Sales History" @click="handleGetSalesHistory">
 				<div class="tabs__tab">
 					<div class="tab__sales-history">
-						<div>
+						<span class="sales-history__title">
 							{{
 								dataSalesHistory.pagingInfo &&
 								`All ${dataSalesHistory.pagingInfo.totalItems} records`
 							}}
-						</div>
+						</span>
 						<div class="tab__checkbox">
 							<b-form-checkbox
 								value="true"
@@ -46,7 +46,7 @@
 									<td
 										class="table__table-data table__table-data--sales-history-date"
 									>
-										{{ handleFormatDate(sales.invoiceDateTimeTS) }}
+										{{ handleFormatDate(sales.createdDateTimeTS) }}
 									</td>
 
 									<td
@@ -96,7 +96,7 @@
 									<td class="table__table-data table__table-data--btn">
 										<button
 											class="data--btn__btn data--btn__btn--view"
-											@click="() => alert('sos')"
+											@click="onClickShowSalesDetail(sales)"
 										>
 											View
 										</button>
@@ -110,6 +110,11 @@
 							</tbody>
 						</table>
 					</div>
+					<paging
+						v-if="page.pageTotal > 1"
+						:page="page"
+						@handlePaging="handleGetSalesHistory"
+					/>
 				</div>
 			</b-tab>
 
@@ -382,6 +387,7 @@
 			@showHistoryPrepaidGoodPaging="onClickShowHistoryPrepaidGoodPaging"
 		/>
 
+		<sales-detail ref="refSalesDetail" />
 		<notification modalTitle="Notification" ref="refNotification" />
 	</div>
 </template>
@@ -393,6 +399,7 @@ import session from "../../lib/utils/session";
 import constant from "../../lib/utils/constant";
 
 import Paging from "@components/Paging/Paging.vue";
+import SalesDetail from "../Sales-Detail/Sales-Detail.vue";
 import Notification from "@components/Notification/Notification.vue";
 import PrepaidGoodView from "@components/Prepaid-Good-View/Prepaid-Good-View.vue";
 import PrepaidGoodHistory from "@components/Prepaid-Good-History/Prepaid-Good-History.vue";
@@ -460,6 +467,7 @@ export default {
 
 	components: {
 		Paging,
+		SalesDetail,
 		Notification,
 		PrepaidGoodView,
 		"prepaid-good-history": PrepaidGoodHistory,
@@ -539,7 +547,6 @@ export default {
 
 		handleSetSalesHistory(data) {
 			this.dataSalesHistory = data;
-			console.log("dataHistory", this.dataSalesHistory?.items?.length);
 			this.page = {
 				pageTotal: Math.ceil(
 					data?.pagingInfo?.totalItems / data?.pagingInfo?.pageSize
@@ -551,8 +558,8 @@ export default {
 		handleFormatDate(date) {
 			if (date === -1) return "No Limit";
 
-			return common.momentFunction.FormatDate(
-				common.momentFunction.UnixMiliSecondsIntoDate(date)
+			return common.momentFunctions.FormatDate(
+				common.momentFunctions.UnixMiliSecondsIntoDate(date)
 			);
 		},
 
@@ -672,7 +679,7 @@ export default {
 			if (type) {
 				return (
 					good?.expiryDateTS !== -1 &&
-					good?.expiryDateTS < common.momentFunction.DateNowIntoUnix()
+					good?.expiryDateTS < common.momentFunctions.DateNowIntoUnix()
 				);
 			}
 
@@ -681,6 +688,39 @@ export default {
 
 		showLongText(text, length) {
 			return common.commonFunctions.showLongText(text, length);
+		},
+
+		async onClickShowSalesDetail(sales) {
+			const data = {
+				status: sales.refStatus,
+				salesNumber: sales.salesNumber,
+				shopId: session.shopSession.getShopId(),
+			};
+
+			try {
+				this.$emit("loading", true);
+
+				const res = await apis.salesApis.getSalesDetail(data);
+
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					throw res;
+				}
+
+				if (res.data.isOK) {
+					const salesDetail = res.data.result;
+					this.$emit("loading", false);
+					this.$refs.refSalesDetail.showModal({
+						title: "Sales Detail",
+						salesDetail,
+					});
+				} else {
+					console.log(res, data);
+					this.$emit("loading", false);
+				}
+			} catch (errors) {
+				console.log(errors);
+			}
 		},
 	},
 };

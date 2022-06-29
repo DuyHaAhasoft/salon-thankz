@@ -16,7 +16,7 @@
 					{{ !!salesDetail && salesDetail.clientName }}
 				</div>
 				<div class="sales-date content__sales-date">
-					{{ !!salesDetail && handleFormatDate(salesDetail.invoiceDateTimeTS) }}
+					{{ !!salesDetail && handleFormatDate(salesDetail.createdDateTimeTS) }}
 				</div>
 				<table class="table tab__table" v-if="!!salesDetail && statusScreenLaptop">
 					<thead>
@@ -222,7 +222,6 @@ export default {
 		showModal(dataModal) {
 			this.title = dataModal.title;
 			this.salesDetail = dataModal.salesDetail;
-			console.log(this.salesDetail);
 			this.$refs.salesDetailModal && this.$refs.salesDetailModal.show();
 		},
 
@@ -235,14 +234,14 @@ export default {
 		},
 
 		handleFormatDate(date) {
-			return common.momentFunction.FormatFullDateTime(
-				common.momentFunction.UnixMiliSecondsIntoDate(date)
+			return common.momentFunctions.FormatFullDateTime(
+				common.momentFunctions.UnixMiliSecondsIntoDate(date)
 			);
 		},
 
 		handleFormatDateTime(date) {
-			return common.momentFunction.FormatDateTime(
-				common.momentFunction.UnixMiliSecondsIntoDate(date)
+			return common.momentFunctions.FormatDateTime(
+				common.momentFunctions.UnixMiliSecondsIntoDate(date)
 			);
 		},
 

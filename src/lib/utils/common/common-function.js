@@ -3,7 +3,9 @@ import { saveAs } from "file-saver";
 
 const commonFunctions = {
     concatURL,
+    hourSelect,
     exportExcel,
+    minuteSelect,
     showLongText,
     formatSaleItem,
     formatPhoneNumber,
@@ -202,6 +204,26 @@ function formatPaymentMethod(paymentMethod, paidDateTimeTS) {
         paymentType: 1,
         salesPaymentId: 0,
     }
+}
+
+function hourSelect() {
+    const hourOptions = [];
+
+    for(let i = 0; i < 24 ; i++ ) {
+        hourOptions.push({ value: i, text: i })
+    }
+
+    return hourOptions
+}
+
+function minuteSelect() {
+    const minuteOptions = [];
+
+    for(let i = 0; i < 60 ; i++ ) {
+        minuteOptions.push({ value: i, text: i })
+    }
+
+    return minuteOptions
 }
 
 export default commonFunctions

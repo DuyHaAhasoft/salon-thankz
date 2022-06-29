@@ -328,7 +328,7 @@ export default {
 
 						client.mobileNumber2 = item.mobileNumber2;
 						client.registrationDate = moment(
-							common.momentFunction.UnixMiliSecondsIntoDate(
+							common.momentFunctions.UnixMiliSecondsIntoDate(
 								item.clientInputDateTimeTS
 							)
 						).format("YYYY-MM-DD");
@@ -534,7 +534,7 @@ export default {
 		},
 
 		onClickSales(client) {
-			const invoiceDateTimeTS = common.momentFunction.DateNowIntoUnix();
+			const invoiceDateTimeTS = common.momentFunctions.DateNowIntoUnix();
 			this.$refs.refSalesAction.showModal({
 				type: 0,
 				client: client,
