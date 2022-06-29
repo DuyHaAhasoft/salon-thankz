@@ -127,7 +127,7 @@
 						<div class="detail__payment-detail">
 							<div class="payment-detail__total-amount">
 								<span class="payment-detail__title">Total Amount</span>
-								<span>{{ totalAmount }}</span>
+								<span class="payment-detail__data">{{ totalAmount }}</span>
 							</div>
 							<div class="payment-detail__point-deduction">
 								<span class="payment-detail__title">Point Deduction</span>
@@ -539,7 +539,18 @@ export default {
 				const datetimeAddSales = `${dateRegistered}  ${this.hoursSales}:${this.minutesSales}`;
 				const timestampDatetimeAddSales = common.momentFunctions.DateIntoUnix(datetimeAddSales);
 
-				console.log('timestampDatetimeAddSales', timestampDatetimeAddSales)
+				if(timestampDatetimeAddSales > common.momentFunctions.DateIntoUnix()) {
+					this.$refs.refNotification.showModal({
+						listMessage: [
+							{
+								errorCode: "Error",
+								errorMessage: "Can not add sales in future.",
+							},
+						],
+					});
+
+					return
+				}
 
 				const salesItems = Object.values(this.goodListSelected).map(good => {
 					const goodFormatted = common.commonFunctions.formatSaleItem(good);

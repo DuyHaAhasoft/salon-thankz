@@ -143,12 +143,17 @@
                         border: 1px solid #ccc;
 
                         .payment-detail__title {
-                            width: 150px;
+                            width: 50%;
                             display: inline-block;
                         }
 
-                        .payment-detail__total-amount {
+                        .payment-detail__data {
+                            text-align: right;
+                            width: 50%;
+                        }
 
+                        .payment-detail__total-amount {
+                            
                         }
 
                         .payment-detail__point-deduction {
@@ -177,7 +182,7 @@
                             margin-bottom: 10px;
 
                             .deduction__text {
-
+                                font-weight: 550;
                             }
 
                             .deduction__group-button {
@@ -203,7 +208,7 @@
                             margin-bottom: 10px;
 
                             .payment__title {
-
+                                font-weight: 550;
                             }
 
                             .payment__payment-method {
