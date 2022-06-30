@@ -19,9 +19,13 @@
 						<td class="table-data__qty">
 							<input
 								min="1"
+								max="9999"
 								type="number"
+								minlength="1"
+								maxlength="4"
 								class="item__qty"
 								v-model="goodSelected.qty"
+								oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
 							/>
 						</td>
 						<td class="table-data__btn">
@@ -30,22 +34,6 @@
 					</tr>
 				</tbody>
 			</table>
-			<!-- <div
-				class="good-type__item"
-				v-for="(goodSelected, index) in goodListSelected"
-				:key="index"
-			>
-				<div class="item__name">{{ goodSelected.goodInfo.serviceName }}</div>
-				<input
-					min="1"
-					type="number"
-					class="item__qty"
-					v-model="goodSelected.qty"
-				/>
-				<div class="item__delete" @click="handleDeleteItem(goodSelected, 1)">
-					X
-				</div>
-			</div> -->
 		</div>
 		<div v-if="isTypeGood.products" class="good-selected__good-type">
 			<table>
@@ -64,12 +52,19 @@
 					>
 						<td class="table-data__name">{{ showLongText(goodSelected.goodInfo.productName, 15) }}</td>
 						<td class="table-data__qty">
-							<input
+							<!-- <input
 								min="1"
+								max="9999"
 								type="number"
+								minlength="1"
+								maxlength="4"
 								class="item__qty"
 								v-model="goodSelected.qty"
-							/>
+								oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength); this.value = this.value.toString().replace(/,/g,'')"
+							/> -->
+							<button @click="handleQty(goodSelected.id, goodSelected.qty - 1 )">&lt;</button>
+							{{ handleFormatNumber(goodSelected.qty) }}
+							<button @click="handleQty(goodSelected.id, goodSelected.qty + 1)">></button>
 						</td>
 						<td class="table-data__btn">
 							<button class="btn--del" @click="handleDeleteItem(goodSelected, 2)">X</button>
@@ -152,6 +147,14 @@ export default {
 
 		showLongText(text, length) {
 			return common.commonFunctions.showLongText(text, length);
+		},
+
+		handleFormatNumber(data) {
+			let number = 0;
+			if (data > 0) {
+				number = common.commonFunctions.formatMoneyNumber(data);
+			}
+			return number;
 		},
 	},
 };

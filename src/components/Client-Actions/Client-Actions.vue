@@ -507,14 +507,14 @@ export default {
 		},
 
 		async handleUploadAvatar(file) {
+			this.$emit("loading", true);
+
 			const formData = new FormData();
 
 			formData.append("fomrFile", file);
 			formData.append("clientId", this.dataClient.clientId);
 			formData.append("shopId", session.shopSession.getShopId());
 			formData.append("countryCode", constant.payload.DEFAULT_COUNTRY);
-
-			this.$emit("loading", true);
 
 			try {
 				const res = await apis.clientApis.uploadClientImage(formData);
@@ -546,12 +546,12 @@ export default {
 		},
 
 		async handleDeleteAvatar() {
+			this.$emit("loading", true);
+
 			const data = {
 				shopId: session.shopSession.getShopId(),
 				clientImageId: this.dataClient.clientImageId,
 			};
-
-			this.$emit("loading", true);
 
 			try {
 				const res = await apis.clientApis.deleteClientImage(data);
@@ -573,6 +573,8 @@ export default {
 		},
 
 		async handleGetPrepaidCard(dataInfo = { pageNumber: 1, expired: false }) {
+			this.$emit("loading", true);
+
 			const data = {
 				pageSize: 10,
 				prepaidCardType: -1,
@@ -584,7 +586,7 @@ export default {
 			};
 
 			try {
-				this.$emit("loading", true);
+				
 				const res = await apis.clientApis.getClientPrepaidCards(data);
 
 				if (res.status !== 200) {
@@ -613,6 +615,8 @@ export default {
 		async handleGetPrepaidService(
 			dataInfo = { expired: false, pageNumber: 1 }
 		) {
+			this.$emit("loading", true);
+
 			const data = {
 				pageSize: 10,
 				includeFamilyService: true,
@@ -623,7 +627,7 @@ export default {
 			};
 
 			try {
-				this.$emit("loading", true);
+				
 				const res = await apis.clientApis.getClientPrepaidServices(data);
 
 				if (res.status !== 200) {
@@ -655,6 +659,8 @@ export default {
 			fromDateTS = 1,
 			includeDeleted = false,
 		}) {
+			this.$emit("loading", true);
+
 			const data = {
 				pageSize: 10,
 				pageNumber: pageNumber,
@@ -667,7 +673,7 @@ export default {
 			};
 
 			try {
-				this.$emit("loading", true);
+				
 				const res = await apis.clientApis.getSalesHistoryByClient(data);
 
 				if (res.status !== 200) {
@@ -701,6 +707,8 @@ export default {
 		},
 
 		async handleDeleteClient() {
+			this.$emit("loading", true);
+
 			const data = {
 				clientId: this.dataClient.clientId,
 				shopId: session.shopSession.getShopId(),
@@ -709,7 +717,6 @@ export default {
 				shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
 			};
 
-			this.$emit("loading", true);
 
 			try {
 				const res = await apis.clientApis.deleteClient(data);

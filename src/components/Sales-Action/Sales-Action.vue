@@ -29,15 +29,15 @@
 								<tr>
 									<th
 										v-for="field in fields"
-										:key="field.text + handleRandomIndex()"
+										:key="field.text"
 									>
 										{{ field.text }}
 									</th>
 								</tr>
 							</thead>
-							<tbody v-if="isShow">
+							<tbody v-if="isShow.goodListSelectedShow">
 								<tr
-									:key="index + handleRandomIndex()"
+									:key="index"
 									v-for="(good, index) in goodListSelectedShow"
 								>
 									<td class="table__table-data table__table-data--sales-item">
@@ -45,23 +45,16 @@
 									</td>
 
 									<td class="table__table-data table__table-data--unit-price">
-										<input
-											min="1"
-											type="number"
-											v-model="good.showDataTable.unitPrice"
-											@change="
-												handleUnitPrice(
-													good.showDataTable.goodId,
-													good.showDataTable.unitPrice
-												)
-											"
-										/>
+										{{ handleFormatNumber(good.showDataTable.unitPrice) }}
 									</td>
 
 									<td class="table__table-data table__table-data--qty">
-										<input
+										<!-- <input
 											min="1"
+											max="9999"
 											type="number"
+											minlength="1"
+											maxlength="4"
 											v-model="good.showDataTable.qTy"
 											@change="
 												handleQty(
@@ -69,7 +62,12 @@
 													good.showDataTable.qTy
 												)
 											"
-										/>
+											oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+										/> -->
+
+										<button @click="handleQty(good.showDataTable.goodId, good.showDataTable.qTy - 1 )">&lt;</button>
+										{{ handleFormatNumber(good.showDataTable.qTy) }}
+										<button @click="handleQty(good.showDataTable.goodId, good.showDataTable.qTy + 1)">></button>
 									</td>
 
 									<td
@@ -80,7 +78,7 @@
 									</td>
 
 									<td class="table__table-data table__table-data--amount">
-										{{ good.showDataTable.amount }}
+										{{ handleFormatNumber(good.showDataTable.amount) }}
 									</td>
 
 									<td
@@ -133,7 +131,7 @@
 						<div class="detail__payment-detail">
 							<div class="payment-detail__total-amount">
 								<span class="payment-detail__title">Total Amount</span>
-								<span class="payment-detail__data">{{ totalAmount }}</span>
+								<span class="payment-detail__data">{{ handleFormatNumber(totalAmount) }}</span>
 							</div>
 							<div class="payment-detail__point-deduction">
 								<span class="payment-detail__title">Point Deduction</span>
@@ -143,13 +141,21 @@
 								<span class="payment-detail__title">Balance Deduction</span>
 								<span>0</span>
 							</div>
+							<div v-if="isShow.paymentSelected" class="payment-detail__payment-paid">
+								<div class="payment-paid__payment" v-for="(payment, index) in paymentSelected" :key="index">
+									<span class="payment-detail__title">{{ payment.paymentMethodName }}</span>
+									<span class="payment-detail__data">{{ handleFormatNumber(payment.paymentAmount) }}</span>
+									<span><button class="payment-detail__btn" @click="handleDeletePaymentSelected(payment.paymentMethodId)">X</button></span>
+								</div>
+							</div>
+
 							<div class="payment-detail__outstanding">
 								<span class="payment-detail__title">Outstanding</span>
-								<span>{{ outstanding }}</span>
+								<span>{{ handleFormatNumber(outstanding) }}</span>
 							</div>
 							<div class="payment-detail__earn-loyalty-points">
 								<span class="payment-detail__title">Earn Loyalty Points</span>
-								<input type="number" min="0" v-model="salesLoyaltyPoint" />
+								<span>0</span>
 							</div>
 						</div>
 						<div class="detail__deduction-notes-payment-date">
@@ -174,7 +180,7 @@
 								<div class="payment__title">PAYMENT</div>
 								<div class="payment__payment-method">
 									<button
-										:key="paymentMethod.id + handleRandomIndex()"
+										:key="paymentMethod.id"
 										class="payment-method__button"
 										v-for="paymentMethod in paymentMethods"
 										@click="handlePaymentSelected(paymentMethod)"
@@ -335,6 +341,14 @@ export default {
 	},
 
 	mounted() {
+		const paymentMethodsName = ["Cash", "Credit Card"];
+		const setPaymentMethods = session.saleSession.getAllPaymentMethods();
+		setPaymentMethods.forEach(paymentMethod => {
+			if (paymentMethodsName.includes(paymentMethod.name)) {
+				this.paymentMethods.push(paymentMethod);
+			}
+		});
+
 		this.$nextTick(() => {
 			window.addEventListener("resize", this.onResize);
 		});
@@ -350,7 +364,10 @@ export default {
 		},
 
 		isShow() {
-			return this.goodListSelectedShow.length;
+			return {
+				goodListSelectedShow: this.goodListSelectedShow.length,
+				paymentSelected: this.paymentSelected.length,
+			};
 		},
 
 		isShowButton() {
@@ -376,13 +393,13 @@ export default {
 			this.minutesSales = common.momentFunctions.GetMinutes();
 
 			// this.paymentMethods = session.saleSession.getAllPaymentMethods();
-			const paymentMethodsName = ["Cash", "Credit Card"];
-			const setPaymentMethods = session.saleSession.getAllPaymentMethods();
-			setPaymentMethods.forEach(paymentMethod => {
-				if (paymentMethodsName.includes(paymentMethod.name)) {
-					this.paymentMethods.push(paymentMethod);
-				}
-			});
+			// const paymentMethodsName = ["Cash", "Credit Card"];
+			// const setPaymentMethods = session.saleSession.getAllPaymentMethods();
+			// setPaymentMethods.forEach(paymentMethod => {
+			// 	if (paymentMethodsName.includes(paymentMethod.name)) {
+			// 		this.paymentMethods.push(paymentMethod);
+			// 	}
+			// });
 
 			this.dataClient = dataModal.client;
 			this.invoiceDateTimeTS = dataModal.invoiceDateTimeTS;
@@ -576,13 +593,18 @@ export default {
 				const salesItems = Object.values(this.goodListSelected).map(good => {
 					const goodFormatted = common.commonFunctions.formatSaleItem(good);
 					// this.totalAmount += goodFormatted.amount;
+					if(goodFormatted.quantity === 0) {
+						goodFormatted.quantity = 1;
+						goodFormatted.amount = goodFormatted.unitPrice;
+					}
+					
 					return goodFormatted;
 				});
-				if (this.paymentSelected[0]) {
-					this.paymentSelected[0].paymentAmount = this.salesPaid;
-				} else {
-					// this.outstanding = this.totalAmount;
-				}
+				// if (this.paymentSelected[0]) {
+				// 	this.paymentSelected[0].paymentAmount = this.salesPaid;
+				// } else {
+				// 	this.outstanding = this.totalAmount;
+				// }
 
 				const data = {
 					balanceDeduction: 0,
@@ -725,16 +747,50 @@ export default {
 
 		handlePaymentSelected(paymentMethod) {
 			this.outstanding = 0;
-			this.salesPaid = this.totalAmount;
+			// this.salesPaid = this.totalAmount;
 
 			const paidDateTimeTS = common.momentFunctions.DateIntoUnix();
+			const indexPayment = this.paymentSelected.findIndex(payment => payment.paymentMethodId === paymentMethod.id)
 
-			const paymentMethodFormatted = common.commonFunctions.formatPaymentMethod(
-				paymentMethod,
-				paidDateTimeTS
-			);
+			if(this.totalAmount === this.salesPaid) {
+				this.$refs.refNotification.showModal({
+					listMessage: [
+						{
+							errorCode: "Warning",
+							errorMessage: "All fees have been paid!",
+						},
+					],
+				});
 
-			this.paymentSelected = [paymentMethodFormatted];
+				return
+			}
+
+
+			if(indexPayment !== -1) {
+				this.paymentSelected[indexPayment].paymentAmount += this.totalAmount - this.salesPaid;
+				this.paymentSelected[indexPayment].paidDateTimeTS = paidDateTimeTS;
+			} else {
+				const paymentMethodFormatted = common.commonFunctions.formatPaymentMethod(
+					paymentMethod,
+					paidDateTimeTS
+				);
+
+				paymentMethodFormatted.paymentAmount = this.totalAmount - this.salesPaid;
+
+				// this.paymentSelected = [paymentMethodFormatted];
+				this.paymentSelected.push(paymentMethodFormatted);
+			}
+
+			this.salesPaid = this.totalAmount;
+		},
+
+		handleDeletePaymentSelected(PaymentSelectedId) {
+			const indexPayment = this.paymentSelected.findIndex(payment => payment.paymentMethodId === PaymentSelectedId);
+
+			this.outstanding += this.paymentSelected[indexPayment].paymentAmount;
+			this.salesPaid -= this.paymentSelected[indexPayment].paymentAmount;
+
+			this.paymentSelected.splice(indexPayment, 1);
 		},
 
 		handleGetGoodCategory(typeGood) {
@@ -780,8 +836,22 @@ export default {
 		},
 
 		handleQty(id, qty) {
-			this.goodListSelected[id.toString()].qty = qty;
-			this.goodListSelectedShow = this.handleFormatDataSalesItem();
+			const amount = this.goodListSelected[id.toString()].qty * this.goodListSelected[id.toString()].showDataTable.unitPrice;
+
+			if(amount.toString().length <= 12) {
+				this.goodListSelected[id.toString()].qty = qty;
+				this.goodListSelectedShow = this.handleFormatDataSalesItem();
+			} else {
+				this.$refs.refNotification.showModal({
+					listMessage: [
+						{
+							errorCode: "Error",
+							errorMessage: "Sales Item Amount can not exceed 12 characters.",
+						},
+					],
+				});
+			}
+			
 		},
 
 		handleUnitPrice(id, unitPrice) {

@@ -296,6 +296,8 @@ export default {
 
 	methods: {
 		async loadDataClient() {
+			this.isLoading = true;
+
 			const data = {
 				pageSize: this.page.pageSize,
 				pageNumber: this.page.pageNumber,
@@ -303,8 +305,6 @@ export default {
 			};
 
 			let keysClient = Object.keys(this.fields);
-
-			this.isLoading = true;
 
 			try {
 				const res = await apis.clientApis.getAllClientByShop(data);
@@ -446,6 +446,8 @@ export default {
 		},
 
 		async handleClickEditClient(client) {
+			this.handleSetLoading(true);
+
 			const data = {
 				clientId: client.clientId,
 				shopId: session.shopSession.getShopId(),
@@ -467,6 +469,8 @@ export default {
 			} catch (errors) {
 				console.log("Errors", errors);
 			}
+
+			this.handleSetLoading(false);
 		},
 
 		async getNextMemberNumber() {
@@ -493,6 +497,8 @@ export default {
 		},
 
 		async handleClickPrintListClient() {
+			this.handleSetLoading(true);
+
 			const data = {};
 			data.header = "Client List";
 			data.title = `Client List Page ${this.page.pageNumber}`;
@@ -531,6 +537,8 @@ export default {
 			});
 
 			common.commonFunctions.exportExcel(data);
+
+			this.handleSetLoading(false);
 		},
 
 		handleSetLoading(valueLoading) {

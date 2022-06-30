@@ -181,7 +181,7 @@ function formatSaleItem(item) {
 			prepaidGoodsGuid: "",
 			prepaidServiceInitialQuantity: 0,
 			productCode: "",
-			quantity: item.qty,
+			quantity: item.qty ?? 0,
 			relatedServiceId: 0,
 			relatedServiceName: "",
 			relatedServiceUnitPrice: 0,

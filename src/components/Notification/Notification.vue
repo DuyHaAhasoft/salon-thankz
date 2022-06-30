@@ -6,7 +6,7 @@
 			hide-footer
 			ref="modal"
 			:title="modalTitle"
-			header-bg-variant="warning"
+			header-bg-variant="info"
 			:no-close-on-backdrop="true"
 			:modal-class="'modal notification-modal__modal'"
 		>
