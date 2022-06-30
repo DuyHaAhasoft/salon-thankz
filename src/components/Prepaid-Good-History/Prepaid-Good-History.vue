@@ -13,7 +13,9 @@
 		>
 			<div class="good-name modal__good-name">
 				{{
-					!!infoPrepaidGood && infoPrepaidGood[0] && showLongText(infoPrepaidGood[0].cardName, 40)
+					!!infoPrepaidGood &&
+					infoPrepaidGood[0] &&
+					showLongText(infoPrepaidGood[0].cardName, 40)
 				}}
 			</div>
 			<table
@@ -236,6 +238,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -249,6 +252,11 @@ export default {
 				} else {
 					console.log(res, data);
 					this.$emit("loading", false);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -305,8 +313,8 @@ export default {
 		},
 
 		showLongText(text, length = 20) {
-			return common.commonFunctions.showLongText(text, length)
-		}
+			return common.commonFunctions.showLongText(text, length);
+		},
 	},
 };
 </script>

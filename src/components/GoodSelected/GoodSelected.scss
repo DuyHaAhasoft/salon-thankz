@@ -50,11 +50,13 @@
 
             .table-data__name {
                 width: 30%;
+                text-align: center;
             }
 
             .table-data__qty {
-                max-width: 35%;
-                min-width: 80px;
+                width: 35%;
+                min-width: 100px;
+                text-align: center;
 
                 .qty__btn {
                     opacity: 0;

@@ -311,6 +311,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.isLoading = false;
+					location.reload();
 					throw res;
 				}
 
@@ -363,12 +364,19 @@ export default {
 					this.isLoading = false;
 					console.log(res.data);
 				}
+
+				if (res.isOK === false) {
+					this.isLoading = false;
+					location.reload();
+				}
 			} catch (errors) {
 				console.log(errors);
 			}
 		},
 
 		async loadStaffActive() {
+			this.isLoading = true;
+
 			const data = {
 				shopId: session.shopSession.getShopId(),
 			};
@@ -376,11 +384,17 @@ export default {
 			try {
 				const resStaffActive = await apis.shopApis.getStaffActive(data);
 
-				if (resStaffActive.status !== 200) throw resStaffActive.message;
+				if (resStaffActive.status !== 200) {
+					this.isLoading = false;
+					location.reload();
+					throw resStaffActive.message;
+				}
 
 				if (resStaffActive.data.isOK)
 					session.shopSession.setStaffActive(resStaffActive.data.result);
 				else alert("Error Staff Active");
+
+				this.isLoading = false;
 			} catch (errors) {
 				console.log(errors);
 			}
@@ -456,7 +470,11 @@ export default {
 			try {
 				const resDataClient = await apis.clientApis.getClientByClientId(data);
 
-				if (resDataClient.status !== 200) throw resDataClient.message;
+				if (resDataClient.status !== 200) {
+					this.handleSetLoading(false);
+					location.reload();
+					throw resDataClient.message;
+				}
 
 				if (resDataClient.data.isOK) {
 					this.$refs.clientActionsRef.showModal({
@@ -474,6 +492,8 @@ export default {
 		},
 
 		async getNextMemberNumber() {
+			this.handleSetLoading(true);
+
 			const data = {
 				shopId: session.shopSession.getShopId(),
 			};
@@ -483,8 +503,11 @@ export default {
 					data
 				);
 
-				if (resNextMemberNumber.status !== 200)
+				if (resNextMemberNumber.status !== 200) {
+					this.handleSetLoading(false);
+					location.reload();
 					throw resNextMemberNumber.message;
+				}
 
 				if (resNextMemberNumber.data.isOK) {
 					return resNextMemberNumber.data.result;
@@ -494,6 +517,8 @@ export default {
 			} catch (errors) {
 				console.log(errors);
 			}
+
+			this.handleSetLoading(false);
 		},
 
 		async handleClickPrintListClient() {
@@ -586,6 +611,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.isLoading = false;
+					location.reload();
 					throw res;
 				}
 
@@ -593,6 +619,11 @@ export default {
 					await session.saleSession.setSaleAllSetup(res.data.result);
 				} else {
 					alert(res.errorMessages);
+				}
+
+				if (res.isOK === false) {
+					this.isLoading = false;
+					location.reload();
 				}
 
 				this.isLoading = false;

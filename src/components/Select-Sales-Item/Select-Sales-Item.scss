@@ -20,7 +20,10 @@
                     width: 40%;
 
                     .group-button-list-item-select__group-button {
-                        
+                        .group-button {
+                            gap: 10px;
+                            justify-content: center;
+                        }
                     }
 
                     .group-button-list-item-select__list-item-select {

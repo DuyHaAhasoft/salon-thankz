@@ -14,6 +14,7 @@
 			<group-button
 				@cancel="onClickCancel"
 				@delete="onClickDelete"
+				:nameButton="nameButton"
 				:isShowButton="isShowGroupButton"
 			/>
 		</b-modal>
@@ -34,6 +35,10 @@ export default {
 				cancel: true,
 				delete: true,
 				confirm: false,
+			},
+			nameButton: {
+				delete: "Confirm",
+				cancel: "Cancel",
 			},
 		};
 	},

@@ -118,8 +118,6 @@
 				</div>
 			</b-tab>
 
-			<b-tab title="Bookings" disabled></b-tab>
-
 			<b-tab title="Prepaid Cards" active @click="handleGetPrepaidCard">
 				<div class="tabs__tab tabs__tab--prepaid-card">
 					<div class="tab__checkbox">
@@ -377,8 +375,6 @@
 					/>
 				</div>
 			</b-tab>
-			<b-tab title="Messages" disabled></b-tab>
-			<b-tab title="Photos" disabled></b-tab>
 		</b-tabs>
 
 		<prepaid-good-history
@@ -589,6 +585,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -602,6 +599,11 @@ export default {
 				} else {
 					console.log(res);
 					this.$emit("loading", false);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -625,6 +627,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -638,6 +641,11 @@ export default {
 				} else {
 					console.log(res);
 					this.$emit("loading", false);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -704,6 +712,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -717,6 +726,11 @@ export default {
 				} else {
 					console.log(res, data);
 					this.$emit("loading", false);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);

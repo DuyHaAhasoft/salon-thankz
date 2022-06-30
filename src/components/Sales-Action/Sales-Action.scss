@@ -25,6 +25,7 @@
                     border-collapse: unset;
 
                     th, td {
+                        width: 100%;
                         padding: 5px;
                         vertical-align: middle;
                     }
@@ -137,9 +138,19 @@
                             max-width: 5%;
                             text-align: center;
 
+                            span {
+                                padding: 2px 5px;
+                                border-radius: 4px;
+                                background-color: #fff;
+                            }
+
+                            span:hover {
+                                background-color: rgb(231, 228, 228);
+                            }
+
                             &:hover {
                                 cursor: pointer;
-                                background-color: rgb(231, 228, 228);
+                                // background-color: rgb(231, 228, 228);
                             }
                         }
                     }
@@ -168,8 +179,8 @@
                         display: flex;
                         margin-bottom: 10px;
                         flex-direction: column;
-                        justify-content: space-between;
                         border: 1px solid #ccc;
+                        justify-content: space-between;
 
                         .payment-detail__title {
                             width: 50%;
@@ -177,13 +188,17 @@
                         }
 
                         .payment-detail__data {
-                            text-align: right;
                             width: 50%;
+                            float: right;
+                            text-align: right;
                         }
 
                         .payment-detail__btn {
+                            color: red;
+                            font-size:10px;
                             margin-left: 5px;
-                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                            border: 1px solid red;
                             background-color: #fff;
 
                             &:hover {
@@ -297,16 +312,25 @@
                                 white-space: nowrap;
                             }
 
-                            .date__date-picker {
-                                input {
-                                    max-width: 130px;
-                                    width: max-content;
-                                }
-                            }
+                            .date__date-time {
+                                gap: 10px;
+                                display: flex;
 
-                            .date__time {
-                                select {
-                                    height: 30px;
+                                .date-time__date-picker {
+                                    input {
+                                        max-width: 130px;
+                                        width: max-content;
+                                    }
+                                }
+
+                                .date-time__time {
+                                    select {
+                                        height: 30px;
+
+                                        &:hover {
+                                            cursor: pointer;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -314,7 +338,10 @@
 
                 }
                 .content-footer__group-button {
-
+                    .group-button {
+                        gap: 10px;
+                        justify-content: center;
+                    }
                 }
             }
         }
@@ -339,9 +366,9 @@
                     .select-item__table {
                         width: 100%;
                         padding: 5px;
+                        overflow-x: auto;
                         border-spacing: 0px;
                         border-collapse: unset;
-                        overflow-x: scroll;
     
                         th, td {
                             padding: 5px;
@@ -477,6 +504,58 @@
     }
 }
 
+@media (max-width: 991.98px) {
+    .sales-action {
+
+        .sales-action-modal__modal {
+            .modal__add-sales {
+
+                .add-sales__content-footer {
+
+                    .content-footer__detail {
+                        
+                        .detail__deduction-notes-payment-date {
+
+                            .deduction-notes-payment-date__date {
+                                flex-direction: column;
+
+                                .date__date-time {
+                                    gap: 5px;
+                                    display: flex;
+
+                                    .date-time__date-picker {
+                                        input {
+                                            max-width: 100px;
+                                            width: max-content;
+                                        }
+                                    }
+
+                                    .date-time__time {
+                                        select {
+                                            height: 30px;
+
+                                            &:hover {
+                                                cursor: pointer;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    .content-footer__group-button {
+                        .group-button {
+                            gap: 10px;
+                            justify-content: center;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @media (max-width: 767.98px) {
     .sales-action {
     
@@ -502,8 +581,8 @@
                             border: 1px solid #ccc;
     
                             .payment-detail__title {
-                                display: inline-block;
                                 width: 150px;
+                                display: inline-block;
                             }
     
                             .payment-detail__total-amount {
@@ -529,7 +608,22 @@
     
                         .detail__deduction-notes-payment-date {
                             width: 100%;
-    
+                            
+                            .deduction-notes-payment-date__date {
+                                flex-direction: row;
+                                
+                                .date__date-time {
+                                    gap: 10px;
+                                    display: flex;
+
+                                    .date-time__date-picker {
+                                        input {
+                                            max-width: 100px;
+                                            width: max-content;
+                                        }
+                                    }
+                                }
+                            }
                         }
     
                     }

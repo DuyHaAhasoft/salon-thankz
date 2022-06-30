@@ -27,27 +27,41 @@
 						<table>
 							<thead>
 								<tr>
-									<th
-										v-for="field in fields"
-										:key="field.text"
-									>
+									<th v-for="field in fields" :key="field.text">
 										{{ field.text }}
 									</th>
 								</tr>
 							</thead>
 							<tbody v-if="isShow.goodListSelectedShow">
-								<tr
-									:key="index"
-									v-for="(good, index) in goodListSelectedShow"
-								>
+								<tr :key="index" v-for="(good, index) in goodListSelectedShow">
 									<td class="table__table-data table__table-data--sales-item">
-										{{ good.showDataTable.salesItem }}
+										{{ showLongText(good.showDataTable.salesItem, 15) }}
 									</td>
 
 									<td class="table__table-data table__table-data--unit-price">
-										<button class="btn-change-number" @click="handleUnitPrice(good.showDataTable.goodId, good.showDataTable.unitPrice - 1 )">&lt;</button>
+										<button
+											class="btn-change-number"
+											@click="
+												handleUnitPrice(
+													good.showDataTable.goodId,
+													good.showDataTable.unitPrice - 1
+												)
+											"
+										>
+											&lt;
+										</button>
 										{{ handleFormatNumber(good.showDataTable.unitPrice) }}
-										<button class="btn-change-number" @click="handleUnitPrice(good.showDataTable.goodId, good.showDataTable.unitPrice + 1)">></button>
+										<button
+											class="btn-change-number"
+											@click="
+												handleUnitPrice(
+													good.showDataTable.goodId,
+													good.showDataTable.unitPrice + 1
+												)
+											"
+										>
+											>
+										</button>
 									</td>
 
 									<td class="table__table-data table__table-data--qty">
@@ -67,9 +81,29 @@
 											oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
 										/> -->
 
-										<button class="btn-change-number" @click="handleQty(good.showDataTable.goodId, good.showDataTable.qTy - 1 )">&lt;</button>
+										<button
+											class="btn-change-number"
+											@click="
+												handleQty(
+													good.showDataTable.goodId,
+													good.showDataTable.qTy - 1
+												)
+											"
+										>
+											&lt;
+										</button>
 										{{ handleFormatNumber(good.showDataTable.qTy) }}
-										<button class="btn-change-number" @click="handleQty(good.showDataTable.goodId, good.showDataTable.qTy + 1)">></button>
+										<button
+											class="btn-change-number"
+											@click="
+												handleQty(
+													good.showDataTable.goodId,
+													good.showDataTable.qTy + 1
+												)
+											"
+										>
+											>
+										</button>
 									</td>
 
 									<td
@@ -115,7 +149,7 @@
 										class="table__table-data table__table-data--delete"
 										@click="handleDeleteItemSelected(good.showDataTable.goodId)"
 									>
-										X
+										<span>X</span>
 									</td>
 								</tr>
 							</tbody>
@@ -133,31 +167,55 @@
 						<div class="detail__payment-detail">
 							<div class="payment-detail__total-amount">
 								<span class="payment-detail__title">Total Amount</span>
-								<span class="payment-detail__data">{{ handleFormatNumber(totalAmount) }}</span>
+								<span class="payment-detail__data">{{
+									handleFormatNumber(totalAmount)
+								}}</span>
 							</div>
 							<div class="payment-detail__point-deduction">
 								<span class="payment-detail__title">Point Deduction</span>
-								<span>0</span>
+								<span class="payment-detail__data">0</span>
 							</div>
 							<div class="payment-detail__balance-deduction">
 								<span class="payment-detail__title">Balance Deduction</span>
-								<span>0</span>
+								<span class="payment-detail__data">0</span>
 							</div>
-							<div v-if="isShow.paymentSelected" class="payment-detail__payment-paid">
-								<div class="payment-paid__payment" v-for="(payment, index) in paymentSelected" :key="index">
-									<span class="payment-detail__title">{{ payment.paymentMethodName }}</span>
-									<span class="payment-detail__data">{{ handleFormatNumber(payment.paymentAmount) }}</span>
-									<span><button class="payment-detail__btn" @click="handleDeletePaymentSelected(payment.paymentMethodId)">X</button></span>
+							<div
+								v-if="isShow.paymentSelected"
+								class="payment-detail__payment-paid"
+							>
+								<div
+									class="payment-paid__payment"
+									v-for="(payment, index) in paymentSelected"
+									:key="index"
+								>
+									<span class="payment-detail__title">{{
+										payment.paymentMethodName
+									}}</span>
+									<span class="payment-detail__data"
+										>{{ handleFormatNumber(payment.paymentAmount) }}
+										<span
+											><button
+												class="payment-detail__btn"
+												@click="
+													handleDeletePaymentSelected(payment.paymentMethodId)
+												"
+											>
+												X
+											</button></span
+										>
+									</span>
 								</div>
 							</div>
 
 							<div class="payment-detail__outstanding">
 								<span class="payment-detail__title">Outstanding</span>
-								<span>{{ handleFormatNumber(outstanding) }}</span>
+								<span class="payment-detail__data">{{
+									handleFormatNumber(outstanding)
+								}}</span>
 							</div>
 							<div class="payment-detail__earn-loyalty-points">
 								<span class="payment-detail__title">Earn Loyalty Points</span>
-								<span>0</span>
+								<span class="payment-detail__data">0</span>
 							</div>
 						</div>
 						<div class="detail__deduction-notes-payment-date">
@@ -196,29 +254,31 @@
 							</div>
 							<div class="deduction-notes-payment-date__date">
 								<span class="date__tittle">Sales Date</span>
-								<v-date-picker
-									v-model="registeredDate"
-									:masks="masks"
-									class="date-picker date__date-picker"
-								>
-									<template v-slot="{ inputValue, inputEvents }">
-										<input
-											class="input-date-picker date-picker__input-date-picker"
-											:value="inputValue"
-											v-on="inputEvents"
-										/>
-									</template>
-								</v-date-picker>
-								<div class="date__time">
-									<b-form-select
-										v-model="hoursSales"
-										:options="hourOptions"
-									></b-form-select>
-									:
-									<b-form-select
-										v-model="minutesSales"
-										:options="minuteOptions"
-									></b-form-select>
+								<div class="date__date-time">
+									<v-date-picker
+										v-model="registeredDate"
+										:masks="masks"
+										class="date-picker date-time__date-picker"
+									>
+										<template v-slot="{ inputValue, inputEvents }">
+											<input
+												class="input-date-picker date-picker__input-date-picker"
+												:value="inputValue"
+												v-on="inputEvents"
+											/>
+										</template>
+									</v-date-picker>
+									<div class="date-time__time">
+										<b-form-select
+											v-model="hoursSales"
+											:options="hourOptions"
+										></b-form-select>
+										:
+										<b-form-select
+											v-model="minutesSales"
+											:options="minuteOptions"
+										></b-form-select>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -395,16 +455,21 @@ export default {
 			this.hoursSales = common.momentFunctions.GetHours();
 			this.minutesSales = common.momentFunctions.GetMinutes();
 
-			this.paymentMethods = session.saleSession.getAllPaymentMethods();
+			// this.paymentMethods = session.saleSession.getAllPaymentMethods();
 
 			const paymentMethodsName = ["Cash", "Credit Card"];
 
 			const setPaymentMethods = session.saleSession.getAllPaymentMethods();
 
 			setPaymentMethods.forEach(paymentMethod => {
-				const indexPayment = this.paymentMethods.findIndex(payment => payment.id === paymentMethod.id)
+				const indexPayment = this.paymentMethods.findIndex(
+					payment => payment.id === paymentMethod.id
+				);
 
-				if (paymentMethodsName.includes(paymentMethod.name) && indexPayment === -1) {
+				if (
+					paymentMethodsName.includes(paymentMethod.name) &&
+					indexPayment === -1
+				) {
 					this.paymentMethods.push(paymentMethod);
 				}
 			});
@@ -457,6 +522,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -467,6 +533,11 @@ export default {
 					);
 				} else {
 					console.log("error", res);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 				this.$emit("loading", false);
 				return;
@@ -490,6 +561,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -498,6 +570,11 @@ export default {
 					this.categories = res.data.result.items;
 				} else {
 					console.log("error", res);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 
 				this.$emit("loading", false);
@@ -525,6 +602,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -532,6 +610,11 @@ export default {
 					this.goodList = res.data.result.items;
 				} else {
 					console.log("error", res);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 
 				this.$emit("loading", false);
@@ -556,6 +639,7 @@ export default {
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -563,6 +647,11 @@ export default {
 					this.goodList = res.data.result.items;
 				} else {
 					console.log("error", res);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 
 				this.$emit("loading", false);
@@ -601,11 +690,11 @@ export default {
 				const salesItems = Object.values(this.goodListSelected).map(good => {
 					const goodFormatted = common.commonFunctions.formatSaleItem(good);
 					// this.totalAmount += goodFormatted.amount;
-					if(goodFormatted.quantity === 0) {
+					if (goodFormatted.quantity === 0) {
 						goodFormatted.quantity = 1;
 						goodFormatted.amount = goodFormatted.unitPrice;
 					}
-					
+
 					return goodFormatted;
 				});
 				// if (this.paymentSelected[0]) {
@@ -664,6 +753,7 @@ export default {
 
 							if (res.status !== 200) {
 								this.$emit("loading", false);
+								location.reload();
 								throw res;
 							}
 
@@ -673,6 +763,11 @@ export default {
 								this.resetModal();
 							} else {
 								alert(res.data.errorMessages);
+							}
+
+							if (res.isOK === false) {
+								this.$emit("loading", false);
+								location.reload();
 							}
 
 							this.$emit("loading", false);
@@ -692,6 +787,7 @@ export default {
 
 						if (res.status !== 200) {
 							this.$emit("loading", false);
+							location.reload();
 							throw res;
 						}
 
@@ -700,6 +796,11 @@ export default {
 							this.resetModal();
 						} else {
 							alert(res.data.errorMessages);
+						}
+
+						if (res.isOK === false) {
+							this.$emit("loading", false);
+							location.reload();
 						}
 
 						this.$emit("loading", false);
@@ -729,6 +830,7 @@ export default {
 			this.totalAmount = 0;
 			this.salesNotes = "";
 			this.minutesSales = 0;
+			this.paymentMethod = [];
 			this.paymentSelected = [];
 			this.goodListSelected = {};
 			this.salesLoyaltyPoint = 0;
@@ -758,9 +860,11 @@ export default {
 			// this.salesPaid = this.totalAmount;
 
 			const paidDateTimeTS = common.momentFunctions.DateIntoUnix();
-			const indexPayment = this.paymentSelected.findIndex(payment => payment.paymentMethodId === paymentMethod.id)
+			const indexPayment = this.paymentSelected.findIndex(
+				payment => payment.paymentMethodId === paymentMethod.id
+			);
 
-			if(this.totalAmount === this.salesPaid) {
+			if (this.totalAmount === this.salesPaid) {
 				this.$refs.refNotification.showModal({
 					listMessage: [
 						{
@@ -770,20 +874,22 @@ export default {
 					],
 				});
 
-				return
+				return;
 			}
 
-
-			if(indexPayment !== -1) {
-				this.paymentSelected[indexPayment].paymentAmount += this.totalAmount - this.salesPaid;
+			if (indexPayment !== -1) {
+				this.paymentSelected[indexPayment].paymentAmount +=
+					this.totalAmount - this.salesPaid;
 				this.paymentSelected[indexPayment].paidDateTimeTS = paidDateTimeTS;
 			} else {
-				const paymentMethodFormatted = common.commonFunctions.formatPaymentMethod(
-					paymentMethod,
-					paidDateTimeTS
-				);
+				const paymentMethodFormatted =
+					common.commonFunctions.formatPaymentMethod(
+						paymentMethod,
+						paidDateTimeTS
+					);
 
-				paymentMethodFormatted.paymentAmount = this.totalAmount - this.salesPaid;
+				paymentMethodFormatted.paymentAmount =
+					this.totalAmount - this.salesPaid;
 
 				// this.paymentSelected = [paymentMethodFormatted];
 				this.paymentSelected.push(paymentMethodFormatted);
@@ -793,7 +899,9 @@ export default {
 		},
 
 		handleDeletePaymentSelected(PaymentSelectedId) {
-			const indexPayment = this.paymentSelected.findIndex(payment => payment.paymentMethodId === PaymentSelectedId);
+			const indexPayment = this.paymentSelected.findIndex(
+				payment => payment.paymentMethodId === PaymentSelectedId
+			);
 
 			this.outstanding += this.paymentSelected[indexPayment].paymentAmount;
 			this.salesPaid -= this.paymentSelected[indexPayment].paymentAmount;
@@ -844,9 +952,10 @@ export default {
 		},
 
 		handleQty(id, qty) {
-			const amount = qty * this.goodListSelected[id.toString()].showDataTable.unitPrice;
+			const amount =
+				qty * this.goodListSelected[id.toString()].showDataTable.unitPrice;
 
-			if(amount.toString().length <= 12) {
+			if (amount.toString().length <= 12) {
 				this.goodListSelected[id.toString()].qty = qty;
 				this.goodListSelectedShow = this.handleFormatDataSalesItem();
 			} else {
@@ -859,13 +968,12 @@ export default {
 					],
 				});
 			}
-			
 		},
 
 		handleUnitPrice(id, unitPrice) {
 			const amount = this.goodListSelected[id.toString()].qty * unitPrice;
 
-			if(amount.toString().length <= 12) {
+			if (amount.toString().length <= 12) {
 				const typeGood = this.goodListSelected[id.toString()].type;
 				if (typeGood === 1) {
 					this.goodListSelected[id.toString()].goodInfo.price = unitPrice;
@@ -955,6 +1063,10 @@ export default {
 		handleRandomIndex() {
 			const randomIndex = common.randomFunctions.randomIndex();
 			return randomIndex;
+		},
+
+		showLongText(text, length) {
+			return common.commonFunctions.showLongText(text, length);
 		},
 	},
 };

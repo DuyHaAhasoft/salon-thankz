@@ -395,6 +395,7 @@ export default {
 		async onClickConfirm() {
 			this.dataClient.clientGroupId = this.groupClient.clientGroupId;
 			this.dataClient.clientGroupName = this.groupClient.clientGroupName;
+			this.dataClient.sessionToken = session.shopSession.getSessionToken();
 			this.dataClient.clientInputDateTimeTS =
 				common.momentFunctions.DateIntoUnix(
 					common.momentFunctions.FormatDate(this.registeredDate)
@@ -431,7 +432,11 @@ export default {
 					res = await apis.clientApis.editClient(this.dataClient);
 				}
 
-				if (res.status !== 200) throw res.message;
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					location.reload();
+					throw res.message;
+				}
 
 				if (res.data.isOK) {
 					this.$emit("loadClient");
@@ -445,6 +450,11 @@ export default {
 
 					this.errorActionClient.isShow = true;
 					this.errorActionClient.errorMessages = [...res.data.errorMessages];
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -519,7 +529,11 @@ export default {
 			try {
 				const res = await apis.clientApis.uploadClientImage(formData);
 
-				if (res.status !== 200) throw res;
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					location.reload();
+					throw res;
+				}
 
 				if (res.data.isOK) {
 					const pathURL = [
@@ -540,6 +554,11 @@ export default {
 
 					console.log(res.data);
 				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
+				}
 			} catch (errors) {
 				console.log("errors", errors);
 			}
@@ -556,7 +575,11 @@ export default {
 			try {
 				const res = await apis.clientApis.deleteClientImage(data);
 
-				if (res.status !== 200) throw res;
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					location.reload();
+					throw res;
+				}
 
 				if (res.data.isOK) {
 					this.urlImageAvatar = "";
@@ -566,6 +589,11 @@ export default {
 				} else {
 					this.$emit("loading", false);
 					console.log(res);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -586,11 +614,11 @@ export default {
 			};
 
 			try {
-				
 				const res = await apis.clientApis.getClientPrepaidCards(data);
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -605,6 +633,11 @@ export default {
 					this.$emit("loading", false);
 				} else {
 					this.$emit("loading", false);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -627,11 +660,11 @@ export default {
 			};
 
 			try {
-				
 				const res = await apis.clientApis.getClientPrepaidServices(data);
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -647,6 +680,11 @@ export default {
 					this.$emit("loading", false);
 				} else {
 					this.$emit("loading", false);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -673,11 +711,11 @@ export default {
 			};
 
 			try {
-				
 				const res = await apis.clientApis.getSalesHistoryByClient(data);
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw res;
 				}
 
@@ -692,6 +730,11 @@ export default {
 					this.$emit("loading", false);
 				} else {
 					this.$emit("loading", false);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				console.log(errors);
@@ -717,12 +760,12 @@ export default {
 				shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
 			};
 
-
 			try {
 				const res = await apis.clientApis.deleteClient(data);
 
 				if (res.status !== 200) {
 					this.$emit("loading", false);
+					location.reload();
 					throw this.$refs.refNotification.showModal({
 						listMessage: res.errorMessages,
 					});
@@ -740,6 +783,11 @@ export default {
 					this.$refs.refNotification.showModal({
 						listMessage: res.errorMessages,
 					});
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
 				}
 			} catch (errors) {
 				this.$refs.refNotification.showModal({ listMessage: errors });

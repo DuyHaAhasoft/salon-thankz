@@ -135,11 +135,13 @@ export default {
 					const res = await apis.userApis.login(data);
 
 					if (res.status !== 200) {
+						location.reload();
 						throw res.statusText;
 					}
 
 					if (res.data.isOK) {
-						res.data.result.userAuthInfo.session_token = common.randomFunctions.guid();
+						res.data.result.userAuthInfo.session_token =
+							common.randomFunctions.guid();
 
 						await session.shopSession.setShopInfo(res.data.result);
 						await this.loadClientSetUp(res.data.result.shopBasicInfo.shopId);
@@ -153,6 +155,11 @@ export default {
 						this.$refs.notificationRef.showModal({
 							listMessage: res.data.errorMessages,
 						});
+					}
+
+					if (res.isOK === false) {
+						this.isLoading = false;
+						location.reload();
 					}
 				} catch (errors) {
 					console.log(errors);
@@ -168,7 +175,10 @@ export default {
 			try {
 				const resShopInfo = await apis.shopApis.getShopInfo(data);
 
-				if (resShopInfo.status !== 200) throw resShopInfo.message;
+				if (resShopInfo.status !== 200) {
+					location.reload();
+					throw resShopInfo.message;
+				}
 
 				if (resShopInfo.data.isOK)
 					session.clientSession.setClientSetup(resShopInfo.data.result);
