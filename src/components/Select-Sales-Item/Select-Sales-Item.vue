@@ -234,7 +234,11 @@ export default {
 					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 					this.handleGetProductCategory();
 				}
-			} else if (confirm("Change Data") === true) {
+			} else if (
+				confirm(
+					"The selected data is not saved when you move the tab. Do you want to move?"
+				) === true
+			) {
 				this.typeGood = typeGood;
 				this.goodTypeSelected = typeGood;
 
