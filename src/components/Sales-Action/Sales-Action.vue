@@ -45,7 +45,9 @@
 									</td>
 
 									<td class="table__table-data table__table-data--unit-price">
+										<button class="btn-change-number" @click="handleUnitPrice(good.showDataTable.goodId, good.showDataTable.unitPrice - 1 )">&lt;</button>
 										{{ handleFormatNumber(good.showDataTable.unitPrice) }}
+										<button class="btn-change-number" @click="handleUnitPrice(good.showDataTable.goodId, good.showDataTable.unitPrice + 1)">></button>
 									</td>
 
 									<td class="table__table-data table__table-data--qty">
@@ -65,9 +67,9 @@
 											oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
 										/> -->
 
-										<button @click="handleQty(good.showDataTable.goodId, good.showDataTable.qTy - 1 )">&lt;</button>
+										<button class="btn-change-number" @click="handleQty(good.showDataTable.goodId, good.showDataTable.qTy - 1 )">&lt;</button>
 										{{ handleFormatNumber(good.showDataTable.qTy) }}
-										<button @click="handleQty(good.showDataTable.goodId, good.showDataTable.qTy + 1)">></button>
+										<button class="btn-change-number" @click="handleQty(good.showDataTable.goodId, good.showDataTable.qTy + 1)">></button>
 									</td>
 
 									<td
@@ -341,13 +343,14 @@ export default {
 	},
 
 	mounted() {
-		const paymentMethodsName = ["Cash", "Credit Card"];
-		const setPaymentMethods = session.saleSession.getAllPaymentMethods();
-		setPaymentMethods.forEach(paymentMethod => {
-			if (paymentMethodsName.includes(paymentMethod.name)) {
-				this.paymentMethods.push(paymentMethod);
-			}
-		});
+		// const paymentMethodsName = ["Cash", "Credit Card"];
+		// const setPaymentMethods = session.saleSession.getAllPaymentMethods();
+
+		// setPaymentMethods.forEach(paymentMethod => {
+		// 	if (paymentMethodsName.includes(paymentMethod.name)) {
+		// 		this.paymentMethods.push(paymentMethod);
+		// 	}
+		// });
 
 		this.$nextTick(() => {
 			window.addEventListener("resize", this.onResize);
@@ -392,14 +395,19 @@ export default {
 			this.hoursSales = common.momentFunctions.GetHours();
 			this.minutesSales = common.momentFunctions.GetMinutes();
 
-			// this.paymentMethods = session.saleSession.getAllPaymentMethods();
-			// const paymentMethodsName = ["Cash", "Credit Card"];
-			// const setPaymentMethods = session.saleSession.getAllPaymentMethods();
-			// setPaymentMethods.forEach(paymentMethod => {
-			// 	if (paymentMethodsName.includes(paymentMethod.name)) {
-			// 		this.paymentMethods.push(paymentMethod);
-			// 	}
-			// });
+			this.paymentMethods = session.saleSession.getAllPaymentMethods();
+
+			const paymentMethodsName = ["Cash", "Credit Card"];
+
+			const setPaymentMethods = session.saleSession.getAllPaymentMethods();
+
+			setPaymentMethods.forEach(paymentMethod => {
+				const indexPayment = this.paymentMethods.findIndex(payment => payment.id === paymentMethod.id)
+
+				if (paymentMethodsName.includes(paymentMethod.name) && indexPayment === -1) {
+					this.paymentMethods.push(paymentMethod);
+				}
+			});
 
 			this.dataClient = dataModal.client;
 			this.invoiceDateTimeTS = dataModal.invoiceDateTimeTS;
@@ -836,7 +844,7 @@ export default {
 		},
 
 		handleQty(id, qty) {
-			const amount = this.goodListSelected[id.toString()].qty * this.goodListSelected[id.toString()].showDataTable.unitPrice;
+			const amount = qty * this.goodListSelected[id.toString()].showDataTable.unitPrice;
 
 			if(amount.toString().length <= 12) {
 				this.goodListSelected[id.toString()].qty = qty;
@@ -855,16 +863,29 @@ export default {
 		},
 
 		handleUnitPrice(id, unitPrice) {
-			const typeGood = this.goodListSelected[id.toString()].type;
-			if (typeGood === 1) {
-				this.goodListSelected[id.toString()].goodInfo.price = unitPrice;
-			}
+			const amount = this.goodListSelected[id.toString()].qty * unitPrice;
 
-			if (typeGood === 2) {
-				this.goodListSelected[id.toString()].goodInfo.retailPrice = unitPrice;
-			}
+			if(amount.toString().length <= 12) {
+				const typeGood = this.goodListSelected[id.toString()].type;
+				if (typeGood === 1) {
+					this.goodListSelected[id.toString()].goodInfo.price = unitPrice;
+				}
 
-			this.goodListSelectedShow = this.handleFormatDataSalesItem();
+				if (typeGood === 2) {
+					this.goodListSelected[id.toString()].goodInfo.retailPrice = unitPrice;
+				}
+
+				this.goodListSelectedShow = this.handleFormatDataSalesItem();
+			} else {
+				this.$refs.refNotification.showModal({
+					listMessage: [
+						{
+							errorCode: "Error",
+							errorMessage: "Sales Item Amount can not exceed 12 characters.",
+						},
+					],
+				});
+			}
 		},
 
 		handleFormatDataSalesItem() {

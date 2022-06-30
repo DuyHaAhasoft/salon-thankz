@@ -65,23 +65,47 @@
                     .table__table-data {
                         width: 100%;
 
+                        .btn-change-number {
+                            opacity: 0;
+                            border: none;
+
+                            &:hover {
+                                cursor: pointer;
+                                background-color: #ccc;
+                            }
+                        }
+
                         &.table__table-data--sales-item {
                             max-width: 30%;
                         }
 
                         &.table__table-data--unit-price {
                             max-width: 10%;
+                            text-align: center;
 
                             input {
                                 max-width: 80px;
+                            }
+
+                            &:hover {
+                                .btn-change-number {
+                                    opacity: 1;
+                                } 
                             }
                         }
 
                         &.table__table-data--qty {
                             max-width: 10%;
+                            text-align: center;
 
                             input {
                                 max-width: 80px;
+                            }
+
+                            &:hover {
+                                .btn-change-number {
+                                    opacity: 1;
+                                } 
                             }
                         }
 

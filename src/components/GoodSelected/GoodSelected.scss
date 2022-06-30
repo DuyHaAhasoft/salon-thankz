@@ -49,11 +49,27 @@
             width: 100%;
 
             .table-data__name {
-                width: 40%;
+                width: 30%;
             }
 
             .table-data__qty {
-                max-width: 25%;
+                max-width: 35%;
+                min-width: 80px;
+
+                .qty__btn {
+                    opacity: 0;
+                    border: none;
+
+                    &:hover {
+                        background-color: #ccc;
+                    }
+                }
+
+                &:hover {
+                    .qty__btn {
+                        opacity: 1;
+                    }
+                }
             }
 
             .table-data__btn {

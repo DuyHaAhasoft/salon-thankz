@@ -17,7 +17,7 @@
 					>
 						<td class="table-data__name">{{ goodSelected.goodInfo.serviceName }}</td>
 						<td class="table-data__qty">
-							<input
+							<!-- <input
 								min="1"
 								max="9999"
 								type="number"
@@ -26,7 +26,10 @@
 								class="item__qty"
 								v-model="goodSelected.qty"
 								oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-							/>
+							/> -->
+							<button class="qty__btn" @click="() => { if(goodSelected.qty !== 1) goodSelected.qty--}">&lt;</button>
+							{{ handleFormatNumber(goodSelected.qty) }}
+							<button class="qty__btn" @click="() => goodSelected.qty++">></button>
 						</td>
 						<td class="table-data__btn">
 							<button class="btn--del" @click="handleDeleteItem(goodSelected, 1)">X</button>
@@ -62,9 +65,9 @@
 								v-model="goodSelected.qty"
 								oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength); this.value = this.value.toString().replace(/,/g,'')"
 							/> -->
-							<button @click="handleQty(goodSelected.id, goodSelected.qty - 1 )">&lt;</button>
+							<button class="qty__btn" @click="() => { if(goodSelected.qty !== 1) goodSelected.qty--}">&lt;</button>
 							{{ handleFormatNumber(goodSelected.qty) }}
-							<button @click="handleQty(goodSelected.id, goodSelected.qty + 1)">></button>
+							<button class="qty__btn" @click="() => goodSelected.qty++">></button>
 						</td>
 						<td class="table-data__btn">
 							<button class="btn--del" @click="handleDeleteItem(goodSelected, 2)">X</button>
