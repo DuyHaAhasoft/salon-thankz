@@ -744,7 +744,7 @@ export default {
 
 		onClickDelete() {
 			this.$refs.refConfirmModal.showModal({
-				title: "Delete Client",
+				title: "Sales with outstanding",
 				message: `Are you sure you want to delete client ${this.dataClient.clientName} ?`,
 			});
 		},

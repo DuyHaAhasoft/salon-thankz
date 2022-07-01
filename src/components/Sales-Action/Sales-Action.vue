@@ -35,7 +35,7 @@
 							<tbody v-if="isShow.goodListSelectedShow">
 								<tr :key="index" v-for="(good, index) in goodListSelectedShow">
 									<td class="table__table-data table__table-data--sales-item">
-										{{ showLongText(good.showDataTable.salesItem, 15) }}
+										{{ showLongText(good.showDataTable.salesItem, 20) }}
 									</td>
 
 									<td class="table__table-data table__table-data--unit-price">
@@ -210,7 +210,13 @@
 							<div class="payment-detail__outstanding">
 								<span class="payment-detail__title">Outstanding</span>
 								<span class="payment-detail__data">{{
-									handleFormatNumber(outstanding)
+									isOutstanding ? handleFormatNumber(outstanding) : 0
+								}}</span>
+							</div>
+							<div class="payment-detail__change" v-if="!isOutstanding">
+								<span class="payment-detail__title">Change</span>
+								<span class="payment-detail__data">{{
+									handleFormatNumber(change)
 								}}</span>
 							</div>
 							<div class="payment-detail__earn-loyalty-points">
@@ -313,6 +319,7 @@
 		/>
 		<!-- <loading /> -->
 		<notification modalTitle="Notification" ref="refNotification" />
+		<confirm-modal ref="refConfirmModal" @confirm="handleAddSalesWithOutstanding" />
 	</div>
 </template>
 
@@ -327,6 +334,7 @@ import session from "@/lib/utils/session";
 import GoodType from "@components/Good-Type/Good-Type.vue";
 import GroupButton from "@components/Group-Button/Group-Button.vue";
 import Notification from "@components/Notification/Notification.vue";
+import ConfirmModal from "@components/Confirm-Modal/Confirm-Modal.vue";
 import SelectSalesItem from "@components/Select-Sales-Item/Select-Sales-Item.vue";
 
 const DEFAULT_SALES_ACTION_TYPE = [
@@ -364,6 +372,7 @@ export default {
 	data() {
 		return {
 			title: "",
+			change: 0,
 			typeGood: 1,
 			goodList: [],
 			salesPaid: 0,
@@ -399,6 +408,7 @@ export default {
 		GoodType,
 		GroupButton,
 		Notification,
+		ConfirmModal,
 		SelectSalesItem,
 	},
 
@@ -448,6 +458,12 @@ export default {
 		hourOptions() {
 			return common.commonFunctions.hourSelect();
 		},
+
+		isOutstanding() {
+			if(this.outstanding < 0)
+				return false;
+			return true;
+		}
 	},
 
 	methods: {
@@ -740,47 +756,72 @@ export default {
 
 				this.$emit("loading", true);
 
-				if (this.outstanding > 0) {
-					if (
-						confirm(
-							`The outstanding is ${this.handleFormatNumber(
-								this.outstanding
-							)}. Do you want to save?`
-						) === true
-					) {
-						try {
-							const res = await apis.salesApis.addSales(data);
-
-							if (res.status !== 200) {
-								this.$emit("loading", false);
-								location.reload();
-								throw res;
-							}
-
-							if (res.data.isOK) {
-								this.$emit("loadingDataClient");
-								this.hideModal();
-								this.resetModal();
-							} else {
-								alert(res.data.errorMessages);
-							}
-
-							if (res.isOK === false) {
-								this.$emit("loading", false);
-								location.reload();
-							}
-
-							this.$emit("loading", false);
-						} catch (errors) {
-							console.log("errors", errors);
-						}
-
-						this.$emit("loading", false);
+				if(this.change > 0) {
+					if(this.paymentSelected.length === 1) {
+						this.paymentSelected[0].paymentAmount = this.totalAmount;
+						data.outstanding = 0;
 					} else {
-						// this.totalAmount = 0;
-						// this.outstanding = 0;
+						this.$refs.refNotification.showModal({
+							listMessage: [
+								{
+									errorCode: "Error",
+									errorMessage: "Change are not allowed for multiple payments.",
+								},
+							],
+						});
 						this.$emit("loading", false);
+						return
 					}
+				}
+
+				if (this.outstanding > 0) {
+					this.$emit("loading", false);
+					this.$refs.refConfirmModal.showModal({
+						title: "Delete Client",
+						message: `The outstanding is ${this.handleFormatNumber(this.outstanding)}. Do you want to save? ?`,
+					});
+					// if (
+					// 	confirm(
+					// 		`The outstanding is ${this.handleFormatNumber(
+					// 			this.outstanding
+					// 		)}. Do you want to save?`
+					// 	) === true
+					// ) {
+					// 	try {
+					// 		const res = await apis.salesApis.addSales(data);
+
+					// 		if (res.status !== 200) {
+					// 			this.$emit("loading", false);
+					// 			location.reload();
+					// 			throw res;
+					// 		}
+
+					// 		if (res.data.isOK) {
+					// 			this.$emit("loadingDataClient");
+					// 			this.hideModal();
+					// 			this.resetModal();
+					// 		} else {
+					// 			alert('error outstanding',res.data.errorMessages);
+					// 		}
+
+					// 		if (res.isOK === false) {
+					// 			this.$emit("loading", false);
+					// 			location.reload();
+					// 		}
+
+					// 		this.$emit("loading", false);
+					// 	} catch (errors) {
+					// 		console.log("errors", errors);
+					// 	}
+
+					// 	this.$emit("loading", false);
+					// } else {
+					// 	// this.totalAmount = 0;
+					// 	// this.outstanding = 0;
+					// 	this.$emit("loading", false);
+					// }
+
+
 				} else {
 					try {
 						const res = await apis.salesApis.addSales(data);
@@ -795,7 +836,7 @@ export default {
 							this.hideModal();
 							this.resetModal();
 						} else {
-							alert(res.data.errorMessages);
+							alert('error not outstanding',res.data.errorMessages);
 						}
 
 						if (res.isOK === false) {
@@ -822,7 +863,108 @@ export default {
 			}
 		},
 
+		async handleAddSalesWithOutstanding() {
+			if (Object.values(this.goodListSelected).length) {
+				const dateRegistered = common.momentFunctions.FormatDate(
+					this.registeredDate
+				);
+				const datetimeAddSales = `${dateRegistered}  ${this.hoursSales}:${this.minutesSales}`;
+				const timestampDatetimeAddSales =
+					common.momentFunctions.DateIntoUnix(datetimeAddSales);
+
+				if (timestampDatetimeAddSales > common.momentFunctions.DateIntoUnix()) {
+					this.$refs.refNotification.showModal({
+						listMessage: [
+							{
+								errorCode: "Error",
+								errorMessage: "Can not add sales in future.",
+							},
+						],
+					});
+
+					return;
+				}
+
+				const salesItems = Object.values(this.goodListSelected).map(good => {
+					const goodFormatted = common.commonFunctions.formatSaleItem(good);
+					if (goodFormatted.quantity === 0) {
+						goodFormatted.quantity = 1;
+						goodFormatted.amount = goodFormatted.unitPrice;
+					}
+
+					return goodFormatted;
+				});
+
+				const data = {
+					balanceDeduction: 0,
+					balanceMoves: [],
+					bookingId: 0,
+					branchNumber: session.shopSession.getBranchInfo().number,
+					chainId: session.shopSession.chainId,
+					clientId: this.dataClient.clientId,
+					createdById: session.shopSession.getUserAccount().id,
+					createdByName: session.shopSession.getUserAccount().name,
+					createdDateTimeTS: timestampDatetimeAddSales,
+					deductionPoints: 0,
+					deletedById: 0,
+					deletedByName: "",
+					deletedDateTimeTS: 0,
+					earnedPoints: this.salesLoyaltyPoint,
+					editedById: 0,
+					editedByName: "",
+					editedDateTimeTS: 0,
+					editedSalesId: 0,
+					hourOfDay: common.momentFunctions.GetHours(),
+					invoiceDateTimeTS: this.invoiceDateTimeTS,
+					isSalesConnect: false,
+					notes: this.salesNotes.trim(),
+					outstanding: this.outstanding,
+					payments: this.paymentSelected,
+					salesId: 0,
+					salesItems: salesItems,
+					salesNumber: "",
+					sessionToken: session.shopSession.getSessionToken(),
+					shopId: session.shopSession.getShopId(),
+					shopLocation: constant.payload.DEFAULT_SHOP_LOCATION,
+					status: 0,
+					totalAmount: this.totalAmount,
+				};
+
+				this.$emit("loading", true);
+
+				try {
+					const res = await apis.salesApis.addSales(data);
+
+					if (res.status !== 200) {
+						this.$emit("loading", false);
+						location.reload();
+						throw res;
+					}
+
+					if (res.data.isOK) {
+						this.$emit("loadingDataClient");
+						this.hideModal();
+						this.resetModal();
+					} else {
+						alert('error outstanding',res.data.errorMessages);
+					}
+
+					if (res.isOK === false) {
+						this.$emit("loading", false);
+						location.reload();
+					}
+
+					this.$emit("loading", false);
+				} catch (errors) {
+					console.log("errors", errors);
+				}
+
+				this.$emit("loading", false);
+			} 
+		},
+
 		resetModal() {
+			this.change = 0;
 			this.salesPaid = 0;
 			this.hoursSales = 0;
 			this.dataClient = {};
@@ -852,7 +994,8 @@ export default {
 		handleDeleteItemSelected(itemDelete) {
 			delete this.goodListSelected[itemDelete];
 
-			this.goodListSelectedShow = Object.values(this.goodListSelected);
+			// this.goodListSelectedShow = Object.values(this.goodListSelected);
+			this.goodListSelectedShow = this.handleFormatDataSalesItem();
 		},
 
 		handlePaymentSelected(paymentMethod) {
@@ -905,6 +1048,14 @@ export default {
 
 			this.outstanding += this.paymentSelected[indexPayment].paymentAmount;
 			this.salesPaid -= this.paymentSelected[indexPayment].paymentAmount;
+
+			if(this.change > 0) {
+				if(this.paymentSelected[indexPayment].paymentAmount >= this.change) {
+					this.change = 0;
+				} else {
+					this.change -= this.paymentSelected[indexPayment].paymentAmount;
+				}
+			}
 
 			this.paymentSelected.splice(indexPayment, 1);
 		},
@@ -1037,6 +1188,12 @@ export default {
 			});
 
 			this.outstanding = this.totalAmount - this.salesPaid;
+
+			if(this.outstanding < 0) {
+				this.change = -this.outstanding;
+			} else {
+				this.change = 0;
+			}
 
 			return dataFormatted;
 		},

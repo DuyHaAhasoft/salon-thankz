@@ -90,6 +90,12 @@
                         }
                     }
 
+                    &.table__table-data--sales-history-pay-amount {
+                        .sales-history-pay-amount__outstanding {
+                            color: red;
+                        }
+                    }
+
                     .data--btn__btn {
                         width: 100%;
                         border: 0px;

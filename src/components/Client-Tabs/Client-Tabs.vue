@@ -53,7 +53,7 @@
 										class="table__table-data table__table-data--sales-history-items"
 									>
 										<div v-for="(item, index) in sales.items" :key="index">
-											{{ showLongText(item.itemName, 15) }}
+											{{ showLongText(item.itemName, 20) }}
 										</div>
 									</td>
 
@@ -71,7 +71,7 @@
 											:key="payment.paymentMethodId"
 										>
 											{{
-												payment && showLongText(payment.paymentMethodName, 10)
+												payment && showLongText(payment.paymentMethodName, 20)
 											}}
 										</div>
 									</td>
@@ -79,8 +79,8 @@
 									<td
 										class="table__table-data table__table-data--sales-history-pay-amount"
 									>
-										<div v-if="sales.outstanding">
-											-{{ handleFormatNumber(sales.outstanding) }}
+										<div v-if="sales.outstanding" class="sales-history-pay-amount__outstanding">
+											{{ handleFormatNumber(sales.outstanding) }}
 										</div>
 										<div v-else>
 											{{ handleFormatNumber(sales.totalAmount) }}

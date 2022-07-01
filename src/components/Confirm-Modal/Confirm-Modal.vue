@@ -13,7 +13,7 @@
 
 			<group-button
 				@cancel="onClickCancel"
-				@delete="onClickDelete"
+				@confirm="onClickConfirm"
 				:nameButton="nameButton"
 				:isShowButton="isShowGroupButton"
 			/>
@@ -33,13 +33,15 @@ export default {
 			message: "",
 			isShowGroupButton: {
 				cancel: true,
-				delete: true,
-				confirm: false,
+				delete: false,
+				confirm: true,
 			},
 			nameButton: {
-				delete: "Confirm",
+				confirm: "Confirm",
 				cancel: "Cancel",
 			},
+
+			typeGood: null,
 		};
 	},
 
@@ -67,7 +69,7 @@ export default {
 			this.$refs.confirmModal && this.$refs.confirmModal.hide();
 		},
 
-		onClickDelete() {
+		onClickConfirm() {
 			this.$emit("confirm");
 			this.hideModal();
 		},

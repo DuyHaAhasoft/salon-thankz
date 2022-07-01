@@ -35,6 +35,7 @@
                         tr {
 
                             th {
+                                width: 10%;
                                 border: 0px;
                                 padding: 10px 0px;
                                 font-weight: 400;
@@ -78,6 +79,7 @@
 
                         &.table__table-data--sales-item {
                             max-width: 30%;
+                            min-width: 100px;
                         }
 
                         &.table__table-data--unit-price {
@@ -111,7 +113,7 @@
                         }
 
                         &.table__table-data--unit-discount {
-                            max-width: 5%;
+                            max-width: 7%;
                         }
 
                         &.table__table-data--amount {
@@ -119,7 +121,7 @@
                         }
 
                         &.table__table-data--staff {
-                            max-width: 5%;
+                            max-width: 7%;
                         }
 
                         &.table__table-data--sales-type {
@@ -127,15 +129,15 @@
                         }
 
                         &.table__table-data--points-deduct {
-                            max-width: 5%;
+                            max-width: 7%;
                         }
 
                         &.table__table-data--balance-deduct {
-                            max-width: 5%;
+                            max-width: 7%;
                         }
 
                         &.table__table-data--delete {
-                            max-width: 5%;
+                            max-width: 7%;
                             text-align: center;
 
                             span {
@@ -239,6 +241,10 @@
 
                         .payment-detail__outstanding {
                             color: red;
+                        }
+
+                        .payment-detail__change {
+                            color: green;
                         }
 
                         .payment-detail__earn-loyalty-points {

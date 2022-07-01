@@ -58,6 +58,7 @@
 		</b-modal>
 
 		<notification modalTitle="Notification" ref="refNotification" />
+		<confirm-modal ref="refConfirmModal" @confirm="handleGetGoodCategoryChangeData" />
 	</div>
 </template>
 
@@ -70,6 +71,7 @@ import GroupButton from "@components/Group-Button/Group-Button.vue";
 import GoodSelected from "@components/GoodSelected/GoodSelected.vue";
 import Notification from "@components/Notification/Notification.vue";
 import CategoryGood from "@components/Category-Good/Category-Good.vue";
+import ConfirmModal from "@components/Confirm-Modal/Confirm-Modal.vue";
 
 // const DEFAULT_DATA_CATEGORY = {
 // 	categoryService: {},
@@ -89,6 +91,7 @@ export default {
 			typeGood: 1,
 			goodList: [],
 			categories: [],
+			typeGoodTemp: 0,
 			goodListSelected: {},
 			goodListSelectedShow: [],
 			iShowSelectedItem: false,
@@ -106,6 +109,7 @@ export default {
 		CategoryGood,
 		GoodSelected,
 		Notification,
+		ConfirmModal,
 	},
 
 	props: {
@@ -234,32 +238,67 @@ export default {
 					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 					this.handleGetProductCategory();
 				}
-			} else if (
-				confirm(
-					"The selected data is not saved when you move the tab. Do you want to move?"
-				) === true
-			) {
-				this.typeGood = typeGood;
-				this.goodTypeSelected = typeGood;
+			} else {
+				this.typeGoodTemp = typeGood;
 
-				const itemSalesTypeArray = Object.values(constant.sales.itemSalesType);
-				this.goodTypeSelectedName =
-					itemSalesTypeArray[
-						itemSalesTypeArray.findIndex(
-							item => item.id === this.goodTypeSelected
-						)
-					].text;
+				this.$refs.refConfirmModal.showModal({
+					title: "Change category",
+					message: 'The selected data is not saved when you move the tab. Do you want to move?',
+				});
+				// this.typeGood = typeGood;
+				// this.goodTypeSelected = typeGood;
 
-				if (typeGood === constant.sales.services) {
-					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
-					this.handleGetServiceCategory();
-				}
+				// const itemSalesTypeArray = Object.values(constant.sales.itemSalesType);
+				// this.goodTypeSelectedName =
+				// 	itemSalesTypeArray[
+				// 		itemSalesTypeArray.findIndex(
+				// 			item => item.id === this.goodTypeSelected
+				// 		)
+				// 	].text;
 
-				if (typeGood === constant.sales.products) {
-					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
-					this.handleGetProductCategory();
-				}
+				// if (typeGood === constant.sales.services) {
+				// 	this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+				// 	this.handleGetServiceCategory();
+				// }
+
+				// if (typeGood === constant.sales.products) {
+				// 	this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+				// 	this.handleGetProductCategory();
+				// }
 			}
+		},
+
+		handleGetGoodCategoryChangeData() {
+			if (
+				this.typeGoodTemp !== constant.sales.services &&
+				this.typeGoodTemp !== constant.sales.products
+			) {
+				this.handleNotification();
+				return;
+			}
+
+			this.typeGood = this.typeGoodTemp;
+			this.goodTypeSelected = this.typeGoodTemp;
+
+			const itemSalesTypeArray = Object.values(constant.sales.itemSalesType);
+			this.goodTypeSelectedName =
+				itemSalesTypeArray[
+					itemSalesTypeArray.findIndex(
+						item => item.id === this.goodTypeSelected
+					)
+				].text;
+
+			if (this.typeGoodTemp === constant.sales.services) {
+				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+				this.handleGetServiceCategory();
+			}
+
+			if (this.typeGoodTemp === constant.sales.products) {
+				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+				this.handleGetProductCategory();
+			}
+			
+			this.typeGoodTemp = 0;
 		},
 
 		async handleGetServiceCategory() {
@@ -295,6 +334,7 @@ export default {
 
 		resetModal() {
 			this.typeGood = 1;
+			this.typeGoodTemp = 0;
 			this.goodListSelected = {};
 			this.iShowSelectedItem = false;
 			this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
