@@ -1037,6 +1037,12 @@ export default {
 			});
 
 			this.outstanding = this.totalAmount - this.salesPaid;
+			console.log(
+				"dataFormat",
+				this.outstanding,
+				this.totalAmount,
+				this.salesPaid
+			);
 
 			return dataFormatted;
 		},
@@ -1044,6 +1050,8 @@ export default {
 		handleFormatNumber(data) {
 			let number = 0;
 			if (data > 0) {
+				number = common.commonFunctions.formatMoneyNumber(data);
+			} else if (data < 0) {
 				number = common.commonFunctions.formatMoneyNumber(data);
 			}
 			return number;

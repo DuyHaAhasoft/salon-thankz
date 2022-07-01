@@ -210,8 +210,18 @@
                             margin: 5px 0px;
 
                             .payment-paid__payment {
+                                width: 100%;
                                 font-size: 14px;
                                 font-style: italic;
+                                display: inline-flex;
+
+                                .payment-detail__title {
+                                    width: 30%;
+                                }
+
+                                .payment-detail__data {
+                                    width: 70%;
+                                }
                             }
                         }
 
