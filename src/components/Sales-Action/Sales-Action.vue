@@ -319,7 +319,10 @@
 		/>
 		<!-- <loading /> -->
 		<notification modalTitle="Notification" ref="refNotification" />
-		<confirm-modal ref="refConfirmModal" @confirm="handleAddSalesWithOutstanding" />
+		<confirm-modal
+			ref="refConfirmModal"
+			@confirm="handleAddSalesWithOutstanding"
+		/>
 	</div>
 </template>
 
@@ -460,10 +463,9 @@ export default {
 		},
 
 		isOutstanding() {
-			if(this.outstanding < 0)
-				return false;
+			if (this.outstanding < 0) return false;
 			return true;
-		}
+		},
 	},
 
 	methods: {
@@ -756,8 +758,8 @@ export default {
 
 				this.$emit("loading", true);
 
-				if(this.change > 0) {
-					if(this.paymentSelected.length === 1) {
+				if (this.change > 0) {
+					if (this.paymentSelected.length === 1) {
 						this.paymentSelected[0].paymentAmount = this.totalAmount;
 						data.outstanding = 0;
 					} else {
@@ -770,7 +772,7 @@ export default {
 							],
 						});
 						this.$emit("loading", false);
-						return
+						return;
 					}
 				}
 
@@ -778,7 +780,9 @@ export default {
 					this.$emit("loading", false);
 					this.$refs.refConfirmModal.showModal({
 						title: "Delete Client",
-						message: `The outstanding is ${this.handleFormatNumber(this.outstanding)}. Do you want to save? ?`,
+						message: `The outstanding is ${this.handleFormatNumber(
+							this.outstanding
+						)}. Do you want to save? ?`,
 					});
 					// if (
 					// 	confirm(
@@ -820,8 +824,6 @@ export default {
 					// 	// this.outstanding = 0;
 					// 	this.$emit("loading", false);
 					// }
-
-
 				} else {
 					try {
 						const res = await apis.salesApis.addSales(data);
@@ -833,10 +835,11 @@ export default {
 						}
 
 						if (res.data.isOK) {
+							this.$emit("loadingDataClient");
 							this.hideModal();
 							this.resetModal();
 						} else {
-							alert('error not outstanding',res.data.errorMessages);
+							alert("error not outstanding", res.data.errorMessages);
 						}
 
 						if (res.isOK === false) {
@@ -946,7 +949,7 @@ export default {
 						this.hideModal();
 						this.resetModal();
 					} else {
-						alert('error outstanding',res.data.errorMessages);
+						alert("error outstanding", res.data.errorMessages);
 					}
 
 					if (res.isOK === false) {
@@ -960,7 +963,7 @@ export default {
 				}
 
 				this.$emit("loading", false);
-			} 
+			}
 		},
 
 		resetModal() {
@@ -1049,8 +1052,8 @@ export default {
 			this.outstanding += this.paymentSelected[indexPayment].paymentAmount;
 			this.salesPaid -= this.paymentSelected[indexPayment].paymentAmount;
 
-			if(this.change > 0) {
-				if(this.paymentSelected[indexPayment].paymentAmount >= this.change) {
+			if (this.change > 0) {
+				if (this.paymentSelected[indexPayment].paymentAmount >= this.change) {
 					this.change = 0;
 				} else {
 					this.change -= this.paymentSelected[indexPayment].paymentAmount;
@@ -1189,7 +1192,7 @@ export default {
 
 			this.outstanding = this.totalAmount - this.salesPaid;
 
-			if(this.outstanding < 0) {
+			if (this.outstanding < 0) {
 				this.change = -this.outstanding;
 			} else {
 				this.change = 0;

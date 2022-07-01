@@ -393,6 +393,7 @@ export default {
 		},
 
 		async onClickConfirm() {
+			this.dataClient.shopId = session.shopSession.getShopId();
 			this.dataClient.clientGroupId = this.groupClient.clientGroupId;
 			this.dataClient.clientGroupName = this.groupClient.clientGroupName;
 			this.dataClient.sessionToken = session.shopSession.getSessionToken();
