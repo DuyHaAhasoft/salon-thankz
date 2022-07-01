@@ -1037,12 +1037,6 @@ export default {
 			});
 
 			this.outstanding = this.totalAmount - this.salesPaid;
-			console.log(
-				"dataFormat",
-				this.outstanding,
-				this.totalAmount,
-				this.salesPaid
-			);
 
 			return dataFormatted;
 		},

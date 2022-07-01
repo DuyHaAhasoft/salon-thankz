@@ -141,19 +141,22 @@ function showLongText(text, length = 100) {
 function formatSaleItem(item) {
     let goodId = 0;
     let goodName = '';
+    let goodPrice = 0;
 
     if(item.type === 1) {
+        goodPrice = item.goodInfo.price;
         goodId = item.goodInfo.serviceId;
         goodName = item.goodInfo.serviceName;
     }
 
     if(item.type === 2) {
+        goodPrice = item.goodInfo.retailPrice;
         goodId = item.goodInfo.productId;
         goodName = item.goodInfo.productName;
     }
 
     return {
-            amount: item.goodInfo.price * item.qty,
+            amount: goodPrice * item.qty,
 			clientPrepaidGoodsId: 0,
 			deductedByPrepaidGoodsGuid: "",
 			deductedPrepaidGoodsRef: 0,
@@ -191,7 +194,7 @@ function formatSaleItem(item) {
 			smallCutDiscountEnumDefault: 0,
 			staffs: [],
 			supplierPrice: 0,
-			unitPrice: item.goodInfo.price,
+			unitPrice: goodPrice,
     }
 }
 
