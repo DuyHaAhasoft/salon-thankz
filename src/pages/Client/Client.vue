@@ -203,7 +203,7 @@
 		<sales-action
 			ref="refSalesAction"
 			@loading="handleSetLoading"
-			@loadingDataClient="loadDataClient"
+			@loadClient="loadDataClient"
 		/>
 	</div>
 </template>

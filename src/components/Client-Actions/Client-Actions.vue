@@ -384,6 +384,14 @@ export default {
 			}
 
 			await this.handleGetPrepaidCard();
+			await this.handleGetPrepaidService();
+			if (dataModal.typeModal) {
+				await this.handleGetSalesHistory({
+					pageNumber: 1,
+					fromDateTS: 1,
+					includeDeleted: false,
+				});
+			}
 
 			this.$refs.clientActionsModal && this.$refs.clientActionsModal.show();
 		},

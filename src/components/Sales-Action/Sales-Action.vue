@@ -835,10 +835,14 @@ export default {
 						}
 
 						if (res.data.isOK) {
-							this.$emit("loadingDataClient");
-							this.hideModal();
-							this.resetModal();
+							setTimeout(() => {
+								this.$emit("loadClient");
+								this.hideModal();
+								this.resetModal();
+								this.$emit("loading", false);
+							}, 15000);
 						} else {
+							this.$emit("loading", false);
 							alert("error not outstanding", res.data.errorMessages);
 						}
 
@@ -847,12 +851,13 @@ export default {
 							location.reload();
 						}
 
-						this.$emit("loading", false);
+						// this.$emit("loading", false);
 					} catch (errors) {
+						this.$emit("loading", false);
 						console.log("errors", errors);
 					}
 
-					this.$emit("loading", false);
+					// this.$emit("loading", false);
 				}
 			} else {
 				this.$refs.refNotification.showModal({
@@ -945,10 +950,14 @@ export default {
 					}
 
 					if (res.data.isOK) {
-						this.$emit("loadingDataClient");
-						this.hideModal();
-						this.resetModal();
+						setTimeout(() => {
+							this.$emit("loadClient");
+							this.$emit("loading", false);
+							this.hideModal();
+							this.resetModal();
+						}, 15000);
 					} else {
+						this.$emit("loading", false);
 						alert("error outstanding", res.data.errorMessages);
 					}
 
@@ -957,12 +966,13 @@ export default {
 						location.reload();
 					}
 
-					this.$emit("loading", false);
+					// this.$emit("loading", false);
 				} catch (errors) {
+					this.$emit("loading", false);
 					console.log("errors", errors);
 				}
 
-				this.$emit("loading", false);
+				// this.$emit("loading", false);
 			}
 		},
 
