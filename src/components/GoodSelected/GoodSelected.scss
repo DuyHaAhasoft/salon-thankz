@@ -2,6 +2,8 @@
     padding: 10px 0px 0px 4px;
 
     .good-selected__good-type {
+        max-height: 50vh;
+        overflow-y: auto;
         padding: 10px 5px;
         border-spacing: 0px;
         border-collapse: unset;
@@ -50,7 +52,11 @@
 
             .table-data__name {
                 width: 30%;
+                overflow: hidden;
+                max-width: 100px;
                 text-align: center;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
 
             .table-data__qty {

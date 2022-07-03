@@ -14,25 +14,30 @@
             margin-bottom: 10px;
             background-color: #ccc;
         }
+        .list-category {
+            max-height: 60vh;
+            overflow-y: auto;
 
-        .category__item {
-            padding: 5px;
-            margin-bottom: 5px;
-            border: 1px solid #ccc;
+            .category__item {
+                padding: 5px;
+                margin-bottom: 5px;
+                border: 1px solid #ccc;
 
-            &.category__item--selected {
-                background-color: #D9E1F2;
+                &.category__item--selected {
+                    background-color: #D9E1F2;
+
+                    &:hover {
+                        background-color: #D9E1F2;
+                    }
+                }
 
                 &:hover {
-                    background-color: #D9E1F2;
+                    cursor: pointer;
+                    background-color: rgb(241, 240, 240);
                 }
             }
-
-            &:hover {
-                cursor: pointer;
-                background-color: rgb(241, 240, 240);
-            }
         }
+        
 
 
     }
@@ -47,21 +52,25 @@
             margin-bottom: 10px;
             background-color: #ccc;
         }
+        .good__list-item {
+            max-height: 60vh;
+            overflow-y: auto;
 
-        .good__item {
-            padding: 5px;
-            margin-bottom: 5px;
-            border: 1px solid #ccc;
+            .list-item__item {
+                padding: 5px;
+                margin-bottom: 5px;
+                border: 1px solid #ccc;
 
-            .item__price {
-                color: #ccc;
-                font-size: 14px;
-                margin-left: 4px;
-            }
+                .item__price {
+                    color: #ccc;
+                    font-size: 14px;
+                    margin-left: 4px;
+                }
 
-            &:hover {
-                cursor: pointer;
-                background-color: rgb(241, 240, 240);
+                &:hover {
+                    cursor: pointer;
+                    background-color: rgb(241, 240, 240);
+                }
             }
         }
     }
