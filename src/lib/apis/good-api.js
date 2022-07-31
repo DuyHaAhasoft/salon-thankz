@@ -20,6 +20,16 @@ const goodApis = {
         const url = '/api/read/v1/inventory/Product'
         return http.post(url, payload)
     },
+
+    getPrepaidCard(payload) {
+        const url = '/api/read/v1/goods/PrepaidCard'
+        return http.post(url, payload)
+    },
+
+    getPrepaidServiceByCategory(payload) {
+        const url = '/api/read/v1/goods/PrepaidService'
+        return http.post(url, payload)
+    },
 }
 
 export default goodApis

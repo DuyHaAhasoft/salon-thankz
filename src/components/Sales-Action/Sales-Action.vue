@@ -310,12 +310,15 @@
 			:dataCategories="categories"
 			@loading="handleSetLoading"
 			@resetGoodType="handleResetGoodType"
+			@getPrepaidCard="handleGetPrepaidCard"
 			@getServiceCategory="handleGetServiceCategory"
 			@getProductCategory="handleGetProductCategory"
 			@confirmItemSelected="handleConfirmItemSelected"
 			@getProductByCategory="handleGetProductByCategory"
 			@getServiceByCategory="handleGetServiceByCategory"
 			@resetDataCategoryGood="handleResetDataCategoryGood"
+			@getUserPrepaidService="handleGetUserPrepaidService"
+			@getPrepaidServiceByCategory="handleGetPrepaidServiceByCategory"
 		/>
 		<!-- <loading /> -->
 		<notification modalTitle="Notification" ref="refNotification" />
@@ -416,15 +419,6 @@ export default {
 	},
 
 	mounted() {
-		// const paymentMethodsName = ["Cash", "Credit Card"];
-		// const setPaymentMethods = session.saleSession.getAllPaymentMethods();
-
-		// setPaymentMethods.forEach(paymentMethod => {
-		// 	if (paymentMethodsName.includes(paymentMethod.name)) {
-		// 		this.paymentMethods.push(paymentMethod);
-		// 	}
-		// });
-
 		this.$nextTick(() => {
 			window.addEventListener("resize", this.onResize);
 		});
@@ -525,7 +519,7 @@ export default {
 			this.$emit("loading", value);
 		},
 
-		async handleGetServiceCategory() {
+		async handleGetServiceCategory(typeGood = 1) {
 			const data = {
 				status: 1,
 				pageSize: 100,
@@ -546,9 +540,13 @@ export default {
 
 				if (res.data.isOK) {
 					this.categories = res.data.result.items;
-					this.handleGetServiceByCategory(
-						res.data.result.items[0]?.serviceCategoryId
-					);
+					const firstServiceCategoryId =
+						res.data.result.items[0]?.serviceCategoryId ?? 0;
+					if (typeGood === 1) {
+						this.handleGetServiceByCategory(firstServiceCategoryId);
+					} else {
+						this.handleGetPrepaidServiceByCategory(firstServiceCategoryId);
+					}
 				} else {
 					console.log("error", res);
 				}
@@ -683,6 +681,118 @@ export default {
 			this.categories = [];
 		},
 
+		async handleGetPrepaidCard() {
+			const data = {
+				status: 1,
+				pageNumber: 1,
+				pageSize: 100,
+				shopId: session.shopSession.getShopId(),
+			};
+			this.$emit("loading", true);
+
+			try {
+				const res = await apis.goodApis.getPrepaidCard(data);
+
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					location.reload();
+					throw res;
+				}
+
+				if (res.data.isOK) {
+					this.goodList = res.data.result.items;
+				} else {
+					console.log("error", res);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
+				}
+
+				this.$emit("loading", false);
+			} catch (errors) {
+				console.log("errors", errors);
+			} finally {
+				this.$emit("loading", false);
+			}
+		},
+
+		async handleGetPrepaidServiceByCategory(serviceCategoryId = 0) {
+			const data = {
+				status: 1,
+				pageSize: 100,
+				pageNumber: 1,
+				serviceCategoryId: serviceCategoryId,
+				shopId: session.shopSession.getShopId(),
+			};
+
+			this.$emit("loading", true);
+
+			try {
+				const res = await apis.goodApis.getPrepaidServiceByCategory(data);
+
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					location.reload();
+					throw res;
+				}
+
+				if (res.data.isOK) {
+					this.goodList = res.data.result.items;
+				} else {
+					console.log("error", res);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
+				}
+			} catch (errors) {
+				console.log("errors", errors);
+			} finally {
+				this.$emit("loading", false);
+			}
+		},
+
+		async handleGetUserPrepaidService() {
+			const data = {
+				clientId: this.dataClient?.clientId ?? 0,
+				includeExpired: false,
+				includeFamilyService: true,
+				pageNumber: 1,
+				pageSize: 100,
+				shopId: session.shopSession.getShopId(),
+			};
+
+			try {
+				this.$emit("loading", true);
+
+				const res = await apis.clientApis.getClientPrepaidServices(data);
+
+				if (res.status !== 200) {
+					this.$emit("loading", false);
+					location.reload();
+					throw res;
+				}
+
+				if (res.data.isOK) {
+					this.goodList = res.data.result.items;
+				} else {
+					console.log("error", res);
+				}
+
+				if (res.isOK === false) {
+					this.$emit("loading", false);
+					location.reload();
+				}
+			} catch (errors) {
+				console.log("errors", errors);
+			} finally {
+				this.$emit("loading", false);
+			}
+		},
+
 		async handleAddSales() {
 			if (Object.values(this.goodListSelected).length) {
 				const dateRegistered = common.momentFunctions.FormatDate(
@@ -784,46 +894,6 @@ export default {
 							this.outstanding
 						)}. Do you want to save? ?`,
 					});
-					// if (
-					// 	confirm(
-					// 		`The outstanding is ${this.handleFormatNumber(
-					// 			this.outstanding
-					// 		)}. Do you want to save?`
-					// 	) === true
-					// ) {
-					// 	try {
-					// 		const res = await apis.salesApis.addSales(data);
-
-					// 		if (res.status !== 200) {
-					// 			this.$emit("loading", false);
-					// 			location.reload();
-					// 			throw res;
-					// 		}
-
-					// 		if (res.data.isOK) {
-					// 			this.$emit("loadingDataClient");
-					// 			this.hideModal();
-					// 			this.resetModal();
-					// 		} else {
-					// 			alert('error outstanding',res.data.errorMessages);
-					// 		}
-
-					// 		if (res.isOK === false) {
-					// 			this.$emit("loading", false);
-					// 			location.reload();
-					// 		}
-
-					// 		this.$emit("loading", false);
-					// 	} catch (errors) {
-					// 		console.log("errors", errors);
-					// 	}
-
-					// 	this.$emit("loading", false);
-					// } else {
-					// 	// this.totalAmount = 0;
-					// 	// this.outstanding = 0;
-					// 	this.$emit("loading", false);
-					// }
 				} else {
 					try {
 						const res = await apis.salesApis.addSales(data);
@@ -1074,6 +1144,7 @@ export default {
 		},
 
 		handleGetGoodCategory(typeGood) {
+			this.goodList = [];
 			this.typeGood = typeGood;
 			this.goodTypeSelected = typeGood;
 
@@ -1091,13 +1162,18 @@ export default {
 				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 				this.handleGetProductCategory();
 			}
+			if (typeGood === constant.sales.prepaidCard) {
+				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+				this.handleGetPrepaidCard();
+			}
+			if (typeGood === constant.sales.prepaidService) {
+				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+				this.handleGetServiceCategory(typeGood);
+			}
 		},
 
 		handleShowSelectSalesItem() {
-			if (
-				this.typeGood !== constant.sales.services &&
-				this.typeGood !== constant.sales.products
-			) {
+			if (this.typeGood === constant.sales.packages) {
 				this.handleNotification();
 				return;
 			}

@@ -21,6 +21,7 @@
 				<div class="content__body">
 					<div class="body__category-item">
 						<category-good
+							v-if="!isPGood.isPGood && !isPackages"
 							:typeGood="typeGood"
 							:goodList="dataGoodList"
 							:categories="dataCategories"
@@ -28,6 +29,19 @@
 							@handleAddGoodSelected="handleAddGoodSelected"
 							@handleGetServiceByCategory="handleGetServiceByCategory"
 							@handleGetProductByCategory="handleGetProductByCategory"
+						/>
+						<select-prepaid-card
+							v-if="isPGood.isPGood && isPGood.isPCard"
+							:goodList="dataGoodList"
+						/>
+						<select-prepaid-service
+							v-if="isPGood.isPGood && isPGood.isPService"
+							:goodList="dataGoodList"
+							:categories="dataCategories"
+							@handleGetPrepaidServiceByCategory="
+								handleGetPrepaidServiceByCategory
+							"
+							@handleGetUserPrepaidService="handleGetUserPrepaidService"
 						/>
 					</div>
 					<div class="body__group-button-list-item-select">
@@ -46,6 +60,7 @@
 									{{ goodTypeSelectedName }} Selected
 								</div>
 								<good-selected
+									v-if="!isPGood.isPGood && !isPackages"
 									:isTypeGood="isTypeGood"
 									:goodListSelected="goodListSelectedShow"
 									@handleDeleteItemSelected="handleDeleteItemSelected"
@@ -58,7 +73,10 @@
 		</b-modal>
 
 		<notification modalTitle="Notification" ref="refNotification" />
-		<confirm-modal ref="refConfirmModal" @confirm="handleGetGoodCategoryChangeData" />
+		<confirm-modal
+			ref="refConfirmModal"
+			@confirm="handleGetGoodCategoryChangeData"
+		/>
 	</div>
 </template>
 
@@ -72,11 +90,8 @@ import GoodSelected from "@components/GoodSelected/GoodSelected.vue";
 import Notification from "@components/Notification/Notification.vue";
 import CategoryGood from "@components/Category-Good/Category-Good.vue";
 import ConfirmModal from "@components/Confirm-Modal/Confirm-Modal.vue";
-
-// const DEFAULT_DATA_CATEGORY = {
-// 	categoryService: {},
-// 	categoryProduct: {}
-// }
+import SelectPrepaidCard from "@components/SelectPrepaidCard/SelectPrepaidCard.vue";
+import SelectPrepaidService from "@components/SelectPrepaidService/SelectPrepaidService.vue";
 
 const DEFAULT_CATEGORY_SELECTED = {
 	id: 0,
@@ -110,6 +125,8 @@ export default {
 		GoodSelected,
 		Notification,
 		ConfirmModal,
+		SelectPrepaidCard,
+		SelectPrepaidService,
 	},
 
 	props: {
@@ -172,6 +189,19 @@ export default {
 				prepaidService: this.typeGood === constant.sales.prepaidService,
 			};
 		},
+
+		isPGood() {
+			const isPCard = this.typeGood === constant.sales.prepaidCard;
+			const isPService = this.typeGood === constant.sales.prepaidService;
+			return {
+				isPGood: isPCard || isPService,
+				isPCard,
+				isPService,
+			};
+		},
+		isPackages() {
+			return this.typeGood === constant.sales.packages;
+		},
 	},
 
 	watch: {
@@ -210,10 +240,7 @@ export default {
 		},
 
 		handleGetGoodCategory(typeGood) {
-			if (
-				typeGood !== constant.sales.services &&
-				typeGood !== constant.sales.products
-			) {
+			if (typeGood === constant.sales.packages) {
 				this.handleNotification();
 				return;
 			}
@@ -238,12 +265,21 @@ export default {
 					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 					this.handleGetProductCategory();
 				}
+				if (typeGood === constant.sales.prepaidCard) {
+					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+					this.handleGetPrepaidCard();
+				}
+				if (typeGood === constant.sales.prepaidService) {
+					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+					this.handleGetServiceCategory(typeGood);
+				}
 			} else {
 				this.typeGoodTemp = typeGood;
 
 				this.$refs.refConfirmModal.showModal({
 					title: "Change category",
-					message: 'The selected data is not saved when you move the tab. Do you want to move?',
+					message:
+						"The selected data is not saved when you move the tab. Do you want to move?",
 				});
 				// this.typeGood = typeGood;
 				// this.goodTypeSelected = typeGood;
@@ -269,10 +305,7 @@ export default {
 		},
 
 		handleGetGoodCategoryChangeData() {
-			if (
-				this.typeGoodTemp !== constant.sales.services &&
-				this.typeGoodTemp !== constant.sales.products
-			) {
+			if (this.typeGood === constant.sales.packages) {
 				this.handleNotification();
 				return;
 			}
@@ -297,12 +330,12 @@ export default {
 				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 				this.handleGetProductCategory();
 			}
-			
+
 			this.typeGoodTemp = 0;
 		},
 
-		async handleGetServiceCategory() {
-			this.$emit("getServiceCategory");
+		async handleGetServiceCategory(typeGood = 1) {
+			this.$emit("getServiceCategory", typeGood);
 		},
 
 		async handleGetProductCategory() {
@@ -330,6 +363,26 @@ export default {
 			};
 
 			this.$emit("getServiceByCategory", serviceCategoryId);
+		},
+
+		async handleGetPrepaidCard() {
+			this.$emit("getPrepaidCard");
+		},
+
+		async handleGetPrepaidServiceByCategory({
+			serviceCategoryId = 0,
+			serviceCategoryName = "",
+		}) {
+			this.categorySelected = {
+				id: serviceCategoryId,
+				name: serviceCategoryName,
+			};
+
+			this.$emit("getPrepaidServiceByCategory", serviceCategoryId);
+		},
+
+		handleGetUserPrepaidService() {
+			this.$emit("getUserPrepaidService");
 		},
 
 		resetModal() {
