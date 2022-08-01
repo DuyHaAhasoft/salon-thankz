@@ -10,6 +10,8 @@ const common = {
         active: 1,
         inactive: 0,
     },
+
+    noLimit: -1,
 }
 
 export default common

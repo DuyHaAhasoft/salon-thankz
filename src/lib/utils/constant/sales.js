@@ -60,6 +60,16 @@ const sales = {
     prepaidCard: 3,
     
     prepaidService: 4,
+
+    validityType: {
+        day: 2,
+        month: 1,
+    },
+
+    prepaidCardType: {
+        depositCard: 1,
+        discountCard: 2,
+    }
 }
 
 export default sales
