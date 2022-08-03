@@ -69,6 +69,15 @@ const sales = {
     prepaidCardType: {
         depositCard: 1,
         discountCard: 2,
+    },
+
+    prepaidCardInfo: {
+        price: 0,
+        validity: 12,
+        chargeAmount: 0,
+        validityType: 1,
+        prepaidCardType: 1,
+        prepaidCardName: "",
     }
 }
 
