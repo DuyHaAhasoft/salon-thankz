@@ -1,25 +1,33 @@
 <template>
-	<div>
-		<ul>
-			<li
-				v-for="category in categories"
-				:key="category.orderNo"
-				@click="
-					handleGetPrepaidServiceByCategory(
-						category.serviceCategoryId,
-						category.serviceCategoryName
-					)
-				"
-			>
-				{{ category.serviceCategoryName }}
-			</li>
-		</ul>
-		<ul>
-			<li v-for="good in goodList" :key="good.prepaidServiceId">
-				{{ good.prepaidServiceName }}
-			</li>
-		</ul>
-		<button @click="handleGetUserPrepaidService">User P.Service</button>
+	<div class="select-prepaid-service">
+		<div class="type-show-prepaid-service">
+			<button class="btn btn--sales" @click="handleGetSalePrepaidService">Sale Prepaid Services</button>
+			<button class="btn btn--uses" @click="handleGetUserPrepaidService">Deduct Prepaid Services</button>
+		</div>
+		<div class="category-prepaid-service">
+			<div class="category">
+				<div class="title category--title">Category</div>
+				<div
+					v-for="category in categories"
+					:key="category.orderNo"
+					class=" category--info"
+					@click="
+						handleGetPrepaidServiceByCategory(
+							category.serviceCategoryId,
+							category.serviceCategoryName
+						)
+					"
+				>
+					{{ category.serviceCategoryName }}
+				</div>
+			</div>
+			<div>
+				<div>Prepaid Service</div>
+				<div v-for="good in goodList" :key="good.prepaidServiceId">
+					{{ good.prepaidServiceName }}
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -46,6 +54,20 @@ export default {
 			this.$emit("handleGetPrepaidServiceByCategory", {
 				serviceCategoryId,
 				serviceCategoryName,
+			});
+		},
+
+		handleGetSalePrepaidService() {
+			const categoryFrist = this.categories?.[0] ?? {}
+
+			const categoryDefault = {
+				serviceCategoryId: categoryFrist?.serviceCategoryId ?? 0,
+				serviceCategoryName: categoryFrist?.serviceCategoryName ?? ''
+			}
+
+			this.$emit("handleGetPrepaidServiceByCategory", {
+				serviceCategoryId: categoryDefault.serviceCategoryId,
+				serviceCategoryName: categoryDefault.serviceCategoryName,
 			});
 		},
 

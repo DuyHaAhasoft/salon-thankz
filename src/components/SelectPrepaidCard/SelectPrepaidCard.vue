@@ -30,7 +30,7 @@
 
 				<div v-if="isDepositCard" class="info info--earned-amount info-box__info">
 					<label>Earned Amount</label>
-					<input type="text" v-model="prepaidCardInfo.chargeAmount" />
+					<input type="text" v-model="prepaidCardChargeAmount" />
 				</div>
 
 				<div class="info info--validity info-box__info">
@@ -38,9 +38,9 @@
 
 					<div class="validity-value validity__validity-value">
 						<input 
-							v-model="prepaidCardInfo.validity"
-							:disabled="isDisableValidityInput"
+							v-model="prepaidCardValidity"
 							:class="classDisableValidity"
+							:disabled="isDisableValidityInput"
 						/>
 						
 						<b-form-checkbox
@@ -114,7 +114,25 @@ export default {
 				return this.handleFormatNumber(this.prepaidCardInfo.price)
 			},
 			set: function(value) {
-				this.prepaidCardInfo.price = value.replaceAll(',', '')
+				this.prepaidCardInfo.price = Number(value.replaceAll(',', ''))
+			}
+		},
+
+		prepaidCardChargeAmount: {
+			get: function() {
+				return this.handleFormatNumber(this.prepaidCardInfo.chargeAmount)
+			},
+			set: function(value) {
+				this.prepaidCardInfo.chargeAmount = Number(value.replaceAll(',', ''))
+			}
+		},
+
+		prepaidCardValidity: {
+			get: function() {
+				return this.handleFormatNumber(this.prepaidCardInfo.validity)
+			},
+			set: function(value) {
+				this.prepaidCardInfo.validity = Number(value.replaceAll(',', ''))
 			}
 		},
 	},
