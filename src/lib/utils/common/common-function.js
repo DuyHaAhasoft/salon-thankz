@@ -142,6 +142,9 @@ function formatSaleItem(item) {
     let goodId = 0;
     let goodName = '';
     let goodPrice = 0;
+    let goodType = item.type;
+    let discountForProduct = 0;
+    let discountForService = 0;
 
     if(item.type === 1) {
         goodPrice = item.goodInfo.price;
@@ -150,9 +153,18 @@ function formatSaleItem(item) {
     }
 
     if(item.type === 2) {
-        goodPrice = item.goodInfo.retailPrice;
         goodId = item.goodInfo.productId;
         goodName = item.goodInfo.productName;
+        goodPrice = item.goodInfo.retailPrice;
+    }
+
+    if (item.type === 3) {
+        goodType = 4;
+        goodPrice = item.goodInfo.price;
+        goodId = item.goodInfo.prepaidCardId;
+        goodName = item.goodInfo.prepaidCardName;
+        discountForProduct = item.goodInfo.discountForProduct
+        discountForService = item.goodInfo.discountForService
     }
 
     return {
@@ -167,8 +179,8 @@ function formatSaleItem(item) {
 			discountCategoryId: 0,
 			discountCategoryName: "",
 			discountForClient: false,
-			discountForProduct: 0,
-			discountForService: 0,
+			discountForProduct: discountForProduct,
+			discountForService: discountForService,
 			discountType: 2,
 			discountValue: 0,
 			giftCardType: 0,
@@ -176,7 +188,7 @@ function formatSaleItem(item) {
 			goodsCategoryName: item.categoryInfo.name,
 			goodsId: goodId,
 			goodsName: goodName,
-			goodsType: item.type,
+			goodsType: goodType,
 			isCustomizePrepaidGoods: false,
 			prepaidCardInitialBalance: 0,
 			prepaidCardType: 0,

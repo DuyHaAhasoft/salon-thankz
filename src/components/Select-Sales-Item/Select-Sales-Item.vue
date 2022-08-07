@@ -33,6 +33,7 @@
 						<select-prepaid-card
 							v-if="isPGood.isPGood && isPGood.isPCard"
 							:goodList="dataGoodList"
+							@handleSelectPrepaidCard="handleSelectPrepaidCard"
 						/>
 						<select-prepaid-service
 							v-if="isPGood.isPGood && isPGood.isPService"
@@ -53,7 +54,10 @@
 								@confirm="handleConfirmItemSelected"
 							/>
 						</div>
-						<div class="group-button-list-item-select__list-item-select">
+						<div
+							v-if="!isPGood.isPGood"
+							class="group-button-list-item-select__list-item-select"
+						>
 							<div class="list-item-select__select-staff"></div>
 							<div class="list-item-select__list-item" v-if="iShowSelectedItem">
 								<div class="list-item__title">
@@ -276,11 +280,15 @@ export default {
 			} else {
 				this.typeGoodTemp = typeGood;
 
-				this.$refs.refConfirmModal.showModal({
-					title: "Change category",
-					message:
-						"The selected data is not saved when you move the tab. Do you want to move?",
-				});
+				if (this.goodTypeSelected === constant.sales.prepaidCard) {
+					this.handleGetGoodCategoryChangeData();
+				} else {
+					this.$refs.refConfirmModal.showModal({
+						title: "Change category",
+						message:
+							"The selected data is not saved when you move the tab. Do you want to move?",
+					});
+				}
 				// this.typeGood = typeGood;
 				// this.goodTypeSelected = typeGood;
 
@@ -329,6 +337,15 @@ export default {
 			if (this.typeGoodTemp === constant.sales.products) {
 				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 				this.handleGetProductCategory();
+			}
+
+			if (this.typeGoodTemp === constant.sales.prepaidCard) {
+				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+				this.handleGetPrepaidCard();
+			}
+			if (this.typeGoodTemp === constant.sales.prepaidService) {
+				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
+				this.handleGetServiceCategory(this.typeGood);
 			}
 
 			this.typeGoodTemp = 0;
@@ -399,11 +416,15 @@ export default {
 			this.$emit("resetDataCategoryGood");
 		},
 
-		handleAddGoodSelected({ good, type, category }) {
+		handleAddGoodSelected({ good, type, category = {} }) {
 			let keyGoodSelectedObj;
 
-			if (type === 1) keyGoodSelectedObj = good.serviceId.toString();
-			else if (type === 2) keyGoodSelectedObj = good.productId.toString();
+			if (type === constant.sales.services)
+				keyGoodSelectedObj = good.serviceId.toString();
+			else if (type === constant.sales.products)
+				keyGoodSelectedObj = good.productId.toString();
+			else if (type === constant.sales.prepaidCard)
+				keyGoodSelectedObj = good.prepaidCardId.toString();
 
 			if (this.goodListSelected[keyGoodSelectedObj]) {
 				this.goodListSelected[keyGoodSelectedObj].qty += 1;
@@ -429,6 +450,16 @@ export default {
 			if (!this.goodListSelectedShow.length) {
 				this.iShowSelectedItem = false;
 			}
+		},
+
+		handleSelectPrepaidCard(prepaidCard) {
+			this.goodListSelected = [];
+			console.log("good", prepaidCard);
+			this.handleAddGoodSelected({
+				good: prepaidCard,
+				type: constant.sales.prepaidCard,
+				category: {},
+			});
 		},
 
 		handleConfirmItemSelected() {

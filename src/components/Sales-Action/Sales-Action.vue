@@ -1270,6 +1270,14 @@ export default {
 					good.showDataTable.amount = good.goodInfo.retailPrice * good.qty;
 				}
 
+				if (good.type === constant.sales.prepaidCard) {
+					good.showDataTable.qTy = good.qty;
+					good.showDataTable.unitPrice = good.goodInfo.price;
+					good.showDataTable.goodId = good.goodInfo.prepaidCardId;
+					good.showDataTable.amount = good.goodInfo.price * good.qty;
+					good.showDataTable.salesItem = good.goodInfo.prepaidCardName;
+				}
+
 				this.totalAmount +=
 					good.showDataTable.unitPrice * good.showDataTable.qTy;
 

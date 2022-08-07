@@ -15,7 +15,20 @@
 
         .prepaid-card-list__list-items {
             .list-items__item {
+                margin: 5px 0px;
 
+                &:hover {
+                    cursor: pointer;
+                    background-color: rgb(241, 240, 240);
+                }
+            }
+
+            .item-selected {
+                background-color: #D9E1F2;
+
+                    &:hover {
+                        background-color: #D9E1F2;
+                    }
             }
         }
     }
