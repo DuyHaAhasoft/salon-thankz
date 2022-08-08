@@ -43,6 +43,7 @@
 								handleGetPrepaidServiceByCategory
 							"
 							@handleGetUserPrepaidService="handleGetUserPrepaidService"
+							@handleSelectPrepaidService="handleSelectPrepaidService"
 						/>
 					</div>
 					<div class="body__group-button-list-item-select">
@@ -69,6 +70,36 @@
 									:goodListSelected="goodListSelectedShow"
 									@handleDeleteItemSelected="handleDeleteItemSelected"
 								/>
+							</div>
+						</div>
+						<div
+							class="prepaid-service-selected"
+							v-if="
+								isPGood.isPGood &&
+								isPGood.isPService &&
+								goodListSelectedShow.length
+							"
+						>
+							<div class="prepaid-service-selected__title">
+								{{
+									goodListSelectedShow[0] &&
+									goodListSelectedShow[0].goodInfo.prepaidServiceName
+								}}
+							</div>
+							<div class="prepaid-service-selected__deduct">
+								<b-form-checkbox
+									value="true"
+									unchecked-value="false"
+									id="checkbox-deduct-service"
+									name="checkbox-deduct-service"
+									v-model="isDeductService"
+								>
+									Use Now
+								</b-form-checkbox>
+								<div v-show="isShowDeductService" class="deduct-quantity">
+									<span>Deduct Quantity </span>
+									<input type="number" />
+								</div>
 							</div>
 						</div>
 					</div>
@@ -112,9 +143,11 @@ export default {
 			categories: [],
 			typeGoodTemp: 0,
 			goodListSelected: {},
+			isDeductService: false,
 			goodListSelectedShow: [],
 			iShowSelectedItem: false,
 			title: "Select Sales Item",
+			isShowDeductService: false,
 			windowWidth: window.innerWidth,
 			categorySelected: Object.assign({}, DEFAULT_CATEGORY_SELECTED),
 			goodTypeSelected: Object.values(constant.sales.itemSalesType)[0].id,
@@ -215,6 +248,10 @@ export default {
 				this.iShowSelectedItem = false;
 				this.goodListSelectedShow = [];
 			}
+		},
+
+		isDeductService: function (value) {
+			this.isShowDeductService = value;
 		},
 	},
 
@@ -454,10 +491,18 @@ export default {
 
 		handleSelectPrepaidCard(prepaidCard) {
 			this.goodListSelected = [];
-			console.log("good", prepaidCard);
 			this.handleAddGoodSelected({
 				good: prepaidCard,
 				type: constant.sales.prepaidCard,
+				category: {},
+			});
+		},
+
+		handleSelectPrepaidService(prepaidServie) {
+			this.goodListSelected = [];
+			this.handleAddGoodSelected({
+				good: prepaidServie,
+				type: constant.sales.prepaidService,
 				category: {},
 			});
 		},

@@ -42,6 +42,34 @@
                             }
                         }
                     }
+
+                    .prepaid-service-selected {
+                        padding: 5px;
+                        margin-top: 10px;
+                        border: 1px solid #ccc;
+
+                        .prepaid-service-selected__title {
+                            text-align: center;
+                            margin: -5px -5px 5px;
+                            background-color: #ccc;
+                        }
+
+                        .prepaid-service-selected__deduct {
+
+                            .deduct-quantity {
+                                gap: 10px;
+                                display: flex;
+
+                                span {
+                                    white-space: nowrap;
+                                }
+
+                                input {
+                                    max-width: 150px;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
