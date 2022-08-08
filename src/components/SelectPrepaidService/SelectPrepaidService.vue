@@ -1,14 +1,21 @@
 <template>
 	<div class="select-prepaid-service">
 		<div class="type-show-prepaid-service">
-			<button class="btn btn--sales" @click="handleGetSalePrepaidService">
+			<button 
+				class="btn btn--sales"
+				:class="{'btn--selected': isShowPService}"
+				@click="handleGetSalePrepaidService"
+			>
 				Sale Prepaid Services
 			</button>
-			<button class="btn btn--uses" @click="handleGetUserPrepaidService">
+			<button
+				class="btn btn--uses"
+				:class="{'btn--selected': !isShowPService}"
+				@click="handleGetUserPrepaidService">
 				Deduct Prepaid Services
 			</button>
 		</div>
-		<div class="category-prepaid-service">
+		<div class="category-prepaid-service" v-if="isShowPService">
 			<div class="category">
 				<div class="title category__title">Category</div>
 				<div class="list-category">
@@ -44,13 +51,52 @@
 				</div>
 			</div>
 		</div>
+		<div v-else>
+			<table>
+				<thead>
+					<tr>
+						<th
+							v-for="field in fields"
+							:key="field.text"
+							:class="{ 'th-no-data': statusScreenPhone }"
+						>
+							{{ field.text }}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="good in goodList" :key="good.prepaidServiceId">
+						<td>
+							{{ good.prepaidServiceName }}
+						</td>
+						<td>
+							{{ handleFormatNumber(good.quantity) }}
+						</td>
+						<td>
+							{{ handleFormatDate(good.invoiceDateTimeTS) }}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </template>
 
 <script>
+
+import common from "../../lib/utils/common";
+
+const FIELDS_TABLE = {
+	prepaidServiceName: { text: "Prepaid Service Name" },
+	quantity: { text: "Remaining Quantity" },
+	expiryDateTS: { text: "Expiry Date" },
+};
+
 export default {
 	data() {
 		return {
+			isShowPService: true,
+			fields: Object.assign({}, FIELDS_TABLE),
 			categoryIdSelected: this.categories?.[0]?.serviceCategoryId ?? 0,
 		};
 	},
@@ -88,6 +134,8 @@ export default {
 		handleGetSalePrepaidService() {
 			const categoryFirst = this.categories?.[0] ?? {};
 
+			this.isShowPService = true;
+
 			const categoryDefault = {
 				serviceCategoryId: categoryFirst?.serviceCategoryId ?? 0,
 				serviceCategoryName: categoryFirst?.serviceCategoryName ?? "",
@@ -102,7 +150,22 @@ export default {
 		},
 
 		handleGetUserPrepaidService() {
+			this.isShowPService = false;
+
 			this.$emit("handleGetUserPrepaidService");
+		},
+
+		handleFormatDate(date) {
+			if (date === -1) return "No Limit";
+
+			return common.momentFunctions.FormatDate(
+				common.momentFunctions.UnixMiliSecondsIntoDate(date)
+			);
+		},
+
+		handleFormatNumber(balance) {
+			if (balance === -1) return "No Limit";
+			return common.commonFunctions.formatMoneyNumber(balance);
 		},
 	},
 };
