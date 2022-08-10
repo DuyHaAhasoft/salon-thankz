@@ -1,5 +1,6 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import randomFunctions from "./random-function";
 
 const commonFunctions = {
     concatURL,
@@ -90,7 +91,6 @@ row.height = 30;
 row.alignment = { vertical: "middle", horizontal: "center" };
 
 for (let i = 0; i < data.columns.length; i++) {
-    console.log(data.columns[i].width, row);
 
     row._cells[i]._column.width = data.columns[i].width;
     row._cells[i].border = {
@@ -143,8 +143,10 @@ function formatSaleItem(item) {
     let goodName = '';
     let goodPrice = 0;
     let goodType = item.type;
+    let prepaidGoodsGuid = "";
     let discountForProduct = 0;
     let discountForService = 0;
+    let deductedByPrepaidGoodsGuid = "";
 
     if(item.type === 1) {
         goodPrice = item.goodInfo.price;
@@ -163,14 +165,16 @@ function formatSaleItem(item) {
         goodPrice = item.goodInfo.price;
         goodId = item.goodInfo.prepaidCardId;
         goodName = item.goodInfo.prepaidCardName;
-        discountForProduct = item.goodInfo.discountForProduct
-        discountForService = item.goodInfo.discountForService
+        discountForProduct = item.goodInfo.discountForProduct;
+        discountForService = item.goodInfo.discountForService;
+        deductedByPrepaidGoodsGuid = "00000000-0000-0000-0000-000000000000";
+        prepaidGoodsGuid = randomFunctions.guid();
     }
 
     return {
         amount: goodPrice * item.qty,
         clientPrepaidGoodsId: 0,
-        deductedByPrepaidGoodsGuid: "",
+        deductedByPrepaidGoodsGuid: deductedByPrepaidGoodsGuid,
         deductedPrepaidGoodsRef: 0,
         deductedPrepaidGoodsRefName: "",
         deductionAmount: 0,
@@ -193,7 +197,7 @@ function formatSaleItem(item) {
         prepaidCardInitialBalance: 0,
         prepaidCardType: 0,
         prepaidGoodsExpiryDateTS: 0,
-        prepaidGoodsGuid: "",
+        prepaidGoodsGuid: prepaidGoodsGuid,
         prepaidServiceInitialQuantity: 0,
         productCode: "",
         quantity: item.qty ?? 0,
@@ -207,7 +211,6 @@ function formatSaleItem(item) {
         staffs: [],
         supplierPrice: 0,
         unitPrice: goodPrice,
-            
     }
 }
 

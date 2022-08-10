@@ -96,8 +96,8 @@
 								>
 									Use Now
 								</b-form-checkbox>
-								<div v-show="isShowDeductService" class="deduct-quantity">
-									<span>Deduct Quantity </span>
+								<div v-if="isDeductService" class="deduct-quantity">
+									<span>Deduct Quantity</span>
 									<input type="number" />
 								</div>
 							</div>
@@ -317,7 +317,10 @@ export default {
 			} else {
 				this.typeGoodTemp = typeGood;
 
-				if (this.goodTypeSelected === constant.sales.prepaidCard) {
+				if (
+					this.goodTypeSelected === constant.sales.prepaidCard ||
+					this.goodTypeSelected === constant.sales.prepaidService
+				) {
 					this.handleGetGoodCategoryChangeData();
 				} else {
 					this.$refs.refConfirmModal.showModal({
