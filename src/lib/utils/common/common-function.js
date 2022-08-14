@@ -1,3 +1,4 @@
+import moment from 'moment';
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import randomFunctions from "./random-function";
@@ -14,6 +15,7 @@ const commonFunctions = {
     trimAllDataObject,
     formatPaymentMethod,
     covertSizeFileIntoMB,
+    prepaidGoodsExpiryDate,
 }
 
 function formatPhoneNumber(phone) {
@@ -143,10 +145,17 @@ function formatSaleItem(item) {
     let goodName = '';
     let goodPrice = 0;
     let goodType = item.type;
+    let relatedServiceId = 0;
     let prepaidGoodsGuid = "";
     let discountForProduct = 0;
     let discountForService = 0;
+    let relatedServiceName = "";
+    let relatedServiceUnitPrice = 0;
+    let prepaidGoodsExpiryDateTS = 0;
+    let prepaidCardInitialBalance = 0;
     let deductedByPrepaidGoodsGuid = "";
+    let deductedPrepaidGoodsRefName = "";
+    let prepaidServiceInitialQuantity = 0;
 
     if(item.type === 1) {
         goodPrice = item.goodInfo.price;
@@ -165,18 +174,35 @@ function formatSaleItem(item) {
         goodPrice = item.goodInfo.price;
         goodId = item.goodInfo.prepaidCardId;
         goodName = item.goodInfo.prepaidCardName;
+        prepaidGoodsGuid = randomFunctions.guid();
         discountForProduct = item.goodInfo.discountForProduct;
         discountForService = item.goodInfo.discountForService;
+        prepaidCardInitialBalance = item.goodInfo.chargeAmount;
         deductedByPrepaidGoodsGuid = "00000000-0000-0000-0000-000000000000";
-        prepaidGoodsGuid = randomFunctions.guid();
+        prepaidGoodsExpiryDateTS = prepaidGoodsExpiryDate(item.goodInfo.validityType, item.goodInfo.validity)
     }
 
-    return {
-        amount: goodPrice * item.qty,
+    if (item.type === 4) {
+        goodType = 3;
+        goodPrice = item.goodInfo.price;
+        goodId = item.goodInfo.prepaidServiceId;
+        prepaidGoodsGuid = randomFunctions.guid();
+        goodName = item.goodInfo.prepaidServiceName;
+        relatedServiceId = item.goodInfo.relatedServiceId;
+        relatedServiceName = item.goodInfo.relatedServiceName;
+        prepaidServiceInitialQuantity = item.goodInfo.quantity;
+        deductedPrepaidGoodsRefName = item.goodInfo.prepaidServiceName;
+        deductedByPrepaidGoodsGuid = "00000000-0000-0000-0000-000000000000";
+        relatedServiceUnitPrice = (item.goodInfo.price / item.goodInfo.quantity).toFixed();
+        prepaidGoodsExpiryDateTS = prepaidGoodsExpiryDate(item.goodInfo.validityType, item.goodInfo.validity);
+    }
+
+    const formattedGood = {
+        amount: goodPrice * item?.qty,
         clientPrepaidGoodsId: 0,
         deductedByPrepaidGoodsGuid: deductedByPrepaidGoodsGuid,
         deductedPrepaidGoodsRef: 0,
-        deductedPrepaidGoodsRefName: "",
+        deductedPrepaidGoodsRefName: deductedPrepaidGoodsRefName,
         deductionAmount: 0,
         deductionPoints: 0,
         deductionType: 0,
@@ -188,22 +214,22 @@ function formatSaleItem(item) {
         discountType: 2,
         discountValue: 0,
         giftCardType: 0,
-        goodsCategoryId: item.categoryInfo.id,
-        goodsCategoryName: item.categoryInfo.name,
+        goodsCategoryId: item?.categoryInfo?.id,
+        goodsCategoryName: item?.categoryInfo?.name,
         goodsId: goodId,
         goodsName: goodName,
         goodsType: goodType,
         isCustomizePrepaidGoods: false,
-        prepaidCardInitialBalance: 0,
+        prepaidCardInitialBalance: prepaidCardInitialBalance,
         prepaidCardType: 0,
-        prepaidGoodsExpiryDateTS: 0,
+        prepaidGoodsExpiryDateTS: prepaidGoodsExpiryDateTS,
         prepaidGoodsGuid: prepaidGoodsGuid,
-        prepaidServiceInitialQuantity: 0,
+        prepaidServiceInitialQuantity: prepaidServiceInitialQuantity,
         productCode: "",
-        quantity: item.qty ?? 0,
-        relatedServiceId: 0,
-        relatedServiceName: "",
-        relatedServiceUnitPrice: 0,
+        quantity: item?.qty ?? 0,
+        relatedServiceId: relatedServiceId,
+        relatedServiceName: relatedServiceName,
+        relatedServiceUnitPrice: relatedServiceUnitPrice,
         salesItemId: 0,
         salesTypeId: null,
         salesTypeName: "",
@@ -212,6 +238,33 @@ function formatSaleItem(item) {
         supplierPrice: 0,
         unitPrice: goodPrice,
     }
+
+    if (item.type === 3 || item.type === 4) {
+        formattedGood.validity = item?.goodInfo?.validity ?? 0;
+        formattedGood.validityType = item?.goodInfo?.validityType ?? 0;
+    }
+
+    return formattedGood;
+}
+
+function prepaidGoodsExpiryDate(validityType ,validity = -1) {
+    if (validity === -1) {
+        return -1
+    }
+
+    let date = (new Date()).toISOString();
+
+    if (validityType === 1) {
+        date = moment(date).add(validity, 'months');
+    } else {
+        date = moment(date).add(validity, 'days');
+    }
+
+    date = date.add(1, 'days')
+    date = date.format('YYYY-MM-DD')
+    const expiredDate = moment(date).unix() - 1;
+
+    return expiredDate;
 }
 
 function formatPaymentMethod(paymentMethod, paidDateTimeTS) {

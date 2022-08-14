@@ -46,7 +46,7 @@
 						v-for="good in goodList"
 						:key="good.prepaidServiceId"
 						class="card__info"
-						@click="selectedPrepaidService(good)"
+						@click="selectedPrepaidService(good, categoryIdSelected)"
 					>
 						{{ good.prepaidServiceName }}
 					</div>
@@ -200,8 +200,14 @@ export default {
 			this.windowWidth = window.innerWidth;
 		},
 
-		selectedPrepaidService(good = null) {
-			this.$emit("handleSelectPrepaidService", good);
+		selectedPrepaidService(good = null, categoryId = 0) {
+			const categorySelected = this.categories.find(
+				category => category.serviceCategoryId === categoryId
+			);
+			this.$emit("handleSelectPrepaidService", {
+				prepaidService: good,
+				category: categorySelected,
+			});
 		},
 	},
 };

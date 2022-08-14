@@ -88,11 +88,11 @@
 							</div>
 							<div class="prepaid-service-selected__deduct">
 								<b-form-checkbox
-									value="true"
-									unchecked-value="false"
+									value="1"
+									unchecked-value="0"
+									v-model="isDeductService"
 									id="checkbox-deduct-service"
 									name="checkbox-deduct-service"
-									v-model="isDeductService"
 								>
 									Use Now
 								</b-form-checkbox>
@@ -251,7 +251,7 @@ export default {
 		},
 
 		isDeductService: function (value) {
-			this.isShowDeductService = value;
+			this.isDeductService = Number(value);
 		},
 	},
 
@@ -465,6 +465,8 @@ export default {
 				keyGoodSelectedObj = good.productId.toString();
 			else if (type === constant.sales.prepaidCard)
 				keyGoodSelectedObj = good.prepaidCardId.toString();
+			else if (type === constant.sales.prepaidService)
+				keyGoodSelectedObj = good.prepaidServiceId.toString();
 
 			if (this.goodListSelected[keyGoodSelectedObj]) {
 				this.goodListSelected[keyGoodSelectedObj].qty += 1;
@@ -501,12 +503,12 @@ export default {
 			});
 		},
 
-		handleSelectPrepaidService(prepaidServie) {
+		handleSelectPrepaidService({ prepaidService, category = {} }) {
 			this.goodListSelected = [];
 			this.handleAddGoodSelected({
-				good: prepaidServie,
+				good: prepaidService,
 				type: constant.sales.prepaidService,
-				category: {},
+				category,
 			});
 		},
 

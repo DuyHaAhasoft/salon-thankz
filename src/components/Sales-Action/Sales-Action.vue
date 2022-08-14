@@ -1192,6 +1192,7 @@ export default {
 		},
 
 		handleQty(id, qty) {
+			console.log(this.goodListSelected);
 			const amount =
 				qty * this.goodListSelected[id.toString()].showDataTable.unitPrice;
 
@@ -1276,6 +1277,15 @@ export default {
 					good.showDataTable.goodId = good.goodInfo.prepaidCardId;
 					good.showDataTable.amount = good.goodInfo.price * good.qty;
 					good.showDataTable.salesItem = good.goodInfo.prepaidCardName;
+				}
+
+				if (good.type === constant.sales.prepaidService) {
+					console.log(good);
+					good.showDataTable.qTy = good.qty;
+					good.showDataTable.unitPrice = good.goodInfo.price;
+					good.showDataTable.goodId = good.goodInfo.prepaidServiceId;
+					good.showDataTable.amount = good.goodInfo.price * good.qty;
+					good.showDataTable.salesItem = good.goodInfo.prepaidServiceName;
 				}
 
 				this.totalAmount +=

@@ -1,7 +1,7 @@
 <template>
 	<div class="client-tabs">
 		<b-tabs content-class="mt-3" class="client-tabs__tabs">
-			<b-tab title="Sales History" @click="handleGetSalesHistory">
+			<b-tab title="Sales History" active @click="handleGetSalesHistory">
 				<div class="tabs__tab">
 					<div class="tab__sales-history">
 						<span class="sales-history__title">
@@ -79,7 +79,10 @@
 									<td
 										class="table__table-data table__table-data--sales-history-pay-amount"
 									>
-										<div v-if="sales.outstanding" class="sales-history-pay-amount__outstanding">
+										<div
+											v-if="sales.outstanding"
+											class="sales-history-pay-amount__outstanding"
+										>
 											{{ handleFormatNumber(sales.outstanding) }}
 										</div>
 										<div v-else>
@@ -118,7 +121,7 @@
 				</div>
 			</b-tab>
 
-			<b-tab title="Prepaid Cards" active @click="handleGetPrepaidCard">
+			<b-tab title="Prepaid Cards" @click="handleGetPrepaidCard">
 				<div class="tabs__tab tabs__tab--prepaid-card">
 					<div class="tab__checkbox">
 						<b-form-checkbox
