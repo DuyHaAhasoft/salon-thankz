@@ -1280,7 +1280,6 @@ export default {
 				}
 
 				if (good.type === constant.sales.prepaidService) {
-					console.log(good);
 					good.showDataTable.qTy = good.qty;
 					good.showDataTable.unitPrice = good.goodInfo.price;
 					good.showDataTable.goodId = good.goodInfo.prepaidServiceId;
