@@ -815,9 +815,19 @@ export default {
 					return;
 				}
 
+				let guidPService = "";
+
 				const salesItems = Object.values(this.goodListSelected).map(good => {
+					if (good.type === constant.sales.deductionPService) {
+						good.goodInfo.deductedByPrepaidGoodsGuid = guidPService;
+					}
+
 					const goodFormatted = common.commonFunctions.formatSaleItem(good);
 					// this.totalAmount += goodFormatted.amount;
+					if (good.type === constant.sales.prepaidService) {
+						guidPService = goodFormatted.prepaidGoodsGuid
+					}
+
 					if (goodFormatted.quantity === 0) {
 						goodFormatted.quantity = 1;
 						goodFormatted.amount = goodFormatted.unitPrice;
@@ -1287,8 +1297,20 @@ export default {
 					good.showDataTable.salesItem = good.goodInfo.prepaidServiceName;
 				}
 
-				this.totalAmount +=
-					good.showDataTable.unitPrice * good.showDataTable.qTy;
+				if (good.type === constant.sales.deductionPService) {
+					const unitPrice = Number(
+						(good.goodInfo.price / good.goodInfo.quantity).toFixed()
+					);
+					good.showDataTable.qTy = good.qty;
+					good.showDataTable.unitPrice = unitPrice;
+					good.showDataTable.amount = unitPrice * good.qty;
+					good.showDataTable.goodId = good.goodInfo.relatedServiceId;
+					good.showDataTable.salesItem = good.goodInfo.relatedServiceName;
+				}
+				if (good.type !== constant.sales.deductionPService) {
+					this.totalAmount +=
+						good.showDataTable.unitPrice * good.showDataTable.qTy;
+				}
 
 				return good;
 			});

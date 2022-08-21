@@ -204,9 +204,16 @@ export default {
 			const categorySelected = this.categories.find(
 				category => category.serviceCategoryId === categoryId
 			);
+
+			const FormattedCategory = {
+				...categorySelected,
+				id: categorySelected.serviceCategoryId,
+				name: categorySelected.serviceCategoryName,
+			};
+
 			this.$emit("handleSelectPrepaidService", {
 				prepaidService: good,
-				category: categorySelected,
+				category: FormattedCategory,
 			});
 		},
 	},

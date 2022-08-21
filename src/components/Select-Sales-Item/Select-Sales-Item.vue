@@ -98,7 +98,7 @@
 								</b-form-checkbox>
 								<div v-if="isDeductService" class="deduct-quantity">
 									<span>Deduct Quantity</span>
-									<input type="number" />
+									<input type="number" v-model="deductionPService" />
 								</div>
 							</div>
 						</div>
@@ -143,6 +143,7 @@ export default {
 			categories: [],
 			typeGoodTemp: 0,
 			goodListSelected: {},
+			deductionPService: 0,
 			isDeductService: false,
 			goodListSelectedShow: [],
 			iShowSelectedItem: false,
@@ -297,6 +298,8 @@ export default {
 						)
 					].text;
 
+				this.deductionPService = 0;
+
 				if (typeGood === constant.sales.services) {
 					this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 					this.handleGetServiceCategory();
@@ -368,6 +371,8 @@ export default {
 						item => item.id === this.goodTypeSelected
 					)
 				].text;
+
+			this.deductionPService = 0;
 
 			if (this.typeGoodTemp === constant.sales.services) {
 				this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
@@ -446,6 +451,7 @@ export default {
 			this.typeGood = 1;
 			this.typeGoodTemp = 0;
 			this.goodListSelected = {};
+			this.deductionPService = 0;
 			this.iShowSelectedItem = false;
 			this.categorySelected = Object.assign({}, DEFAULT_CATEGORY_SELECTED);
 			this.goodTypeSelected = Object.values(constant.sales.itemSalesType)[0].id;
@@ -465,8 +471,10 @@ export default {
 				keyGoodSelectedObj = good.productId.toString();
 			else if (type === constant.sales.prepaidCard)
 				keyGoodSelectedObj = good.prepaidCardId.toString();
-			else if (type === constant.sales.prepaidService)
+			else if (type === constant.sales.prepaidService) {
+				this.deductionPService = 0;
 				keyGoodSelectedObj = good.prepaidServiceId.toString();
+			}
 
 			if (this.goodListSelected[keyGoodSelectedObj]) {
 				this.goodListSelected[keyGoodSelectedObj].qty += 1;
@@ -512,10 +520,31 @@ export default {
 			});
 		},
 
-		handleConfirmItemSelected() {
+		async handleConfirmItemSelected() {
 			// const listItemSelected = this.goodListSelectedShow;
+			const checkPService = this.isPGood.isPGood && this.isPGood.isPService;
+			if (checkPService && this.deductionPService) {
+				await this.goodDeductionPService();
+			}
 			this.$emit("confirmItemSelected", this.goodListSelected);
 			this.$refs.selectSalesItemModal.hide();
+		},
+
+		goodDeductionPService() {
+			const prepaidServiceInfo = Object.values(this.goodListSelected)[0];
+			const keyGoodSelectedObj =
+				prepaidServiceInfo.goodInfo.relatedServiceId.toString();
+
+			this.goodListSelected[keyGoodSelectedObj] = {
+				qty: this.deductionPService,
+				goodInfo: prepaidServiceInfo.goodInfo,
+				type: constant.sales.deductionPService,
+				categoryInfo: prepaidServiceInfo.categoryInfo,
+			};
+
+			this.goodListSelectedShow = Object.values(this.goodListSelected);
+
+			this.iShowSelectedItem = true;
 		},
 
 		handleCloseModal() {

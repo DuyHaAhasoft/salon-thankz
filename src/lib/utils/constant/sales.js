@@ -61,6 +61,8 @@ const sales = {
     
     prepaidService: 4,
 
+    deductionPService: 6,
+
     validityType: {
         day: 2,
         month: 1,

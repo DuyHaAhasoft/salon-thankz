@@ -142,8 +142,10 @@ function showLongText(text, length = 100) {
 
 function formatSaleItem(item) {
     let goodId = 0;
+    let amount = 0;
     let goodName = '';
     let goodPrice = 0;
+    let deductionType = 0;
     let goodType = item.type;
     let relatedServiceId = 0;
     let prepaidGoodsGuid = "";
@@ -161,12 +163,14 @@ function formatSaleItem(item) {
         goodPrice = item.goodInfo.price;
         goodId = item.goodInfo.serviceId;
         goodName = item.goodInfo.serviceName;
+        amount = item.goodInfo.price * item?.qty;
     }
 
     if(item.type === 2) {
         goodId = item.goodInfo.productId;
         goodName = item.goodInfo.productName;
         goodPrice = item.goodInfo.retailPrice;
+        amount = item.goodInfo.retailPrice * item?.qty;
     }
 
     if (item.type === 3) {
@@ -174,18 +178,20 @@ function formatSaleItem(item) {
         goodPrice = item.goodInfo.price;
         goodId = item.goodInfo.prepaidCardId;
         goodName = item.goodInfo.prepaidCardName;
+        amount = item.goodInfo.price * item?.qty;
         prepaidGoodsGuid = randomFunctions.guid();
         discountForProduct = item.goodInfo.discountForProduct;
         discountForService = item.goodInfo.discountForService;
         prepaidCardInitialBalance = item.goodInfo.chargeAmount;
         deductedByPrepaidGoodsGuid = "00000000-0000-0000-0000-000000000000";
-        prepaidGoodsExpiryDateTS = prepaidGoodsExpiryDate(item.goodInfo.validityType, item.goodInfo.validity)
+        prepaidGoodsExpiryDateTS = prepaidGoodsExpiryDate(item.goodInfo.validityType, item.goodInfo.validity);
     }
 
     if (item.type === 4) {
         goodType = 3;
         goodPrice = item.goodInfo.price;
         goodId = item.goodInfo.prepaidServiceId;
+        amount = item.goodInfo.price * item?.qty;
         prepaidGoodsGuid = randomFunctions.guid();
         goodName = item.goodInfo.prepaidServiceName;
         relatedServiceId = item.goodInfo.relatedServiceId;
@@ -193,19 +199,30 @@ function formatSaleItem(item) {
         prepaidServiceInitialQuantity = item.goodInfo.quantity;
         deductedPrepaidGoodsRefName = item.goodInfo.prepaidServiceName;
         deductedByPrepaidGoodsGuid = "00000000-0000-0000-0000-000000000000";
-        relatedServiceUnitPrice = (item.goodInfo.price / item.goodInfo.quantity).toFixed();
+        relatedServiceUnitPrice = Number((item.goodInfo.price / item.goodInfo.quantity).toFixed());
         prepaidGoodsExpiryDateTS = prepaidGoodsExpiryDate(item.goodInfo.validityType, item.goodInfo.validity);
     }
 
+    if (item.type === 6) {
+        goodType = 3;
+        deductionType = 2;
+        goodId = item.goodInfo.relatedServiceId;
+        prepaidGoodsGuid = randomFunctions.guid();
+        goodName = item.goodInfo.relatedServiceName;
+        deductedPrepaidGoodsRefName = item.goodInfo.prepaidServiceName;
+        deductedByPrepaidGoodsGuid = item.goodInfo.deductedByPrepaidGoodsGuid;
+        goodPrice = Number((item.goodInfo.price / item.goodInfo.quantity).toFixed());
+    }
+
     const formattedGood = {
-        amount: goodPrice * item?.qty,
+        amount: amount,
         clientPrepaidGoodsId: 0,
         deductedByPrepaidGoodsGuid: deductedByPrepaidGoodsGuid,
         deductedPrepaidGoodsRef: 0,
         deductedPrepaidGoodsRefName: deductedPrepaidGoodsRefName,
         deductionAmount: 0,
         deductionPoints: 0,
-        deductionType: 0,
+        deductionType: deductionType,
         discountCategoryId: 0,
         discountCategoryName: "",
         discountForClient: false,
