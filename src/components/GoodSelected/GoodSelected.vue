@@ -86,6 +86,34 @@
 				<div @click="handleDeleteItem(goodSelected, 2)">X</div>
 			</div> -->
 		</div>
+		<div v-if="isTypeGood.prepaidService" class="good-selected__good-type">
+			<table>
+				<thead>
+					<tr>
+						<th v-for="field in fields" :key="field.text">
+							{{ field.text }}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr 
+						:key="index"
+						class="good-type__table-data"
+						v-for="(goodSelected, index) in goodListSelected"
+					>
+						<td class="table-data__name">{{ goodSelected.goodInfo.relatedServiceName }}</td>
+						<td class="table-data__qty">
+							<button class="qty__btn" @click="() => { if(goodSelected.qty !== 1) goodSelected.qty--}">&lt;</button>
+							{{ handleFormatNumber(goodSelected.qty) }}
+							<button class="qty__btn" @click="() => goodSelected.qty++">></button>
+						</td>
+						<td class="table-data__btn">
+							<button class="btn--del" @click="handleDeleteItem(goodSelected, 1)">X</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 		<div v-if="isTypeGood.prepaidCard" class="good-selected__good-type"></div>
 		<div
 			v-if="isTypeGood.prepaidService"

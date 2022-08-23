@@ -67,7 +67,7 @@
 					</tr>
 				</thead>
 				<tbody v-if="showTable">
-					<tr v-for="(good, index) in goodList" :key="index">
+					<tr v-for="(good, index) in goodList" :key="index" @click="handleSelectDeductPrepaidService(good)">
 						<td class="table__table-data">
 							{{ showLongText(good.prepaidServiceName, 15) }}
 						</td>
@@ -216,6 +216,17 @@ export default {
 				category: FormattedCategory,
 			});
 		},
+
+		handleSelectDeductPrepaidService(prepaidServiceDeduct) {
+			const category = {
+				id: prepaidServiceDeduct?.serviceCategoryId ?? 0,
+				name: prepaidServiceDeduct?.serviceCategoryName ?? 0,
+			}
+			this.$emit('handleSelectDeductPrepaidService', {
+				prepaidServiceDeduct,
+				category
+			});
+		}
 	},
 };
 </script>

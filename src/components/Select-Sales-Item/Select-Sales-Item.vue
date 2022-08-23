@@ -42,8 +42,9 @@
 							@handleGetPrepaidServiceByCategory="
 								handleGetPrepaidServiceByCategory
 							"
-							@handleGetUserPrepaidService="handleGetUserPrepaidService"
 							@handleSelectPrepaidService="handleSelectPrepaidService"
+							@handleGetUserPrepaidService="handleGetUserPrepaidService"
+							@handleSelectDeductPrepaidService="handleSelectDeductPrepaidService"
 						/>
 					</div>
 					<div class="body__group-button-list-item-select">
@@ -72,14 +73,8 @@
 								/>
 							</div>
 						</div>
-						<div
-							class="prepaid-service-selected"
-							v-if="
-								isPGood.isPGood &&
-								isPGood.isPService &&
-								goodListSelectedShow.length
-							"
-						>
+
+						<div class="prepaid-service-selected" v-if="isPrepaidServiceSelected.isPService && isPrepaidServiceSelected.isPServiceSelected">
 							<div class="prepaid-service-selected__title">
 								{{
 									goodListSelectedShow[0] &&
@@ -100,6 +95,19 @@
 									<span>Deduct Quantity</span>
 									<input type="number" v-model="deductionPService" />
 								</div>
+							</div>
+						</div>
+
+						<div v-if="isPrepaidServiceSelected.isPService && isPrepaidServiceSelected.isDeductPrepaidService">
+							<div class="list-item-select__list-item" v-if="iShowSelectedItem">
+								<div class="list-item__title">
+									Services
+								</div>
+								<good-selected
+									:isTypeGood="isTypeGood"
+									:goodListSelected="goodListSelectedShow"
+									@handleDeleteItemSelected="handleDeleteItemSelected"
+								/>
 							</div>
 						</div>
 					</div>
@@ -237,9 +245,21 @@ export default {
 				isPService,
 			};
 		},
+
 		isPackages() {
 			return this.typeGood === constant.sales.packages;
 		},
+
+		isPrepaidServiceSelected() {
+			const isPServiceSelected = this.goodListSelectedShow?.[0]?.type !== constant.sales.useDeductPService;
+			const prepaidServiceSelected = this.isPGood.isPGood && this.isPGood.isPService && this.goodListSelectedShow.length;
+
+			return 	{
+				isPServiceSelected,
+				isPService: prepaidServiceSelected,
+				isDeductPrepaidService: !isPServiceSelected,
+			}
+		}
 	},
 
 	watch: {
@@ -516,6 +536,15 @@ export default {
 			this.handleAddGoodSelected({
 				good: prepaidService,
 				type: constant.sales.prepaidService,
+				category,
+			});
+		},
+
+		handleSelectDeductPrepaidService({prepaidServiceDeduct, category}) {
+			this.goodListSelected = [];
+			this.handleAddGoodSelected({
+				good: prepaidServiceDeduct,
+				type: constant.sales.useDeductPService,
 				category,
 			});
 		},

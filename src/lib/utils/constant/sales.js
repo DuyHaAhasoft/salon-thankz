@@ -63,6 +63,8 @@ const sales = {
 
     deductionPService: 6,
 
+    useDeductPService: 7,
+
     validityType: {
         day: 2,
         month: 1,

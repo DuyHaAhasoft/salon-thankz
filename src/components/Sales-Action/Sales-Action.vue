@@ -1307,7 +1307,19 @@ export default {
 					good.showDataTable.goodId = good.goodInfo.relatedServiceId;
 					good.showDataTable.salesItem = good.goodInfo.relatedServiceName;
 				}
-				if (good.type !== constant.sales.deductionPService) {
+
+				if (good.type === constant.sales.useDeductPService) {
+					const unitPrice = Number(
+						(good.goodInfo.price / good.goodInfo.quantity).toFixed()
+					);
+					good.showDataTable.qTy = good.qty;
+					good.showDataTable.unitPrice = unitPrice;
+					good.showDataTable.amount = unitPrice * good.qty;
+					good.showDataTable.goodId = good.goodInfo.relatedServiceId;
+					good.showDataTable.salesItem = good.goodInfo.relatedServiceName;
+				}
+				
+				if (good.type !== constant.sales.deductionPService && good.type !== constant.sales.useDeductPService) {
 					this.totalAmount +=
 						good.showDataTable.unitPrice * good.showDataTable.qTy;
 				}
