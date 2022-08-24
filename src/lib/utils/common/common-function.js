@@ -145,6 +145,7 @@ function formatSaleItem(item) {
     let amount = 0;
     let goodName = '';
     let goodPrice = 0;
+    let salesItemId = 0;
     let deductionType = 0;
     let goodType = item.type;
     let relatedServiceId = 0;
@@ -152,6 +153,7 @@ function formatSaleItem(item) {
     let discountForProduct = 0;
     let discountForService = 0;
     let relatedServiceName = "";
+    let deductedPrepaidGoodsRef = 0;
     let relatedServiceUnitPrice = 0;
     let prepaidGoodsExpiryDateTS = 0;
     let prepaidCardInitialBalance = 0;
@@ -214,11 +216,25 @@ function formatSaleItem(item) {
         goodPrice = Number((item.goodInfo.price / item.goodInfo.quantity).toFixed());
     }
 
+    if (item.type === 7) {
+        goodType = 3;
+        deductionType = 2;
+        salesItemId = item.goodInfo.salesId;
+        goodId = item.goodInfo.relatedServiceId;
+        prepaidGoodsGuid = randomFunctions.guid();
+        deductedPrepaidGoodsRef = item.goodInfo.id;
+        goodName = item.goodInfo.relatedServiceName;
+        relatedServiceId = item.goodInfo.relatedServiceId;
+        goodPrice = item.goodInfo.relatedServiceUnitPrice;
+        relatedServiceName = item.goodInfo.relatedServiceName;
+        deductedPrepaidGoodsRefName = item.goodInfo.prepaidServiceName;
+    }
+
     const formattedGood = {
         amount: amount,
         clientPrepaidGoodsId: 0,
         deductedByPrepaidGoodsGuid: deductedByPrepaidGoodsGuid,
-        deductedPrepaidGoodsRef: 0,
+        deductedPrepaidGoodsRef: deductedPrepaidGoodsRef,
         deductedPrepaidGoodsRefName: deductedPrepaidGoodsRefName,
         deductionAmount: 0,
         deductionPoints: 0,
@@ -247,7 +263,7 @@ function formatSaleItem(item) {
         relatedServiceId: relatedServiceId,
         relatedServiceName: relatedServiceName,
         relatedServiceUnitPrice: relatedServiceUnitPrice,
-        salesItemId: 0,
+        salesItemId: salesItemId,
         salesTypeId: null,
         salesTypeName: "",
         smallCutDiscountEnumDefault: 0,
