@@ -37,7 +37,7 @@
 					class="info info--earned-amount info-box__info"
 				>
 					<label>Earned Amount</label>
-					<input type="text" v-model="prepaidCardChargeAmount" />
+					<input type="text" v-model="prepaidCardChargeAmount"/>
 				</div>
 
 				<div class="info info--validity info-box__info">
@@ -56,13 +56,25 @@
 							name="checkbox-no-limit"
 							class="checkbox-no-limit"
 						>
-							Nolimt
+							No Limit
 						</b-form-checkbox>
 					</div>
 
-					<div class="validity-type validity__validity-type">
-						<button class="btn btn__month">Month</button>
-						<button class="btn btn__day">Days</button>
+					<div class="validity-type validity__validity-type" v-if="showValidity">
+						<b-form-group
+							v-slot="{ ariaDescribedby }"
+							class="btn-radio-validity" 
+						>
+							<b-form-radio-group
+								buttons
+								name="radio-btn-outline"
+								v-model="selectedValidity"
+								:options="optionsValidity"
+								class="radio-group-button"
+								button-variant="outline-primary"
+								:aria-describedby="ariaDescribedby"
+							></b-form-radio-group>
+						</b-form-group>
 					</div>
 				</div>
 			</div>
@@ -88,6 +100,8 @@ export default {
 	data() {
 		return {
 			isNoLimit: false,
+			showValidity: true,
+			selectedValidity: 1,
 			prepaidCardInfo: Object.assign({}, DEFAULT_PREPAID_CARD_INFO),
 		};
 	},
@@ -122,6 +136,9 @@ export default {
 				return this.handleFormatNumber(this.prepaidCardInfo.price);
 			},
 			set: function (value) {
+				// const reg = new RegExp('^\d+$');
+				// const reg = new RegExp('^[0-9]+$');
+				// console.log(reg.test(value));
 				this.prepaidCardInfo.price = Number(value.replaceAll(",", ""));
 			},
 		},
@@ -143,6 +160,13 @@ export default {
 				this.prepaidCardInfo.validity = Number(value.replaceAll(",", ""));
 			},
 		},
+
+		optionsValidity() {
+			return [
+				{ text: 'Month', value: 1 },
+				{ text: 'Day', value: 2 },
+			]
+		},
 	},
 
 	beforeUpdate() {
@@ -158,7 +182,14 @@ export default {
 				if (!value && this.prepaidCardInfo?.validity === -1) {
 					this.prepaidCardInfo.validity = 12;
 				}
-			},
+
+				if (value && Object.keys(this.prepaidCardInfo).length) {
+					this.prepaidCardInfo.validityType = 1;
+					this.prepaidCardInfo.validity = -1;
+				}
+
+				this.showValidity = !value;
+			}
 		},
 
 		prepaidCardInfo: {
@@ -169,6 +200,12 @@ export default {
 			},
 
 			deep: true,
+		},
+
+		selectedValidity: {
+			handler: function (value) {
+				this.prepaidCardInfo.validityType = value;
+			}
 		},
 	},
 

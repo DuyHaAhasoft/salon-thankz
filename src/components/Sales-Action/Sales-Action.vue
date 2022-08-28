@@ -139,10 +139,10 @@
 									</td>
 
 									<td
-										@click="handleNotification"
+										@click="handleShowBalanceDeduction(good.showDataTable.amount, good.showDataTable.goodId)"
 										class="table__table-data table__table-data--balance-deduct"
 									>
-										{{ good.showDataTable.balanceDeduct }}
+										{{ handleFormatNumber(good.showDataTable.balanceDeduct) }}
 									</td>
 
 									<td
@@ -177,7 +177,7 @@
 							</div>
 							<div class="payment-detail__balance-deduction">
 								<span class="payment-detail__title">Balance Deduction</span>
-								<span class="payment-detail__data">0</span>
+								<span class="payment-detail__data">{{ handleFormatNumber(deductedBalance) }}</span>
 							</div>
 							<div
 								v-if="isShow.paymentSelected"
@@ -236,7 +236,7 @@
 									</button>
 									<button
 										class="group-button__btn group-button__btn--balance"
-										@click="handleNotification"
+										@click="handleShowBalanceDeduction(totalAmount)"
 									>
 										Balance
 									</button>
@@ -320,6 +320,10 @@
 			@getUserPrepaidService="handleGetUserPrepaidService"
 			@getPrepaidServiceByCategory="handleGetPrepaidServiceByCategory"
 		/>
+		<deduct-balance
+			ref="refDeductBalance"
+			@handleAddDeduct="handleAddDeduct"
+		/>
 		<!-- <loading /> -->
 		<notification modalTitle="Notification" ref="refNotification" />
 		<confirm-modal
@@ -330,10 +334,10 @@
 </template>
 
 <script>
+import apis from "@apis";
 import common from "@common";
 import constant from "@constant";
-import apis from "../../lib/apis";
-import session from "@/lib/utils/session";
+import session from "@lib/utils/session";
 
 //Components
 // import Loading from "@components/Loading/Loading.vue";
@@ -341,6 +345,7 @@ import GoodType from "@components/Good-Type/Good-Type.vue";
 import GroupButton from "@components/Group-Button/Group-Button.vue";
 import Notification from "@components/Notification/Notification.vue";
 import ConfirmModal from "@components/Confirm-Modal/Confirm-Modal.vue";
+import DeductBalance from "@components/DeductBalance/DeductBalance.vue";
 import SelectSalesItem from "@components/Select-Sales-Item/Select-Sales-Item.vue";
 
 const DEFAULT_SALES_ACTION_TYPE = [
@@ -391,6 +396,7 @@ export default {
 			outstanding: 0,
 			minutesSales: 0,
 			paymentMethods: [],
+			deductedBalance: 0,
 			paymentSelected: [],
 			goodListSelected: {},
 			invoiceDateTimeTS: 0,
@@ -415,6 +421,7 @@ export default {
 		GroupButton,
 		Notification,
 		ConfirmModal,
+		DeductBalance,
 		SelectSalesItem,
 	},
 
@@ -1202,7 +1209,6 @@ export default {
 		},
 
 		handleQty(id, qty) {
-			console.log(this.goodListSelected);
 			const amount =
 				qty * this.goodListSelected[id.toString()].showDataTable.unitPrice;
 
@@ -1320,7 +1326,6 @@ export default {
 				}
 				
 				if (good.type === constant.sales.useDeductPService) {
-					console.log(good)
 					const unitPrice = good.goodInfo.relatedServiceUnitPrice;
 					good.showDataTable.qTy = good.qty;
 					good.showDataTable.unitPrice = unitPrice;
@@ -1377,6 +1382,106 @@ export default {
 		showLongText(text, length) {
 			return common.commonFunctions.showLongText(text, length);
 		},
+
+		async handleShowBalanceDeduction(maxDeduct, goodId = -1) {
+			try {
+				this.$emit("loading", true);
+				if (maxDeduct > 0) {
+					const data = {
+						pageNumber: 1,
+						pageSize: 100,
+						prepaidCardType: -1,
+						includeFamilyCard: true,
+						includeExpiredCard: false,
+						shopId: session.shopSession.getShopId(),
+						clientId: this.dataClient?.clientId ?? 0,
+					}
+	
+					const response = await apis.clientApis.getClientPrepaidCards(data);
+					if (response.data.isOK) {
+						if (response.data.result.items.length) {
+							this.$refs.refDeductBalance.showModal({ data: response.data.result, maxDeduct, goodId });
+						} else {
+							this.$refs.refNotification.showModal({
+								listMessage: [
+									{
+										errorCode: "Error",
+										errorMessage: "No Balance To Deduct!",
+									},
+								],
+							});
+						}
+					} else {
+						console.log('error res api getClientPrepaidCards', response);
+					}
+				} else {
+					this.$refs.refNotification.showModal({
+						listMessage: [
+							{
+								errorCode: "Error",
+								errorMessage: "Amount is zero so no need to deduct!",
+							},
+						],
+					});
+				}
+				
+			} catch (error) {
+				console.log('error get deposit card user', error)
+			} finally {
+				this.$emit("loading", false);
+			}
+		},
+
+		handleAddDeduct({ cardInfo, balanceDeduct, goodId }) {
+			this.salesPaid += balanceDeduct;
+			this.outstanding -= balanceDeduct;
+			this.deductedBalance += balanceDeduct;
+
+			if (goodId !== -1) {
+				const goodIndex = this.goodListSelectedShow.findIndex(good => good.showDataTable.goodId === goodId)
+				this.goodListSelectedShow[goodIndex].showDataTable.balanceDeduct = balanceDeduct;
+
+				const goodKey = goodId.toString();
+
+				this.goodListSelected[goodKey].deductedDepositCard = {
+					deductionType: 1,
+					deductionAmount: balanceDeduct,
+					deductedPrepaidGoodsRef: cardInfo?.id,
+					deductedPrepaidGoodsRefName: cardInfo?.prepaidCardName,
+				}
+				// this.$forceUpdate();
+			} else {
+				let deductBalance = balanceDeduct;
+				const goodListSelectedKeys = Object.keys(this.goodListSelected);
+
+				goodListSelectedKeys.forEach((key) => {
+					let deduct = 0;
+					const amountItem = Number(this.goodListSelected[key]?.showDataTable?.amount || 0)
+
+					if (deductBalance) {
+						if (deductBalance >= amountItem) {
+							deduct = amountItem;
+							deductBalance -= deduct;
+						} else {
+							deduct = deductBalance;
+							deductBalance = 0;
+						}
+					}
+
+					if (amountItem && deduct) {
+						const goodIndex = this.goodListSelectedShow.findIndex(good => good.showDataTable.goodId == key)
+						this.goodListSelectedShow[goodIndex].showDataTable.balanceDeduct = deduct;
+
+						this.goodListSelected[key].deductedDepositCard = {
+							deductionType: 1,
+							deductionAmount: deduct,
+							deductedPrepaidGoodsRef: cardInfo?.id,
+							deductedPrepaidGoodsRefName: cardInfo?.prepaidCardName,
+						};
+					}
+				})
+			}
+		}
 	},
 };
 </script>

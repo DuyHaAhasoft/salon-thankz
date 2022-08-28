@@ -89,20 +89,12 @@
                     }
 
                     .validity__validity-type {
-                        gap: 5px;
-                        height: 30px;
-                        display: flex;
+                        height: 20px;
                         margin-top: 8px;
-
-                        .btn__month {
+                        
+                        .btn-radio-validity {
                             font-size: 14px;
-                            padding: 0px 4px;
-                            height: fit-content;
-                        }
-
-                        .btn__day {
-                            font-size: 14px;
-                            padding: 0px 4px;
+                            max-height: 20px;
                             height: fit-content;
                         }
                     }

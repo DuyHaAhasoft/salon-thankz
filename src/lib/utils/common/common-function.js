@@ -277,6 +277,13 @@ function formatSaleItem(item) {
         formattedGood.validityType = item?.goodInfo?.validityType ?? 0;
     }
 
+    if (item.deductedDepositCard) {
+        formattedGood.deductionType = item?.deductedDepositCard?.deductionType;
+        formattedGood.deductionAmount = item?.deductedDepositCard?.deductionAmount;
+        formattedGood.deductedPrepaidGoodsRef = item?.deductedDepositCard?.deductedPrepaidGoodsRef;
+        formattedGood.deductedPrepaidGoodsRefName = item?.deductedDepositCard?.deductedPrepaidGoodsRefName;
+    }
+
     return formattedGood;
 }
 

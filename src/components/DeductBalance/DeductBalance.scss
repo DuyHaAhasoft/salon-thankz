@@ -1,0 +1,74 @@
+.deduct-balance-modal {
+    position: absolute;
+
+    .deduct-balance-modal__modal {
+        table {
+            width: 100%;
+            padding: 4px;
+            max-height: 50vh;
+            overflow-y: auto;
+            border-spacing: 0px;
+            border-collapse: unset;
+
+            th, td {
+                width: 100%;
+                padding: 5px;
+                vertical-align: middle;
+            }
+
+            thead {
+
+                tr {
+
+                    th {
+                        width: 10%;
+                        border: 0px;
+                        padding: 10px 0px;
+                        font-weight: 400;
+                        text-align: center;
+                        border: 1px solid rgba(0, 0, 0, 0.1);
+                        background-color: rgba(240, 240, 240, 1);
+                    }
+                }
+            }
+
+            tbody {
+
+                tr {
+
+                    td {
+                        width: 50px; 
+                        overflow: hidden;
+                        white-space: nowrap; 
+                        text-overflow: ellipsis;
+                        border: 1px solid rgba(240, 240, 240, 1);
+                    }
+                }
+                
+                tr:hover {
+                    background-color: rgb(248, 248, 248);
+                }
+            }
+
+            .table__card-selected {
+                &.card-selected {
+                    background-color: #D9E1F2;
+                }
+            }
+
+            .table__table-data {
+                width: 100%;
+
+                .btn-change-number {
+                    opacity: 0;
+                    border: none;
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: #ccc;
+                    }
+                }
+            }
+        }
+    }
+}

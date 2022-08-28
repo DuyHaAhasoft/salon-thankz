@@ -1,6 +1,6 @@
 <template>
 	<div class="client-tabs">
-		<b-tabs content-class="mt-3" class="client-tabs__tabs">
+		<b-tabs content-class="mt-3" class="client-tabs__tabs" v-model="tabIndex">
 			<b-tab title="Sales History" active @click="handleGetSalesHistory">
 				<div class="tabs__tab">
 					<div class="tab__sales-history">
@@ -451,6 +451,7 @@ export default {
 
 	data() {
 		return {
+			tabIndex: 0,
 			dataPrepaidGoods: {},
 			dataSalesHistory: {},
 			isShowHistoryDeleted: false,
@@ -516,10 +517,12 @@ export default {
 
 	methods: {
 		handleGetPrepaidCard({ pageNumber = 1 }) {
+			this.tabIndex = 1;
 			this.$emit("getPrepaidCard", { expired: this.expired.card, pageNumber });
 		},
 
 		handleGetPrepaidService({ pageNumber = 1 }) {
+			this.tabIndex = 2;
 			this.$emit("getPrepaidService", {
 				expired: this.expired.service,
 				pageNumber: pageNumber,
@@ -527,6 +530,7 @@ export default {
 		},
 
 		handleGetSalesHistory({ pageNumber = 1 }) {
+			this.tabIndex = 0;
 			this.$emit("getSalesHistory", {
 				fromDateTS: 1,
 				pageNumber: pageNumber,
@@ -738,6 +742,10 @@ export default {
 			} catch (errors) {
 				console.log(errors);
 			}
+		},
+
+		resetTab() {
+			this.tabIndex = 0
 		},
 	},
 };

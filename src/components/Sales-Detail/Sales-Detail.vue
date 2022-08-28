@@ -106,9 +106,12 @@
 						</div>
 						<div class="point total-sales__point">
 							<span class="payment-method-name">Point Deduction</span>
-							{{ !!salesDetail && handleNumber(salesDetail.deductionPoints) }}
+							{{ !!salesDetail && handleNumber(this.deductionPoints) }}
 						</div>
-						<div class="balance total-sales__balance">Balance Deduction 0</div>
+						<div class="balance total-sales__balance">
+							<span class="payment-method-name">Balance Deduction</span>
+							{{ !!salesDetail && handleNumber(this.deductionAmount) }}
+						</div>
 						<div
 							v-for="(payment, index) in !!salesDetail && salesDetail.payments"
 							:key="index"
@@ -216,6 +219,14 @@ export default {
 		statusScreenLaptop() {
 			return this.windowWidth > constant.common.screenSize.maxScreenLaptop;
 		},
+
+		deductionPoints() {
+			return this.salesDetail.salesItems.reduce((totalPoint, item) => totalPoint + item.deductionPoints, 0);
+		},
+
+		deductionAmount() {
+			return this.salesDetail.salesItems.reduce((totalPoint, item) => totalPoint + item.deductionAmount, 0);
+		}
 	},
 
 	methods: {

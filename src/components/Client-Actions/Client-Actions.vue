@@ -499,6 +499,9 @@ export default {
 			this.dataSalesHistory = {};
 			this.dataPrepaidCards = {};
 			this.dataPrepaidServices = {};
+
+			this.$refs.refClientTabs &&
+			this.$refs.refClientTabs.resetTab();
 		},
 
 		showUploadImageModal() {

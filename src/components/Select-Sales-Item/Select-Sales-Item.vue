@@ -74,7 +74,7 @@
 							</div>
 						</div>
 
-						<div class="prepaid-service-selected" v-if="isPrepaidServiceSelected.isPService && isPrepaidServiceSelected.isPServiceSelected">
+						<div class="prepaid-service-selected" v-if="isPrepaidServiceSelected.isPService && isPrepaidServiceSelected.isPServiceSelected && showSelectPService">
 							<div class="prepaid-service-selected__title">
 								{{
 									goodListSelectedShow[0] &&
@@ -98,7 +98,7 @@
 							</div>
 						</div>
 
-						<div v-if="isPrepaidServiceSelected.isPService && isPrepaidServiceSelected.isDeductPrepaidService">
+						<div v-if="isPrepaidServiceSelected.isPService && isPrepaidServiceSelected.isDeductPrepaidService && !showSelectPService">
 							<div class="list-item-select__list-item" v-if="iShowSelectedItem">
 								<div class="list-item__title">
 									Services
@@ -155,6 +155,7 @@ export default {
 			isDeductService: false,
 			goodListSelectedShow: [],
 			iShowSelectedItem: false,
+			showSelectPService: true,
 			title: "Select Sales Item",
 			isShowDeductService: false,
 			windowWidth: window.innerWidth,
@@ -274,6 +275,13 @@ export default {
 		isDeductService: function (value) {
 			this.isDeductService = Number(value);
 		},
+
+		deductionPService: function (value) {
+			const prepaidServiceInfo = Object.values(this.goodListSelected)[0];
+			if (value > prepaidServiceInfo?.goodInfo?.quantity) {
+				this.deductionPService = Number(prepaidServiceInfo?.goodInfo?.quantity || 0);
+			}
+		}
 	},
 
 	methods: {
@@ -455,6 +463,11 @@ export default {
 			serviceCategoryId = 0,
 			serviceCategoryName = "",
 		}) {
+			this.showSelectPService = true;
+
+			this.goodListSelected = {};
+			this.goodListSelectedShow = [];
+
 			this.categorySelected = {
 				id: serviceCategoryId,
 				name: serviceCategoryName,
@@ -464,6 +477,11 @@ export default {
 		},
 
 		handleGetUserPrepaidService() {
+			this.showSelectPService = false;
+
+			this.goodListSelected = {};
+			this.goodListSelectedShow = [];
+
 			this.$emit("getUserPrepaidService");
 		},
 
@@ -523,7 +541,9 @@ export default {
 		},
 
 		handleSelectPrepaidCard(prepaidCard) {
-			this.goodListSelected = [];
+			this.goodListSelected = {};
+			this.goodListSelectedShow = [];
+
 			this.handleAddGoodSelected({
 				good: prepaidCard,
 				type: constant.sales.prepaidCard,
@@ -532,7 +552,9 @@ export default {
 		},
 
 		handleSelectPrepaidService({ prepaidService, category = {} }) {
-			this.goodListSelected = [];
+			this.goodListSelected = {};
+			this.goodListSelectedShow = [];
+
 			this.handleAddGoodSelected({
 				good: prepaidService,
 				type: constant.sales.prepaidService,
@@ -541,7 +563,9 @@ export default {
 		},
 
 		handleSelectDeductPrepaidService({prepaidServiceDeduct, category}) {
-			this.goodListSelected = [];
+			this.goodListSelected = {};
+			this.goodListSelectedShow = [];
+
 			this.handleAddGoodSelected({
 				good: prepaidServiceDeduct,
 				type: constant.sales.useDeductPService,
