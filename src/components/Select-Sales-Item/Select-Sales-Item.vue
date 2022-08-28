@@ -105,6 +105,7 @@
 								</div>
 								<good-selected
 									:isTypeGood="isTypeGood"
+									:maxQtyDeduct="maxQtyDeduct"
 									:goodListSelected="goodListSelectedShow"
 									@handleDeleteItemSelected="handleDeleteItemSelected"
 								/>
@@ -150,6 +151,7 @@ export default {
 			goodList: [],
 			categories: [],
 			typeGoodTemp: 0,
+			maxQtyDeduct: 0,
 			goodListSelected: {},
 			deductionPService: 0,
 			isDeductService: false,
@@ -488,6 +490,7 @@ export default {
 		resetModal() {
 			this.typeGood = 1;
 			this.typeGoodTemp = 0;
+			this.maxQtyDeduct = 0;
 			this.goodListSelected = {};
 			this.deductionPService = 0;
 			this.iShowSelectedItem = false;
@@ -565,6 +568,8 @@ export default {
 		handleSelectDeductPrepaidService({prepaidServiceDeduct, category}) {
 			this.goodListSelected = {};
 			this.goodListSelectedShow = [];
+
+			this.maxQtyDeduct = prepaidServiceDeduct.quantity;
 
 			this.handleAddGoodSelected({
 				good: prepaidServiceDeduct,

@@ -105,7 +105,7 @@
 						<td class="table-data__qty">
 							<button class="qty__btn" @click="() => { if(goodSelected.qty !== 1) goodSelected.qty--}">&lt;</button>
 							{{ handleFormatNumber(goodSelected.qty) }}
-							<button class="qty__btn" @click="() => goodSelected.qty++">></button>
+							<button class="qty__btn" @click="() => { if(maxQtyDeduct  > 0 && goodSelected.qty <  maxQtyDeduct) goodSelected.qty++ }">></button>
 						</td>
 						<td class="table-data__btn">
 							<button class="btn--del" @click="handleDeleteItem(goodSelected, 1)">X</button>
@@ -155,6 +155,11 @@ export default {
 			default: function () {
 				return [];
 			},
+		},
+
+		maxQtyDeduct: {
+			type: Number,
+			default: -1,
 		},
 	},
 
