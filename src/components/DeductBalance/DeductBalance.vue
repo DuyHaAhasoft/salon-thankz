@@ -23,8 +23,8 @@
                     <tr 
                         :key="index"
                         v-for="(depositCard, index) in listDepositCard"
-                        :class="cardClass(depositCard.prepaidCardId)"
-                        @click="handleCardSelected(depositCard.prepaidCardId)"
+                        :class="cardClass(index)"
+                        @click="handleCardSelected(index)"
                     >
                         <td class="table__table-data">
                             {{ showLongText(depositCard.prepaidCardName, 20) }}
@@ -36,7 +36,7 @@
                             {{ handleFormatDate(depositCard.expiryDateTS) }}
                         </td>
                         <td class="table__table-data">
-                            <input v-if="isDeduct(depositCard.prepaidCardId)" v-model="balance"/>
+                            <input v-if="isDeduct(index)" v-model="balance"/>
                             <input v-else disabled />
                         </td>
                     </tr>
@@ -71,6 +71,7 @@ export default {
             balanceDeduct: 0,
             selectedCardId: 0,
             listDepositCard: [],
+            selectedCardIndex: 0,
             fields: Object.assign({}, DEFAULT_FIELD_ITEM),
         }
     },
@@ -91,7 +92,7 @@ export default {
             
             set: function (value) {
                 const balanceDeduct = Number(value.replaceAll(",", ""));
-                const selectedCard = this.listDepositCard.find(card => card.prepaidCardId = this.selectedCardId)
+                const selectedCard = this.listDepositCard?.[this.selectedCardIndex]
 
                 if (balanceDeduct > selectedCard?.balance) {
                     this.balanceDeduct = 0;
@@ -119,7 +120,8 @@ export default {
             this.goodId = dataModal.goodId;
             this.maxDeduct = dataModal.maxDeduct;
             this.listDepositCard = dataModal.data.items;
-            this.selectedCardId = dataModal.data.items?.[0]?.prepaidCardId ?? 0;
+            // this.selectedCardId = dataModal.data.items?.[0]?.prepaidCardId ?? 0;
+            this.selectedCardIndex = 0;
 
             if (dataModal.maxDeduct > dataModal.data.items?.[0]?.balance) {
                 this.balanceDeduct = dataModal.data.items?.[0]?.balance ?? 0;
@@ -140,7 +142,7 @@ export default {
         },
 
         handleAddDeduct() {
-            const cardInfo = this.listDepositCard.find(card => card.prepaidCardId = this.selectedCardId);
+            const cardInfo = this.listDepositCard?.[this.selectedCardIndex];
 
             this.$emit('handleAddDeduct', { cardInfo, balanceDeduct: this.balanceDeduct, goodId: this.goodId });
 
@@ -169,24 +171,24 @@ export default {
 			);
         },
 
-        handleCardSelected(cardId) {
-            const selectedCard = this.listDepositCard.find(card => card.prepaidCardId === cardId)
+        handleCardSelected(cardIndex) {
+            const selectedCard = this.listDepositCard?.[cardIndex];
 
             if (this.balanceDeduct > selectedCard.balance) {
                 this.balanceDeduct = selectedCard.balance
             }
 
-            this.selectedCardId = cardId;
+            this.selectedCardIndex = cardIndex;
         },
 
-        isDeduct(cardId) {
-            return cardId === this.selectedCardId;
+        isDeduct(cardIndex) {
+            return cardIndex === this.selectedCardIndex;
         },
 
-        cardClass(cardId) {
+        cardClass(cardIndex) {
             return [
                 {
-                    'table__card-selected card-selected': cardId === this.selectedCardId,
+                    'table__card-selected card-selected': cardIndex === this.selectedCardIndex,
                 }
             ]
         },

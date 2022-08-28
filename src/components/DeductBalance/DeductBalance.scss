@@ -56,6 +56,12 @@
                 }
             }
 
+            tr {
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+
             .table__table-data {
                 width: 100%;
 
